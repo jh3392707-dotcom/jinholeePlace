@@ -43,6 +43,32 @@ td.l{text-align:left;min-width:150px}td select{padding:3px;font-size:12px}
 .sample{background:#4a3a10;color:#ffe08a;padding:6px 10px;font-size:12px;border-radius:3px;margin-bottom:10px}
 .w{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
 @media(max-width:560px){.pick{grid-template-columns:28px 1fr}.pick>div:last-child{grid-column:2}.odds,.stake{text-align:left}}
+
+/* 결과 카드 (모바일 가독성) */
+body{font-size:16px}
+.jump{position:sticky;top:0;z-index:5;display:flex;gap:6px;overflow-x:auto;padding:8px 0;background:linear-gradient(var(--bg) 80%,transparent);margin-bottom:6px}
+.jump button{flex:0 0 auto;background:var(--panel2);color:var(--khaki);border:1px solid var(--line);border-radius:20px;padding:8px 14px;font-weight:700;font-family:inherit;font-size:14px;cursor:pointer}
+.stale{font-size:13px;color:var(--mute);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:8px 10px;margin-bottom:10px}
+.stale.bad{color:#ffb5a5;border-color:var(--red);background:#2b1713}
+.rs{margin-bottom:22px;scroll-margin-top:56px}
+.rs-t{margin:0 0 4px;font-size:22px;font-weight:900;color:var(--khaki);display:flex;align-items:center;gap:8px;border-bottom:3px solid var(--olive);padding-bottom:6px}
+.rs-d{font-size:13px;color:var(--mute);margin:6px 0 10px;line-height:1.55}
+.none{padding:16px;border:1px dashed var(--line);border-radius:6px;color:var(--mute);text-align:center;font-size:14px}
+.pk{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.pk1{border-color:var(--amber);box-shadow:inset 4px 0 0 var(--amber)}
+.pk-h{display:flex;align-items:center;gap:10px}
+.rk{flex:0 0 32px;height:32px;border-radius:50%;background:var(--olive);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-family:'Black Ops One',sans-serif}
+.pk-t{flex:1;min-width:0;font-size:20px;font-weight:900;line-height:1.25;overflow-wrap:anywhere}
+.pk-o{flex:0 0 auto;font-family:'Black Ops One',sans-serif;font-size:26px;color:var(--amber)}
+.pk-m{font-size:13px;color:var(--mute);margin:6px 0 10px;line-height:1.5}
+.pk-g{margin-bottom:8px}.pk-gl{font-size:13px;color:var(--text);margin-bottom:4px}
+.bar{height:10px;background:#12160d;border-radius:5px;overflow:hidden;border:1px solid var(--line)}.bar i{display:block;height:100%;background:var(--green)}
+.pk1 .bar i{background:var(--amber)}
+.pk-b{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pk-b .tag{font-size:13px;padding:3px 8px;margin:0}
+.b1{background:var(--amber);color:#1a1200;font-weight:900;font-size:14px;padding:3px 10px;border-radius:4px}
+.pk-s{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:15px;color:var(--green)}.pk-s b{font-size:18px}
+@media(max-width:560px){.wrap{padding:0 12px 60px}.panel{padding:12px}}
 </style>
 
 <div class="wrap">
@@ -1331,18 +1357,23 @@ function candidates(){
 function bestPerMatch(list,cmp){const best={};list.forEach(c=>{const b=best[c.m.id];if(!b||cmp(c,b)>0)best[c.m.id]=c});return Object.values(best)}
 function build(){
   const all=candidates();
-  const base=all.filter(c=>c.odds>=1.2&&c.pa>=0.5);
-  // 유튜버 일치 픽: 2명 이상이 같은 선택을 추천한 것 (일치 인원 → 확률 순)
-  const safeYt=bestPerMatch(all.filter(c=>c.odds>=1.2&&c.pa>=0.4&&c.votes>=2&&c.ratio>=0.6),(a,b)=>(a.ratio-b.ratio)||(a.votes-b.votes)||(a.pa-b.pa)).sort((a,b)=>b.ratio-a.ratio||b.votes-a.votes||b.pa-a.pa).slice(0,5);
-  const ytIds=new Set(safeYt.map(c=>c.m.id));
-  // 클로드 추천 픽: 배당에서 역산한 확률이 높고, 유튜버 일치 목록과 겹치지 않는 경기
-  const safeCl=bestPerMatch(base.filter(c=>!ytIds.has(c.m.id)),(a,b)=>a.pa-b.pa).sort((a,b)=>b.pa-a.pa).slice(0,5);
-  // 작전 배분용 통합 목록: 확률 + 유튜버 일치 가산
+  const isYt=c=>c.votes>=2&&c.ratio>=0.6;      // 같은 항목 유튜버 다수 일치
+  const isCl=c=>c.odds>=1.2&&c.pa>=0.5;        // 클로드(배당 확률 모델) 안정 추천
+  const top=(list,score,n=5)=>bestPerMatch(list,(a,b)=>score(a)-score(b)).sort((a,b)=>score(b)-score(a)).slice(0,n);
+  // ① 완전 추천: 유튜버 다수 일치 + 클로드 안정 추천이 같은 선택
+  const perfect=top(all.filter(c=>isYt(c)&&isCl(c)),c=>c.pa+0.15*c.ratio*c.cov);
+  // ② 유튜버 추천: 의견 일치율 높은 순 (1명만 분석한 것도 포함, 화면에서 따로 강조)
+  const yt=top(all.filter(c=>c.votes>=1&&c.ratio>=0.5&&c.odds>=1.1),c=>c.ratio*1000+c.votes*10+c.pa);
+  // ③ 클로드 추천: 배당에서 역산한 확률이 높은 순
+  const cl=top(all.filter(isCl),c=>c.pa);
+  // ④ 고배당: 배당 1.8↑ 이면서 (유튜버 다수 일치 또는 기대값 0.95↑ & 확률 28%↑)
+  const high=top(all.filter(c=>c.odds>=1.8&&(isYt(c)||(c.pa>=0.28&&c.ev>=0.95))),c=>c.ev+0.1*c.ratio*c.cov);
+  // 작전 배분용: 안정권 후보를 합쳐 상위 5, 고배당은 겹치지 않는 경기만
   const sc=c=>c.pa+0.05*c.ratio*c.cov;
-  const safe=bestPerMatch(base,(a,b)=>sc(a)-sc(b)).sort((a,b)=>sc(b)-sc(a)).slice(0,5);
+  const safe=top([...perfect,...cl,...yt.filter(c=>c.pa>=0.5&&c.odds>=1.2)],sc);
   const used=new Set(safe.map(c=>c.m.id));
-  const chal=bestPerMatch(all.filter(c=>c.odds>=2.0&&c.pa>=0.28&&c.ev>=0.95&&!used.has(c.m.id)),(a,b)=>a.ev-b.ev).sort((a,b)=>b.ev*(1+b.cov*.3)-a.ev*(1+a.cov*.3)).slice(0,5);
-  return{safe,safeYt,safeCl,chal};
+  const chal=high.filter(c=>!used.has(c.m.id));
+  return{perfect,yt,cl,high,safe,chal};
 }
 const combos=(arr,n)=>n==1?arr.map(x=>[x]):arr.flatMap((x,i)=>combos(arr.slice(i+1),n-1).map(r=>[x,...r]));
 // 공식 규정(스포츠토토 고정배당률 세부규칙): 적중배당률 = 배당들의 곱, 소수점 셋째자리 절사 후 둘째자리에서 절상
@@ -1373,35 +1404,42 @@ function plan(safe,chal,budget,mode){
 const fmtT=s=>{const d=new Date(s);return `${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`};
 const grade=p=>p>=.75?'S':p>=.65?'A':p>=.55?'B':'C';
 function pickCard(c,i,amt,kind){
-  return `<div class="pick"><div class="rank">${i+1}</div><div>
-   <div class="t">${esc(c.label)}</div>
-   <div class="m">${esc(c.m.sport)} · ${esc(c.m.league)} · ${esc(c.m.home)} vs ${esc(c.m.away)} · ${fmtT(c.m.time)}</div>
-   <div style="margin-top:4px"><span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'EV '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span>
-   <span class="tag">보정확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}<span class="tag">유튜버 ${c.votes}/${c.nPick||0}명 (${Math.round((c.ratio||0)*100)}%)</span></div></div>
-   <div><div class="odds">x${c.odds.toFixed(2)}</div><div class="stake">${won(amt)}</div></div></div>`;
+  const pct=Math.round((c.ratio||0)*100),one=c.nPick===1;
+  return `<div class="pk${one?' pk1':''}"><div class="pk-h"><span class="rk">${i+1}</span><div class="pk-t">${esc(c.label)}</div><div class="pk-o">x${c.odds.toFixed(2)}</div></div>
+   <div class="pk-m">${esc(c.m.sport)} · ${esc(c.m.league)}<br>${esc(c.m.home)} vs ${esc(c.m.away)} · <b>${fmtT(c.m.time)}</b></div>
+   <div class="pk-g"><div class="pk-gl">유튜버 의견일치 <b>${c.votes}/${c.nPick||0}명 (${pct}%)</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>
+   <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}</div>
+   <div class="pk-s">${amt>=1000?`추천금액 <b>${won(amt)}</b>`:`<span style="color:var(--mute)">추천금액 없음 (1,000원 미만이라 제외)</span>`}</div></div>`;
 }
 function run(){
   const budget=fixBudget(),mode=$('mode').value;
-  if(window.TOTO_DATA&&!(window.TOTO_DATA.parserVersion>=2)){$('out').innerHTML='<div class="panel" style="border-left-color:var(--red)"><h2>⛔ 배당 데이터를 다시 수집해야 합니다</h2><div class="note">현재 데이터는 이전 수집기로 만들어져 <b>전반전 시장 등이 섞인 잘못된 배당</b>이 들어 있습니다(예: 사우디 vs 한국 한국 승 2.35 → 실제 1.66). 노트북에서 <b>앱열기.bat</b>로 연 화면의 [🔄 배당 최신화]를 누르거나 <b>오늘분석.bat</b>을 실행하세요.</div></div>';return}
-  const {safe,safeYt,safeCl,chal}=build();
-  const sb=budget*.6,cb=budget*.4;
-  const alloc=l=>{const w=l.map(c=>Math.pow(c.pa,3)),t=w.reduce((a,b)=>a+b,0)||1;return l.map((c,i)=>Math.floor(Math.min(sb*w[i]/t/2,budget*0.12)/1000)*1000)};
-  const aY=alloc(safeYt),aC=alloc(safeCl);
-  const wC=chal.map(c=>c.ev),tC=wC.reduce((a,b)=>a+b,0)||1;
+  const oldData=window.TOTO_DATA&&!(window.TOTO_DATA.parserVersion>=2);
+  const {perfect,yt,cl,high,safe,chal}=build();
   const rd=n=>Math.floor(n/1000)*1000;
+  // 추천금액: 안정권(완전/유튜버/클로드)은 예산 60%를 확률^3 비례, 고배당은 40%를 기대값 비례. 한 선택당 최대 예산의 12%
+  const sb=budget*.6,cb=budget*.4,um=new Map();
+  [...perfect,...yt,...cl].forEach(c=>um.set(c.m.id+c.k,c));
+  const wS=[...um.values()].reduce((a,c)=>a+Math.pow(c.pa,3),0)||1,wH=high.reduce((a,c)=>a+c.ev,0)||1;
+  const amtS=c=>rd(Math.min(sb*Math.pow(c.pa,3)/wS,budget*0.12)),amtH=c=>rd(Math.min(cb*c.ev/wH,budget*0.12));
   let h='';
+  if(oldData)h+=`<div class="stale bad" style="font-size:15px;line-height:1.6"><b>⛔ 예전 방식으로 수집된 배당입니다 (미리보기용)</b><br>전반전 배당 등이 섞여 <b>틀린 값</b>이 있습니다. 예: 사우디 vs 한국 한국 승 2.35 → 실제 1.66.<br>이 결과로는 구매하지 마세요. 노트북에서 [🔄 배당 최신화]를 먼저 하세요.</div>`;
   const colAt=window.TOTO_DATA&&window.TOTO_DATA.collectedAt;
   if(colAt){const mins=Math.round((Date.now()-new Date(colAt))/60000);
-    h+=`<div class="panel" style="border-left-color:${mins>15?'var(--red)':'var(--olive)'}"><div class="note" style="color:${mins>15?'#ffb5a5':'var(--mute)'}">${mins>15?'⚠ ':''}배당 수집 후 <b>${mins}분</b> 경과. 배당은 실시간으로 바뀌므로 구매 직전에 [🔄 배당 최신화]로 다시 분석하세요.</div></div>`}
-  if(!safe.length&&!chal.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
-  h+=`<div class="panel"><h2>▌ 📺 안정 픽 ① 유튜버 일치 — 같은 항목을 고른 유튜버 60%↑가 같은 선택</h2>`+(safeYt.length?safeYt.map((c,i)=>pickCard(c,i,aY[i],'s')).join(''):'<div class="note">조건(2명 이상 일치 + 같은 항목 유튜버의 60%↑ 일치, 보정확률 40%↑, 배당 1.20↑)에 맞는 경기가 없습니다. 유튜버 픽을 더 채우거나 아래 ②를 참고하세요.</div>')+
-   `<div class="note">'유튜버 3/4명'은 같은 항목(승무패·핸디캡·언오버 각각)에서 픽을 낸 4명 중 3명이 이 선택을 골랐다는 뜻입니다. 오버·언더를 고른 채널은 승무패 집계에 들어가지 않습니다. 다만 일치도와 배당 확률은 별개라, 등급이 낮으면(C) 유튜버는 몰렸어도 배당상 안정권은 아니라는 뜻입니다.</div></div>`;
-  h+=`<div class="panel"><h2>▌ 🤖 안정 픽 ② 클로드 추천 — 배당 확률 기준</h2>`+(safeCl.length?safeCl.map((c,i)=>pickCard(c,i,aC[i],'s')).join(''):'<div class="note">조건에 맞는 경기가 없습니다.</div>')+
-   `<div class="note">유튜버 일치와 상관없이 배당에서 역산한 승리 확률이 높은 경기입니다. 클로드가 가진 정보는 배당과 유튜버 픽뿐이라, 선수·부상 같은 실제 분석은 반영되지 않았습니다. 추천 금액 = 안정 예산(60%)을 ①과 ②에 절반씩 나눈 뒤 확률 비례 분배.</div></div>`;
-  h+=`<div class="panel"><h2>▌ 💥 도전 픽 BEST 5 — 중·고배당</h2>`+(chal.length?chal.map((c,i)=>pickCard(c,i,rd(cb*wC[i]/tC),'r')).join(''):'<div class="note">배당 2.0↑이면서 기대값(EV)이 괜찮은 도전 픽이 없습니다.</div>')+
-   `<div class="note">추천 금액 = 예산의 40%를 기대값(EV) 비례로 분배. EV 1.0 이상이면 배당 대비 확률이 유리하다고 추정되는 픽입니다.</div></div>`;
+    h+=`<div class="stale ${mins>15?'bad':''}">${mins>15?'⚠ ':''}배당 수집 후 <b>${mins}분</b> 경과 — 배당은 실시간으로 바뀝니다. 구매 직전 [🔄 배당 최신화]</div>`}
+  if(!perfect.length&&!yt.length&&!cl.length&&!high.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
+  const sec=(id,ico,title,desc,body)=>`<section class="rs" id="${id}"><h2 class="rs-t"><span>${ico}</span>${title}</h2><div class="rs-d">${desc}</div>${body}</section>`;
+  const none=t=>`<div class="none">${t}</div>`;
+  h+=`<div class="jump">${[['s1','① 완전추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 배분']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
+  h+=sec('s1','⭐','완전 추천픽','유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고, 배당 확률도 50% 이상인 경기',
+    perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
+  h+=sec('s2','📺','유튜버 추천픽 TOP 5','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
+    yt.length?yt.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('유튜버 픽이 없습니다. 유튜버 분석을 먼저 수집하세요.'));
+  h+=sec('s3','🤖','클로드 추천픽 TOP 5','배당에서 역산한 승리 확률이 높은 순 (50%↑, 배당 1.20↑). 선수·부상 같은 정보는 반영되지 않았습니다.',
+    cl.length?cl.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('조건에 맞는 경기가 없습니다.'));
+  h+=sec('s4','💥','오늘의 고배당 TOP 5','배당 <b>1.8배 이상</b>이면서 유튜버가 다수 일치했거나, 확률 대비 배당이 유리(기대값 0.95↑)한 픽',
+    high.length?high.map((c,i)=>pickCard(c,i,amtH(c),'r')).join(''):none('조건에 맞는 고배당 픽이 없습니다.'));
   const pl=plan(safe,chal,budget,mode);
-  h+=`<div class="panel"><h2>▌ 🗺 작전 배분 — ${won(budget)} 어떻게 엮을까</h2>`;
+  h+=`<div class="panel" id="s5"><h2>🗺 작전 배분 — ${won(budget)} 어떻게 엮을까</h2>`;
   let spent=0,ev=0;
   pl.forEach(g=>{
     h+=`<div style="color:var(--khaki);font-weight:700;margin:8px 0 4px">${g.name} (${g.t.length}장)</div>`;
@@ -1415,12 +1453,13 @@ function run(){
   <div class="warn">💡 100%에 못 미치면 '길게 하면 잃는 구조'라는 뜻입니다. 확률은 배당 역산 + 유튜버 일치도로 추정한 값이라 실제와 다를 수 있습니다. 한 장이라도 전부 맞아야 하므로 폴더 수가 늘수록 적중률이 급감합니다. 보통 2폴(안정)을 중심으로, 도전 조합은 소액만 권장합니다.</div>`;
   h+='</div>';
   // 배당 검증 표
-  const vmap=new Map();[...safeYt,...safeCl,...safe,...chal].forEach(c=>vmap.set(c.m.id+c.k,c));
+  const vmap=new Map();[...perfect,...yt,...cl,...high,...safe].forEach(c=>vmap.set(c.m.id+c.k,c));
   h+=`<div class="panel"><h2>▌ 🔍 배당 검증 — 베트맨 화면과 대조</h2><div class="note" style="margin-bottom:8px">추천에 쓰인 선택의 배당입니다. 베트맨에서 본 값이 다르면 오른쪽 칸에 입력하세요. 입력하면 즉시 다시 분석하고 ✓로 표시됩니다.</div><div class="matrix"><table style="min-width:520px"><tr><th>경기</th><th>선택</th><th>앱 배당</th><th>내가 확인한 배당</th><th>상태</th></tr>`+
    [...vmap.values()].map(c=>`<tr><td class="l">${esc(c.m.home)} vs ${esc(c.m.away)}<br><span class="note">${fmtT(c.m.time)}</span></td><td class="l">${esc(c.label)}</td><td><b>${c.odds.toFixed(2)}</b></td><td><input type="number" step="0.01" min="1.01" style="width:90px;padding:4px" data-vm="${esc(c.m.id)}" data-vk="${c.k}" placeholder="${c.odds.toFixed(2)}"></td><td>${c.ver?'✓ 직접 확인':c.warn?'⚠ '+esc(c.warn):'미확인'}</td></tr>`).join('')+
    `</table></div>`+
    (LASTDIFF.length?`<div style="margin-top:10px"><b style="color:var(--khaki)">최근 최신화로 바뀐 배당 ${LASTDIFF.length}건</b><div class="note">${LASTDIFF.slice().sort((a,b)=>Math.abs(b.nw/b.old-1)-Math.abs(a.nw/a.old-1)).slice(0,10).map(d=>`${esc(d.m.home)} vs ${esc(d.m.away)} ${esc(selLabel(d.m,d.k))}: ${d.old.toFixed(2)} → <b>${d.nw.toFixed(2)}</b>`).join('<br>')}${LASTDIFF.length>10?'<br>…':''}</div></div>`:'')+`</div>`;
   $('out').innerHTML=h;
+  document.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{const t=document.getElementById(b.dataset.j);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
   document.querySelectorAll('[data-vm]').forEach(inp=>inp.onchange=()=>{
     const v=parseFloat(inp.value);if(!(v>1))return;
     const m=S.matches.find(x=>x.id==inp.dataset.vm);if(!m)return;
