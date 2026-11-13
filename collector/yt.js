@@ -40,5 +40,6 @@ function transcript(id){
       console.log(`   => ${name}: 영상 ${used}/${vs.length}개 분석, ${Object.keys(agg).length}경기 픽`);
     }catch(e){console.log('실패:',e.message.split('\n')[0])}
   }
-  fs.writeFileSync(dataPath,JSON.stringify(data,null,1));console.log('data.json 갱신 완료. 앱에서 불러온 뒤 매트릭스에서 확인하세요.');
+  fs.writeFileSync(dataPath,JSON.stringify(data,null,1));fs.writeFileSync(path.join(__dirname,'..','data.js'),'window.TOTO_DATA='+fs.readFileSync(path.join(__dirname,'..','data.json'),'utf8')+';');
+  console.log('data.json 갱신 완료. 앱에서 불러온 뒤 매트릭스에서 확인하세요.');
 })();

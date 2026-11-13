@@ -22,6 +22,7 @@ const url=`https://www.betman.co.kr/main/mainPage/gamebuy/gameSlip.do?gmId=G101&
   const matches=bag.flatMap(j=>parse(j));
   const uniq=Object.values(Object.fromEntries(matches.map(m=>[m.id,m])));
   fs.writeFileSync(path.join(__dirname,'..','data.json'),JSON.stringify({collectedAt:new Date().toISOString(),matches:uniq},null,1));
+  fs.writeFileSync(path.join(__dirname,'..','data.js'),'window.TOTO_DATA='+fs.readFileSync(path.join(__dirname,'..','data.json'),'utf8')+';');
   console.log(`응답 ${n}개 저장(raw/), 경기 ${uniq.length}건 → ../data.json`);
   if(!uniq.length)console.log('⚠ 경기를 못 찾았습니다. collector/raw 폴더의 파일을 Claude에게 보내주세요. 파서를 맞춰드립니다.');
 })();
