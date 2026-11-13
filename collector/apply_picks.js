@@ -10,7 +10,7 @@ if(process.argv.includes('--replace')){data.picks={};data.evidence={}}
 for(const [ch,ms] of Object.entries(input))for(const [id,v] of Object.entries(ms)){
   if(!ids.has(id)||!OK.includes(v.pick)){bad++;continue}
   (data.picks[id]=data.picks[id]||{})[ch]=v.pick;
-  (data.evidence[id]=data.evidence[id]||{})[ch]={k:v.pick,quote:String(v.quote||'').slice(0,240),url:v.url||'',videoTitle:v.videoTitle||'',via:'claude-session'};n++;
+  (data.evidence[id]=data.evidence[id]||{})[ch]={k:v.pick,quote:String(v.quote||'').slice(0,240),url:v.url||'',videoTitle:v.videoTitle||'',via:'claude-session',verified:!!v.verified};n++;
 }
 fs.writeFileSync(dp,JSON.stringify(data,null,1));
 fs.writeFileSync(path.join(__dirname,'..','data.js'),'window.TOTO_DATA='+fs.readFileSync(dp,'utf8')+';');

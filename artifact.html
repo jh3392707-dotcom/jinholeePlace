@@ -1419,7 +1419,7 @@ function evidenceHtml(c){
   if(!who.length)return '';
   const rows=who.map(ch=>{
     const same=mp[ch]===c.k,e=ev[ch];
-    return `<div class="evr ${same?'ok':'no'}"><div class="evh">${same?'✅':'❌'} <b>${esc(ch)}</b> → ${esc(selLabel(m,mp[ch]))}</div>`+
+    return `<div class="evr ${same?'ok':'no'}"><div class="evh">${same?'✅':'❌'} <b>${esc(ch)}</b> → ${esc(selLabel(m,mp[ch]))}${e&&e.verified?' <span class="tag s" style="font-size:12px">✔ 자막 2회 확인</span>':e&&e.via==='claude-session'?' <span class="tag" style="font-size:12px">1회 판단</span>':''}</div>`+
       (e&&e.quote?`<div class="evq">“${esc(e.quote)}”</div>`:`<div class="evq none">${e?'근거 문장이 저장되지 않았습니다':'근거 데이터 없음 (직접 입력했거나 예전 수집) — 오늘분석.bat으로 유튜버 분석을 다시 돌리면 채워집니다'}</div>`)+
       (e&&e.url?`<a class="evl" href="${esc(e.url)}" target="_blank" rel="noopener">▶ ${esc(e.videoTitle||'영상 보기')}</a>`:'')+`</div>`}).join('');
   return `<details class="ev"><summary>🔎 근거 보기 (${who.length}명 · ✅ ${who.filter(ch=>mp[ch]===c.k).length}명 이 선택)</summary>${rows}<div class="note">✅ 이 선택을 고른 유튜버, ❌ 같은 항목에서 다른 선택을 고른 유튜버입니다. 문장은 영상 자막에서 프로그램이 자동으로 찾은 것이라, 뜻을 잘못 읽었을 수 있으니 의심되면 영상 링크로 확인하세요.</div></details>`;
@@ -1607,7 +1607,10 @@ $('dataFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new Fi
 load();$('f_time').value=localStr(new Date(Date.now()+3600e3));renderIntel();bar();
 if(window.TOTO_DATA&&importData(window.TOTO_DATA)){$('dataRes').textContent='수집 데이터 '+S.matches.length+'경기를 자동으로 불러왔습니다 ('+(window.TOTO_DATA.collectedAt||'')+')';run()}
 stamp();
-if(!LOCAL){$('refresh').style.display='none';$('refreshMsg').style.margin='0 0 12px'}
+if(!LOCAL){$('refresh').style.display='none';$('refreshMsg').style.margin='0 0 12px';
+  const box=document.createElement('div');box.className='stale';box.style.cssText='font-size:15px;line-height:1.6;margin-bottom:12px';
+  box.innerHTML='📱 <b>보기 전용 화면</b>입니다. <b>[🔄 분석 최신화]</b> 버튼은 노트북에서 <b>앱열기.bat</b>을 더블클릭해 연 화면에 있습니다. 거기서 분석하면 최신 배당과 추천이 새로 계산됩니다.';
+  $('refreshMsg').before(box)}
 run();
 if(/[?&]auto=1/.test(location.search)&&location.protocol.startsWith('http'))setTimeout(()=>$('refresh').click(),400);
 if(!window.TOTO_DATA)fetch('data.json').then(r=>r.ok?r.json():null).then(d=>{if(d&&d.matches&&d.matches.length){importData(d);run()}}).catch(()=>{});

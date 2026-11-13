@@ -4,7 +4,8 @@ const http=require('http'),fs=require('fs'),path=require('path'),{spawn}=require
 const root=path.join(__dirname,'..'),PORT=8787;
 const mime={'.html':'text/html;charset=utf-8','.js':'text/javascript;charset=utf-8','.json':'application/json;charset=utf-8'};
 let job=null;
-const PROMPT=`collector/transcripts/manifest.json 에 적힌 각 영상 자막(collector/transcripts/<영상id>.txt)과 data.json 의 matches 를 읽어라. 채널별로, 아직 시작 전인 경기마다 항목별(승무패 H/D/A, 핸디캡 HH/HD/HA, 언더오버 O/U) 픽을 판단한다. 자막에 그 경기 언급이 없거나 불확실하거나 부정("~는 어렵다")·조건부 발언이면 제외한다. 팀 이름은 Grep 으로 찾고 앞뒤 문맥을 읽어라. 같은 팀 이름이 여러 경기(예: 일본-브라질 축구, 일본-한국 야구)에 나오면 상대팀·종목·리그·날짜가 정확히 맞는 경기에만 연결하고, 팀 이름만 같다고 다른 종목 발언을 연결하지 마라. 판단 후 픽이 배당 우세 방향과 정반대이면(예: 배당 1.78 우세 팀 대신 3.40 팀을 5명이 추천) 인용 문장을 다시 읽고 경기가 맞는지 재확인해라. 결과를 collector/picks_today.json 에 {"채널명":{"경기id":{"pick":"H","quote":"자막 원문 문장 그대로","url":"영상주소","videoTitle":"영상제목"}}} 형식으로 저장하고, 마지막에 node collector/apply_picks.js collector/picks_today.json --replace 를 실행해라. 질문하지 말고 끝까지 수행하고, 마지막에 반영 건수만 한 줄로 출력해라.`;
+const P1=`collector/transcripts/manifest.json 에 적힌 각 영상 자막(collector/transcripts/<영상id>.txt)과 data.json 의 matches 를 읽어라. 채널별로, 아직 시작 전인 경기마다 항목별(승무패 H/D/A, 핸디캡 HH/HD/HA, 언더오버 O/U) 픽을 판단한다. 자막에 그 경기 언급이 없거나 불확실하거나 부정("~는 어렵다")·조건부 발언이면 제외한다. 팀 이름은 Grep 으로 찾고 앞뒤 문맥을 읽어라. 같은 팀 이름이 여러 경기(예: 일본-브라질 축구, 일본-한국 야구)에 나오면 상대팀·종목·리그·날짜가 정확히 맞는 경기에만 연결하고, 팀 이름만 같다고 다른 종목 발언을 연결하지 마라. 결과를 collector/picks_today.json 에 {"채널명":{"경기id":{"pick":"H","quote":"자막 원문 문장 그대로","url":"영상주소","videoTitle":"영상제목"}}} 형식으로 저장해라. apply_picks 는 실행하지 마라(2차 검증자가 한다). 질문하지 말고 끝까지 수행하고, 마지막에 저장 건수만 한 줄로 출력해라.`;
+const P2=`collector/picks_today.json 은 1차 판단 결과다. 너는 독립적인 2차 검증자다. 1차 결과를 믿지 말고 자막(collector/transcripts/<영상id>.txt)을 처음부터 다시 읽어 각 항목을 검증해라. (1) quote 가 실제 자막에 그대로 있는지 Grep 으로 확인 (2) 그 발언이 이 경기(상대팀·종목·리그·날짜)에 대한 것이 맞는지 (3) 선택 방향(홈승/원정승/무/오버/언더, 핸디캡이면 기준값 방향)이 맞는지 (4) 부정·조건부·단순 소개 발언이 아닌지. 하나라도 어긋나면 수정하거나 삭제해라. 특히 배당 우세 방향과 정반대인 다수 의견은 경기가 맞는지 더 엄격히 확인해라. 통과한 항목에만 "verified":true 를 붙여 collector/picks_verified.json 에 저장하고 node collector/apply_picks.js collector/picks_verified.json --replace 를 실행해라. 질문하지 말고 끝까지 수행하고, 마지막에 "1차 N건 → 검증 통과 M건 (삭제 K, 수정 J)" 한 줄만 출력해라.`;
 function run(cmd,args,opt={}){
   return new Promise(res=>{
     let log='';const p=spawn(cmd,args,Object.assign({shell:process.platform==='win32',cwd:__dirname},opt));
@@ -18,7 +19,8 @@ async function analyze(){
   const J=job={running:true,startedAt:Date.now(),steps:[
     {id:'odds',name:'베트맨 배당 수집',status:'wait',detail:''},
     {id:'dl',name:'유튜버 영상 자막 받기',status:'wait',detail:''},
-    {id:'pick',name:'유튜버 픽 판단 (Claude가 자막을 읽는 중)',status:'wait',detail:''}],error:null};
+    {id:'pick1',name:'유튜버 픽 1차 판단 (Claude가 자막을 읽는 중)',status:'wait',detail:''},
+    {id:'pick2',name:'유튜버 픽 2차 검증 (자막을 처음부터 다시 확인)',status:'wait',detail:''}],error:null};
   const S=id=>J.steps.find(x=>x.id===id),tail=l=>l.trim().split('\n').slice(-3).join(' / ').slice(0,300);
   // 1) 배당
   S('odds').status='run';let r=await run(process.execPath,['collect.js']);
@@ -26,17 +28,29 @@ async function analyze(){
   S('odds').status='ok';S('odds').detail=tail(r.log);
   // 2) 자막 다운로드 (실패해도 기존 픽 유지하고 계속)
   S('dl').status='run';r=await run(process.execPath,['yt.js'],{env:Object.assign({},process.env,{YT_DOWNLOAD_ONLY:'1'}),timeout:900000});
-  if(r.code!==0){S('dl').status='warn';S('dl').detail='자막을 받지 못해 기존 유튜버 픽을 유지합니다. '+tail(r.log);S('pick').status='skip';J.warn=true}
+  if(r.code!==0){S('dl').status='warn';S('dl').detail='자막을 받지 못해 기존 유튜버 픽을 유지합니다. '+tail(r.log);S('pick1').status='skip';S('pick2').status='skip';J.warn=true}
   else{
     S('dl').status='ok';S('dl').detail=tail(r.log);
-    // 3) Claude 헤드리스로 자막 판단 → 실패 시 키워드 방식
-    S('pick').status='run';
-    r=await run('claude',['-p',PROMPT,'--allowedTools','Read','Grep','Glob','Write','Bash(node collector/apply_picks.js:*)','--permission-mode','acceptEdits'],{cwd:root,timeout:900000});
-    if(r.code===0){S('pick').status='ok';S('pick').detail=tail(r.log)}
-    else{
-      S('pick').detail='Claude 실행 실패 → 정확도가 낮은 키워드 방식으로 대체합니다. ';
+    const claudeArgs=(prompt,tools)=>['-p',prompt,'--allowedTools',...tools,'--permission-mode','acceptEdits'];
+    // 3) 1차 판단
+    S('pick1').status='run';
+    const r1=await run('claude',claudeArgs(P1,['Read','Grep','Glob','Write']),{cwd:root,timeout:900000});
+    if(r1.code!==0){
+      // Claude 실행 실패 → 키워드 방식으로 대체 (2차 검증 불가)
+      S('pick1').detail='Claude 실행 실패 → 정확도가 낮은 키워드 방식으로 대체합니다. ';
       const r2=await run(process.execPath,['yt.js'],{timeout:900000});
-      S('pick').status=r2.code===0?'warn':'fail';S('pick').detail+=tail(r2.log||r.log);J.warn=true;
+      S('pick1').status=r2.code===0?'warn':'fail';S('pick1').detail+=tail(r2.log||r1.log);S('pick2').status='skip';S('pick2').detail='키워드 방식은 2차 검증을 할 수 없습니다.';J.warn=true;
+    }else{
+      S('pick1').status='ok';S('pick1').detail=tail(r1.log);
+      // 4) 2차 검증 (별도 Claude 실행이 처음부터 다시 읽고 확인)
+      S('pick2').status='run';
+      const r2=await run('claude',claudeArgs(P2,['Read','Grep','Glob','Write','Bash(node collector/apply_picks.js:*)']),{cwd:root,timeout:900000});
+      if(r2.code===0){S('pick2').status='ok';S('pick2').detail=tail(r2.log)}
+      else{
+        // 2차 검증 실패 → 1차 결과만 반영하고 "검증 안 됨"으로 표시
+        const ap=await run(process.execPath,['apply_picks.js','picks_today.json','--replace']);
+        S('pick2').status='warn';S('pick2').detail='2차 검증에 실패해 1차 결과만 반영했습니다(검증 표시 없음). '+tail(ap.log);J.warn=true;
+      }
     }
   }
   try{J.data=JSON.parse(fs.readFileSync(path.join(root,'data.json'),'utf8'))}catch(e){J.error='data.json을 읽지 못했습니다';}
