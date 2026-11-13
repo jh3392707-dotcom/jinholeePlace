@@ -44,9 +44,13 @@
 
 ## [분석 최신화] 원격 절차 (휴대폰 사이트 버튼이 노트북에서 시작시키는 정해진 루틴)
 사용자가 휴대폰 사이트(아티팩트)의 [🫡 최신화는 대위 이진호에게 요청] 버튼을 누르면 예약된 루틴이 노트북의 이 폴더에서 새 세션을 열어 아래만 수행한다. **이 절차 밖의 다른 작업·명령은 하지 않는다.** 질문하지 말고 끝까지 수행한다.
+**명령 사용 규칙 (허용 질문을 줄이기 위해 반드시 지킨다)**
+- 쉘 명령은 아래 형태만 쓴다: `git pull`, `node collector/<스크립트>.js [인자]`. 폴더 이동(`cd`)·`$env:`·`&&`·`;`·`|`로 이어 붙인 **복합 명령은 쓰지 않는다.** (모든 스크립트는 저장소 루트에서 실행해도 동작한다.)
+- 확인이 필요하면 쉘 명령(`grep`, `wc`, `ls`, `cat`, `git diff`, `tail` 등) 대신 **Read·Grep·Glob 도구**를 쓴다. 불필요한 점검 명령은 하지 않는다.
+- 아티팩트 게시 후 별도의 재검증 명령을 돌리지 않는다. 게시 결과 메시지로 충분하다.
 1. `git pull` (실패해도 계속).
-2. `cd collector && node collect.js` → 베트맨 경기·배당. 0건이면 `raw/`를 읽고 parse.js 수정 후 1회 재시도. 실패하면 이유를 한 줄로 보고하고 종료(아티팩트는 건드리지 않는다).
-3. `$env:YT_DOWNLOAD_ONLY=1; node yt.js` → 자막 다운로드 (`transcripts/manifest.json`).
+2. `node collector/collect.js` → 베트맨 경기·배당. 0건이면 `raw/`를 읽고 parse.js 수정 후 1회 재시도. 실패하면 이유를 한 줄로 보고하고 종료(아티팩트는 건드리지 않는다).
+3. `node collector/yt.js --download-only` → 자막 다운로드 (`collector/transcripts/manifest.json`).
 4. **1차 판단**: 자막을 읽고 채널별·경기별·항목별 픽과 원문 근거를 `collector/picks_today.json`에 저장 (위 '4.'와 '같은 팀 이름 주의' 규칙 적용).
 5. **2차 검증**: Agent 도구로 **독립된 서브에이전트**를 띄워 1차 결과를 믿지 말고 자막을 처음부터 다시 읽어 확인하게 한다('2회 확인 지침'). 통과한 것만 `verified:true`로 `collector/picks_verified.json`에 저장하고 `node collector/apply_picks.js collector/picks_verified.json --replace`.
 6. **추천픽 저장(성적표용)**: `node collector/snapshot.js` — 지금 앱이 보여주는 추천픽(네 구역+조합)을 `records.json`에 스냅샷으로 저장한다. (Playwright 필요)
