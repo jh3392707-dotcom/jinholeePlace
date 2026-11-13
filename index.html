@@ -237,6 +237,8 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .rc-pg.win .rc-pgm{color:#cfe8a0}.rc-pg.win b{color:#9be05a}
 .rc-pg.lose .rc-pgm{color:#ffd2c9}.rc-pg.lose b{color:#ff8a70}
 .rc-pg.wait .rc-pgm{color:var(--mute);font-size:14px;font-weight:700}
+.cb:not([data-s]),.cd:not([data-s]){white-space:normal;overflow-wrap:anywhere}
+.cb-big{font-size:clamp(15px,5.2vw,20px)}
 </style>
 </head>
 <body>
@@ -470,8 +472,10 @@ function tickets(safe,chal){
 }
 
 /* ---------- 렌더 ---------- */
+const kstFmt=iso=>{try{const f=new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',hour12:false,month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).formatToParts(new Date(iso)),g=t=>f.find(x=>x.type===t).value;return g('month')+'/'+g('day')+' '+(g('hour')==='24'?'00':g('hour'))+':'+g('minute')}catch(e){return ''}};
 const fmtT=s=>{const d=new Date(s);return `${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`};
 const grade=p=>p>=.75?'S':p>=.65?'A':p>=.55?'B':'C';
+const safeUrl=u=>/^https?:\/\//i.test(String(u||''))?String(u):'';
 const GROUPS=[['H','D','A'],['HH','HD','HA'],['O','U']];
 function allVer(c){const ev=(S.evidence||{})[c.m.id]||{},mp=S.picks[c.m.id]||{},w=CH.filter(ch=>mp[ch]===c.k);return w.length>0&&w.every(ch=>ev[ch]&&ev[ch].verified)}
 function viaRule(c){const ev=(S.evidence||{})[c.m.id]||{},mp=S.picks[c.m.id]||{};return CH.some(ch=>mp[ch]===c.k&&ev[ch]&&ev[ch].via==='rule')}
@@ -483,7 +487,7 @@ function evidenceHtml(c,openAll){
     const same=mp[ch]===c.k,e=ev[ch];
     return `<div class="evr ${same?'ok':'no'}"><div class="evh">${same?'✅':'❌'} <b>${esc(ch)}</b> → ${esc(selLabel(m,mp[ch]))}${e&&e.verified?' <span class="tag s" style="font-size:12px">✔ 자막 2회 확인</span>':e&&e.via==='claude-session'?' <span class="tag" style="font-size:12px">1회 판단</span>':''}</div>`+
       (e&&e.quote?`<div class="evq">“${esc(e.quote)}”</div>`:`<div class="evq none">${e?'근거 문장이 저장되지 않았습니다':'근거 데이터 없음 (직접 입력했거나 예전 수집) — 오늘분석.bat으로 유튜버 분석을 다시 돌리면 채워집니다'}</div>`)+
-      (e&&e.url?`<a class="evl" href="${esc(e.url)}" target="_blank" rel="noopener">▶ ${esc(e.videoTitle||'영상 보기')}</a>`:'')+`</div>`}).join('');
+      (e&&safeUrl(e.url)?`<a class="evl" href="${esc(safeUrl(e.url))}" target="_blank" rel="noopener noreferrer">▶ ${esc(e.videoTitle||'영상 보기')}</a>`:'')+`</div>`}).join('');
   return `<details class="ev"${openAll?' open':''}><summary>🔎 근거 보기 (${who.length}명 · ✅ ${who.filter(ch=>mp[ch]===c.k).length}명 이 선택)</summary>${rows}<div class="note">✅ 이 선택을 고른 유튜버, ❌ 같은 항목에서 다른 선택을 고른 유튜버입니다. 문장은 영상 자막에서 프로그램이 자동으로 찾은 것이라, 뜻을 잘못 읽었을 수 있으니 의심되면 영상 링크로 확인하세요.</div></details>`;
 }
 // 구매 마감 시각: 베트맨이 준 마감(deadline)을 쓰고, 없으면 경기 시작 30분 전으로 추정(est)
@@ -570,7 +574,7 @@ function recBanner(){
   return `<details class="rec" ${J?'open':''}><summary>🏁 마지막 추천픽 성적표 <span class="rc-s">${J?`✅${H} ❌${M} ⏳${W}`:'결과 대기 중'}</span></summary><div class="rec-b">
    ${sec}
    <div class="rc-top"><div class="rc-n hit">✅ 적중 <b>${H}</b></div><div class="rc-n miss">❌ 비적중 <b>${M}</b></div><div class="rc-n wait">⏳ 대기 <b>${W}</b></div>${V?`<div class="rc-n void">⚪ 무효 <b>${V}</b></div>`:''}</div>
-   <div class="note">저장 시각 ${fmtT(snap.savedAt.slice(0,16))} 기준 추천픽 ${live.length}개 · 배당 수집 ${snap.collectedAt?fmtT(snap.collectedAt.slice(0,16)):'-'}</div>
+   <div class="note">저장 시각 ${kstFmt(snap.savedAt)} 기준 추천픽 ${live.length}개 · 배당 수집 ${snap.collectedAt?kstFmt(snap.collectedAt):'-'} (한국시간)</div>
    ${pending?`<div class="note" style="margin:8px 0">경기가 끝나면 결과가 정리되어 적중/비적중이 표시됩니다. 이 채팅에 <b>"결과 정리"</b>라고 하시면 최종 스코어를 찾아 반영합니다.</div>`:''}
    ${grp.map(g=>`<details class="rc-list"><summary>${g.label} 결과 보기 (${g.L.length}장)</summary>${g.L.map(x=>{const ic2={hit:'✅',miss:'❌',void:'⚪',wait:'⏳'}[x.st];const names=x.legs.map(l=>l.p?esc(l.p.label):'?').join(' + ');const oddsT=(x.t.odds||0).toFixed(2);
      return `<div class="rc-r rc-${x.st}"><span class="rc-i">${ic2}</span><div><b>${names}</b><div class="note">합산 x${oddsT} · ${x.st==='hit'?`적중금 ${wonAbs(x.ret)} (+${wonAbs(x.net)})`:x.st==='miss'?`${wonAbs(snap.budget)} 손실`:x.st==='void'?'전부 무효 — 환불':'결과 대기'} · 경기별 ${x.legs.map(l=>({hit:'✅',miss:'❌',void:'⚪',wait:'⏳'})[l.e.st]).join('')}</div></div></div>`}).join('')}</details>`).join('')}
@@ -690,6 +694,13 @@ function run(){
   if(!groups.length)h+='<div class="none">조합을 만들 픽이 부족합니다.</div>';
   h+=`<div class="warn">📐 <b>적중금 계산 (스포츠토토 공식 규정)</b><br>① 합산배당 = 각 경기 배당의 곱 → 소수점 셋째 자리 절사 후 둘째 자리에서 절상<br>② 적중금 = 합산배당 × 투입금 (원 단위 올림)<br>③ 승부식은 2~10경기 조합 · 한 장 최대 적중금 1억원<br>④ <b>세금은 반영되지 않았습니다.</b> 1장 구매 한도는 출처마다 달라(온라인 5만원 / 판매점 10만원 보도) 베트맨 공지로 확인하세요.<br>💡 확률은 배당 역산 + 유튜버 일치도로 추정한 값이고, 기대 회수가 100% 미만이면 오래 할수록 잃는 구조라는 뜻입니다. 폴더 수가 늘수록 적중률이 급감합니다.</div>`;
   h+='</div>';
+  // 분석 범위: 리그별로 앞으로 열릴 경기 중 유튜버 분석이 있는 경기 수
+  const now0=Date.now(),cov={};let pastN=0,pastLg={};
+  S.matches.forEach(m=>{const started=Date.parse(m.time+':00+09:00')<=now0;
+    if(started){pastN++;pastLg[m.league]=(pastLg[m.league]||0)+1;return}
+    const c=cov[m.league]=cov[m.league]||{n:0,an:0,ch:new Set(),sport:m.sport};c.n++;const mp=S.picks[m.id]||{},ks=Object.keys(mp);if(ks.length){c.an++;ks.forEach(x=>c.ch.add(x))}});
+  const covRows=Object.entries(cov).sort((a,b)=>b[1].n-a[1].n).map(([lg,c])=>`<tr><td class="l">${esc(lg)}<br><span class="note">${esc(c.sport)}</span></td><td>${c.n}</td><td>${c.an}</td><td>${c.ch.size}</td><td>${c.an===0?'<b style="color:#ff8a70">분석 없음</b>':c.ch.size<=1?'<b style="color:#ffd77a">채널 1명만</b>':c.an<c.n/2?'<span style="color:#ffd77a">일부만</span>':'충분'}</td></tr>`).join('');
+  h+=`<details class="panel vd"><summary>📊 분석 범위 — 어떤 경기를 유튜버가 분석했나 (눌러서 열기)</summary><div class="note" style="margin:8px 0">유튜버 분석이 없거나 1명뿐인 경기는 ②·① 구역에서 밀리거나 빠집니다. ③ 클로드 추천은 배당 확률만으로 정합니다.${pastN?`<br>이미 시작한 경기 <b>${pastN}개</b>(${Object.entries(pastLg).map(([k,v])=>esc(k)+' '+v).join(', ')})는 추천에서 제외됩니다.`:''}</div><div class="matrix"><table style="min-width:420px"><tr><th>리그</th><th>남은 경기</th><th>분석된 경기</th><th>분석한 채널</th><th>상태</th></tr>${covRows||'<tr><td colspan="5">남은 경기 없음</td></tr>'}</table></div></details>`;
   // 배당 검증 표
   const vmap=new Map();[...perfect,...yt,...cl,...high,...safe].forEach(c=>vmap.set(c.m.id+c.k,c));
   h+=`<details class="panel vd"><summary>🔍 배당 검증 — 베트맨 화면과 대조 (눌러서 열기)</summary><div class="note" style="margin-bottom:8px">추천에 쓰인 선택의 배당입니다. 베트맨에서 본 값이 다르면 오른쪽 칸에 입력하세요. 입력하면 즉시 다시 분석하고 ✓로 표시됩니다.</div><div class="matrix"><table style="min-width:520px"><tr><th>경기</th><th>선택</th><th>앱 배당</th><th>내가 확인한 배당</th><th>상태</th></tr>`+
