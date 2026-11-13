@@ -373,7 +373,8 @@ function importData(d){
   const key=m=>m.home+'|'+m.away,old={};S.matches.forEach(m=>old[key(m)]=m.id);
   const np={};
   ms.forEach(m=>{const o=old[key(m)];if(o&&S.picks[o]){np[m.id]=S.picks[o]}});
-  S.matches=ms;S.picks=np;S.sample=false;save();renderIntel();bar();return ms.length;
+  S.matches=ms;S.picks=np;S.sample=false;
+  Object.entries(d.picks||{}).forEach(([id,o])=>{S.picks[id]=Object.assign(S.picks[id]||{},o)});save();renderIntel();bar();return ms.length;
 }
 $('dataFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{try{const n=importData(JSON.parse(r.result));$('dataRes').textContent=n?n+'경기를 불러왔습니다.':'경기가 없는 파일입니다.'}catch(x){$('dataRes').textContent='읽기 실패: '+x.message}};r.readAsText(f)};
