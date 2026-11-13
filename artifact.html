@@ -146,6 +146,22 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .lg-r{display:inline-block;background:#d8321f;color:#fff;font-weight:900;padding:1px 8px;border-radius:4px;margin-right:2px}
 .mx{font-size:13px;color:var(--mute);font-weight:700;margin-left:4px}
 .ban{display:inline-block;background:#d8321f;color:#fff;font-weight:900;font-size:13px;padding:3px 10px;border-radius:4px}
+
+/* 대위 이진호의 추천픽 */
+.dia{color:#e3a621;font-size:20px;letter-spacing:3px;text-shadow:0 0 8px #e3a62166,0 1px 0 #000}
+#s1 .rs-t{border-bottom-color:var(--amber);color:#ffd77a}
+.pc-big{border-color:var(--amber);background:linear-gradient(#2d3a1f,#262f1b)}
+.pc-big .pc-s{padding:12px}
+.pc-big .pc-t{font-size:20px;min-height:0}
+.pc-big .pc-d{border-top-color:var(--amber)}
+.pc-big .ev{border-color:#8a7a3a;background:#1d2113}
+.pc-big .ev summary{color:#ffd77a;font-size:15px}
+.pc-big .evr{padding:10px 12px}
+.pc-big .evq{font-size:15px;color:#f2eddb;border-left:3px solid var(--amber);padding-left:8px;margin:6px 0}
+.pc-big .evh{font-size:15px}
+.pc-big .pc-m,.pc-big .pc-cd,.pc-big .pc-s .bar,.pc-big .pc-gl{display:none}
+.pc-big .pc-a{margin-top:2px}
+.pk-cl{margin:8px 0;padding:8px 10px;background:#16201a;border:1px solid var(--line);border-radius:6px;font-size:14px}
 </style>
 
 <div class="wrap">
@@ -2376,7 +2392,7 @@ const grade=p=>p>=.75?'S':p>=.65?'A':p>=.55?'B':'C';
 const GROUPS=[['H','D','A'],['HH','HD','HA'],['O','U']];
 function allVer(c){const ev=(S.evidence||{})[c.m.id]||{},mp=S.picks[c.m.id]||{},w=CH.filter(ch=>mp[ch]===c.k);return w.length>0&&w.every(ch=>ev[ch]&&ev[ch].verified)}
 function viaRule(c){const ev=(S.evidence||{})[c.m.id]||{},mp=S.picks[c.m.id]||{};return CH.some(ch=>mp[ch]===c.k&&ev[ch]&&ev[ch].via==='rule')}
-function evidenceHtml(c){
+function evidenceHtml(c,openAll){
   const m=c.m,g=GROUPS.find(x=>x.includes(c.k)),mp=S.picks[m.id]||{},ev=(S.evidence||{})[m.id]||{};
   const who=CH.filter(ch=>g.includes(mp[ch])).sort((a,b)=>(mp[b]===c.k)-(mp[a]===c.k));
   if(!who.length)return '';
@@ -2385,7 +2401,7 @@ function evidenceHtml(c){
     return `<div class="evr ${same?'ok':'no'}"><div class="evh">${same?'✅':'❌'} <b>${esc(ch)}</b> → ${esc(selLabel(m,mp[ch]))}${e&&e.verified?' <span class="tag s" style="font-size:12px">✔ 자막 2회 확인</span>':e&&e.via==='claude-session'?' <span class="tag" style="font-size:12px">1회 판단</span>':''}</div>`+
       (e&&e.quote?`<div class="evq">“${esc(e.quote)}”</div>`:`<div class="evq none">${e?'근거 문장이 저장되지 않았습니다':'근거 데이터 없음 (직접 입력했거나 예전 수집) — 오늘분석.bat으로 유튜버 분석을 다시 돌리면 채워집니다'}</div>`)+
       (e&&e.url?`<a class="evl" href="${esc(e.url)}" target="_blank" rel="noopener">▶ ${esc(e.videoTitle||'영상 보기')}</a>`:'')+`</div>`}).join('');
-  return `<details class="ev"><summary>🔎 근거 보기 (${who.length}명 · ✅ ${who.filter(ch=>mp[ch]===c.k).length}명 이 선택)</summary>${rows}<div class="note">✅ 이 선택을 고른 유튜버, ❌ 같은 항목에서 다른 선택을 고른 유튜버입니다. 문장은 영상 자막에서 프로그램이 자동으로 찾은 것이라, 뜻을 잘못 읽었을 수 있으니 의심되면 영상 링크로 확인하세요.</div></details>`;
+  return `<details class="ev"${openAll?' open':''}><summary>🔎 근거 보기 (${who.length}명 · ✅ ${who.filter(ch=>mp[ch]===c.k).length}명 이 선택)</summary>${rows}<div class="note">✅ 이 선택을 고른 유튜버, ❌ 같은 항목에서 다른 선택을 고른 유튜버입니다. 문장은 영상 자막에서 프로그램이 자동으로 찾은 것이라, 뜻을 잘못 읽었을 수 있으니 의심되면 영상 링크로 확인하세요.</div></details>`;
 }
 // 경기 시작까지 카운트다운 (경기 시각은 한국시간 기준)
 function tickCd(){
@@ -2402,11 +2418,11 @@ function tickCd(){
 setInterval(tickCd,1000);
 // 유튜버 의견이 배당과 반대인가: 승무패에서 배당 우세가 아닌 쪽을 다수(2명↑·50%↑)가 골랐거나, 어느 항목이든 확률 35% 미만을 3명↑·60%↑가 골랐을 때
 const isOpp=c=>(c.grp===0&&!c.isFav&&c.votes>=2&&c.ratio>=0.5)||(c.votes>=3&&c.ratio>=0.6&&c.p<0.35);
-function pickCard(c,i,amt,kind){
+function pickCard(c,i,amt,kind,openAll){
   const pct=Math.round((c.ratio||0)*100),one=c.nPick===1,opp=isOpp(c);
   const chip=kind=='r'?`<span class="gr gr-r">EV ${c.ev.toFixed(2)}</span>`:`<span class="gr gr-${grade(c.pa)}">${grade(c.pa)}</span>`;
   const amtTxt=opp?`<span class="ban">🚫 구매 금지</span>`:(amt>=1000?`<b>${won(amt)}</b>`:`<span class="mute">금액 없음</span>`);
-  return `<details class="pc${one?' pc1':''}${opp?' pc-opp':''}"><summary class="pc-s">${opp?'<div class="oppbar">🚫 구매 금지 · 배당과 반대 의견 (분석 오류 가능)</div>':''}
+  return `<details class="pc${one?' pc1':''}${opp?' pc-opp':''}${openAll?' pc-big':''}"${openAll?' open':''}><summary class="pc-s">${opp?'<div class="oppbar">🚫 구매 금지 · 배당과 반대 의견 (분석 오류 가능)</div>':''}
    <div class="pc-top"><span class="rk">${i+1}</span>${chip}<span class="pc-o">x${c.odds.toFixed(2)}</span></div>
    <div class="pc-t">${esc(c.label)}</div>
    <div class="pc-m">${esc(c.m.home)} vs ${esc(c.m.away)}</div>
@@ -2420,7 +2436,8 @@ function pickCard(c,i,amt,kind){
    <div class="pk-m">${esc(c.m.sport)} · ${esc(c.m.league)}<br>${esc(c.m.home)} vs ${esc(c.m.away)} · <b>${fmtT(c.m.time)}</b> <span class="cd" data-t="${esc(c.m.time)}"></span></div>
    <div class="pk-g"><div class="pk-gl">유튜버 의견일치 <b>${c.votes}/${c.nPick||0}명 (${pct}%)</b></div></div>
    <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}${opp?'<span class="tag r oppt">🚫 구매 금지 — 유튜버 의견이 배당과 반대입니다. 분석 오류 가능성이 있어 구매하지 마세요</span>':''}${viaRule(c)?'<span class="tag r">키워드 추정(정확도 낮음)</span>':''}</div>
-   ${evidenceHtml(c)}
+   <div class="pk-cl">🤖 <b>클로드 분석</b> · 배당 x${c.odds.toFixed(2)} → 보정 승리확률 <b>${(c.pa*100).toFixed(0)}%</b> (등급 ${grade(c.pa)})</div>
+   ${evidenceHtml(c,openAll)}
    <div class="pk-s">${opp?`<span class="ban">🚫 구매 금지 (배당과 반대 의견 = 분석 오류 가능성)</span>`:(amt>=1000?`추천금액 <b>${won(amt)}</b>`:`<span style="color:var(--mute)">추천금액 없음 (1,000원 미만이라 제외)</span>`)}</div>
   </div></details>`;
 }
@@ -2443,9 +2460,9 @@ function run(){
   const sec=(id,ico,title,desc,body)=>`<section class="rs" id="${id}"><h2 class="rs-t"><span>${ico}</span>${title}</h2><div class="rs-d">${desc}</div>${body.startsWith('<details')?`<div class="pgrid">${body}</div>`:body}</section>`;
   const legend=`<div class="legend"><span class="lg-r">🚫 빨간 카드</span> = 유튜버 의견이 <b>배당과 반대</b>입니다. <b>분석 오류 가능성이 있어 구매 금지</b>이며, 추천금액과 조합에서 제외됩니다.</div>`;
   const none=t=>`<div class="none">${t}</div>`;
-  h+=legend+`<div class="jump">${[['s1','① 완전추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
-  h+=sec('s1','⭐','완전 추천픽 <small class="mx">(최대 8개)</small>','유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고, 배당 확률도 50% 이상인 경기 · 조건에 맞는 것만 보여줍니다',
-    perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
+  h+=legend+`<div class="jump">${[['s1','◆◆◆ 대위 추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
+  h+=sec('s1','<span class="dia">◆◆◆</span>','대위 이진호의 추천픽 <small class="mx">(최대 8개)</small>','유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고 배당 확률도 50% 이상인 경기입니다. <b>유튜버별 근거 문장과 영상 링크</b>를 바로 아래에 펼쳐 두었습니다. 조건에 맞는 것만 보여줍니다.',
+    perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s',true)).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
   h+=sec('s2','📺','유튜버 추천픽 <small class="mx">(최대 8개)</small>','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
     yt.length?yt.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('유튜버 픽이 없습니다. 유튜버 분석을 먼저 수집하세요.'));
   h+=sec('s3','🤖','클로드 추천픽 <small class="mx">(최대 8개)</small>','배당에서 역산한 승리 확률이 높은 순 (50%↑, 배당 1.20↑). 선수·부상 같은 정보는 반영되지 않았습니다.',
