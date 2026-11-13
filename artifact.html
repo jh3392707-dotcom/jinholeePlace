@@ -1344,8 +1344,8 @@ function plan(safe,chal,budget,mode){
   const act=g.filter(x=>x.t.length),sum=act.reduce((a,x)=>a+x.r,0)||1;
   act.forEach(x=>{
     const gb=budget*x.r/sum,ps=x.t.reduce((a,t)=>a+t.p,0);
-    x.t.forEach(t=>{t.stake=Math.floor(gb*(t.p/ps)/100)*100});
-    x.t=x.t.filter(t=>t.stake>=100);
+    x.t.forEach(t=>{t.stake=Math.floor(gb*(t.p/ps)/1000)*1000});
+    x.t=x.t.filter(t=>t.stake>=1000);
   });
   return act.filter(x=>x.t.length);
 }
@@ -1365,10 +1365,10 @@ function run(){
   const budget=Math.max(1000,+$('budget').value||0),mode=$('mode').value;
   const {safe,safeYt,safeCl,chal}=build();
   const sb=budget*.6,cb=budget*.4;
-  const alloc=l=>{const w=l.map(c=>Math.pow(c.pa,3)),t=w.reduce((a,b)=>a+b,0)||1;return l.map((c,i)=>Math.floor(Math.min(sb*w[i]/t/2,budget*0.12)/100)*100)};
+  const alloc=l=>{const w=l.map(c=>Math.pow(c.pa,3)),t=w.reduce((a,b)=>a+b,0)||1;return l.map((c,i)=>Math.floor(Math.min(sb*w[i]/t/2,budget*0.12)/1000)*1000)};
   const aY=alloc(safeYt),aC=alloc(safeCl);
   const wC=chal.map(c=>c.ev),tC=wC.reduce((a,b)=>a+b,0)||1;
-  const rd=n=>Math.floor(n/100)*100;
+  const rd=n=>Math.floor(n/1000)*1000;
   let h='';
   if(!safe.length&&!chal.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
   h+=`<div class="panel"><h2>▌ 📺 안정 픽 ① 유튜버 일치 — 3명 이상이 같은 선택</h2>`+(safeYt.length?safeYt.map((c,i)=>pickCard(c,i,aY[i],'s')).join(''):'<div class="note">조건(유튜버 3명 이상 일치, 보정확률 40%↑, 배당 1.20↑)에 맞는 경기가 없습니다. 유튜버 픽을 더 채우거나 아래 ②를 참고하세요.</div>')+
