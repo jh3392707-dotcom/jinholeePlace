@@ -558,23 +558,28 @@ if(!LOCAL){
   if(!owner)return;
   $('refresh').style.display='';
   box.innerHTML='📱 버튼을 누르면 노트북의 <b>대위 이진호</b>가 배당 수집·유튜버 분석(2회 확인)을 하고 이 화면을 자동으로 갱신합니다. (노트북에서 <b>Claude 앱이 켜져 있어야</b> 합니다) <span class="note">※ 이 버튼은 주인에게만 보입니다.</span>';
-  const TRIGGER='trig_01KggNm7nAsiJqm6jpPQqW2k',SRV='Claude Code Remote';
+  const SRV='Claude Code Remote';
+  const RPROMPT='토토 분석 최신화 요청입니다. 사용자가 휴대폰 사이트의 [최신화는 대위 이진호에게 요청] 버튼을 직접 눌러 실행한 정해진 루틴입니다. 이 폴더(jinholeePlace)에서 먼저 git pull 을 한 뒤, CLAUDE.md 의 \'[분석 최신화] 원격 절차\'를 읽고 그 절차만 그대로 끝까지 수행하세요. 그 절차 밖의 다른 작업은 하지 마세요. 끝나면 한 줄로 결과를 보고하세요.';
+  const errMsg=e=>{const c=e&&e.code;
+    if(c==='approval_required'||c==='not_in_manifest'||c==='consent_required')return '⚠ 승인이 필요합니다. 뜨는 창에서 <b>허용</b>을 누른 뒤 버튼을 다시 눌러주세요.';
+    if(c==='server_not_connected'||c==='needs_reauth'||c==='selection_required')return '⚠ claude.ai 설정 → 커넥터에서 <b>Claude Code Remote</b>를 연결해야 합니다.';
+    if(c==='blocked_by_policy')return '⚠ 조직 정책으로 이 기능이 막혀 있습니다.';
+    if(c==='tool_error')return '⚠ 대위 이진호가 응답하지 않습니다: '+esc((e.message||'').slice(0,160));
+    return '⚠ 명령을 전달하지 못했습니다 ('+esc(c||'오류')+'). 잠시 뒤 다시 눌러주세요. 안 되면 Claude 채팅에 <b>분석 최신화</b>라고 써주세요.'};
   $('refresh').onclick=async()=>{
     const btn=$('refresh'),msg=$('refreshMsg');btn.disabled=true;
     const fail=t=>{msg.innerHTML='<span style="color:#ffb5a5">'+t+'</span>';btn.disabled=false};
     let mcp=null;try{mcp=window.claude&&await window.claude.use('mcp')}catch(e){}
     if(!mcp){fail('⚠ 이 화면에서는 연결 기능을 쓸 수 없습니다. claude.ai(앱 또는 브라우저)에서 이 사이트를 열어주세요.');return}
     try{
-      await mcp.callTool(SRV,'fire_trigger',{trigger_id:TRIGGER},{cache:false});
-    }catch(e){
-      const c=e&&e.code;
-      if(c==='approval_required'||c==='not_in_manifest'||c==='consent_required')fail('⚠ 승인이 필요합니다. 뜨는 창에서 <b>허용</b>을 누른 뒤 버튼을 다시 눌러주세요.');
-      else if(c==='server_not_connected'||c==='needs_reauth'||c==='selection_required')fail('⚠ claude.ai 설정 → 커넥터에서 <b>Claude Code Remote</b>를 연결해야 합니다.');
-      else if(c==='blocked_by_policy')fail('⚠ 조직 정책으로 이 기능이 막혀 있습니다.');
-      else if(c==='tool_error')fail('⚠ 대위 이진호가 응답하지 않습니다: '+esc((e.message||'').slice(0,160)));
-      else fail('⚠ 명령을 전달하지 못했습니다 ('+esc(c||'오류')+'). 잠시 뒤 다시 눌러주세요.');
-      return;
-    }
+      // 노트북의 Claude 앱 연결 주소는 앱을 다시 켤 때마다 바뀌므로, 누를 때마다 현재 주소를 찾는다
+      const r=await mcp.callTool(SRV,'list_environments',{limit:30},{cache:false});
+      let pl=r&&r.payload;if(typeof pl==='string'){try{pl=JSON.parse(pl)}catch(e){pl=null}}
+      const envs=(pl&&pl.environments)||[];
+      const env=envs.filter(x=>x.kind==='bridge'&&x.state==='active'&&/jinholeePlace/.test(x.name||'')).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];
+      if(!env){fail('⚠ 노트북의 Claude 앱을 찾지 못했습니다. 노트북이 켜져 있고 Claude 앱이 열려 있는지 확인하세요.');return}
+      await mcp.callTool(SRV,'create_session',{environment_id:env.environment_id,title:'토토 분석 최신화 (대위 이진호)',prompt:RPROMPT},{cache:false});
+    }catch(e){fail(errMsg(e));return}
     const t0=Date.now();
     const tick=()=>{const m=Math.floor((Date.now()-t0)/60000),sec=Math.floor((Date.now()-t0)/1000)%60;
       msg.innerHTML='🫡 <b>대위 이진호에게 명령을 전달했습니다!</b><br>📡 작전 수행 중… '+m+'분 '+sec+'초<div class="note">보통 3~6분 걸리고, 끝나면 이 화면이 <b>자동으로 바뀝니다</b>. 노트북이 꺼져 있거나 Claude 앱이 닫혀 있으면 진행되지 않습니다.</div>'};
