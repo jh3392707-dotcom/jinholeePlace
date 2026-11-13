@@ -1334,7 +1334,11 @@ function build(){
   return{safe,safeYt,safeCl,chal};
 }
 const combos=(arr,n)=>n==1?arr.map(x=>[x]):arr.flatMap((x,i)=>combos(arr.slice(i+1),n-1).map(r=>[x,...r]));
-const tk=legs=>({legs,odds:legs.reduce((a,l)=>a*l.odds,1),p:legs.reduce((a,l)=>a*l.pa,1)});
+// 공식 규정(스포츠토토 고정배당률 세부규칙): 적중배당률 = 배당들의 곱, 소수점 셋째자리 절사 후 둘째자리에서 절상
+const offOdds=x=>{const t=Math.floor(Math.round(x*1e6)/1e3+1e-9)/1e3;return Math.ceil(Math.round(t*1e3)/10-1e-9)/100};
+// 적중금 = 적중배당률 × 구입금액, 원 단위 절상
+const payoutOf=(stake,odds)=>Math.ceil(Math.round(stake*odds*100)/100-1e-9);
+const tk=legs=>({legs,odds:offOdds(legs.reduce((a,l)=>a*l.odds,1)),p:legs.reduce((a,l)=>a*l.pa,1)});
 function plan(safe,chal,budget,mode){
   const R={stable:[.6,.3,.1],balanced:[.45,.25,.30],aggressive:[.25,.25,.5]}[mode];
   const g=[];
@@ -1386,13 +1390,13 @@ function run(){
   let spent=0,ev=0;
   pl.forEach(g=>{
     h+=`<div style="color:var(--khaki);font-weight:700;margin:8px 0 4px">${g.name} (${g.t.length}장)</div>`;
-    g.t.forEach(t=>{spent+=t.stake;ev+=t.stake*t.p*t.odds;
+    g.t.forEach(t=>{spent+=t.stake;ev+=payoutOf(t.stake,t.odds)*t.p;
       h+=`<div class="ticket"><div class="h"><span>${t.legs.length}폴더 · 합산 x${t.odds.toFixed(2)}</span><span>투입 ${won(t.stake)}</span></div>
       <ul>${t.legs.map(l=>`<li>${esc(l.label)} <span class="note">(${esc(l.m.home)} vs ${esc(l.m.away)}, x${l.odds.toFixed(2)})</span></li>`).join('')}</ul>
-      <div class="f">적중확률 약 ${(t.p*100).toFixed(1)}% · 적중 시 ${won(t.stake*t.odds)} 수령</div></div>`});
+      <div class="f">적중확률 약 ${(t.p*100).toFixed(1)}% · 적중 시 ${won(payoutOf(t.stake,t.odds))} 수령</div></div>`});
   });
   if(!pl.length)h+='<div class="note">예산이 너무 적거나 조합을 만들 픽이 부족합니다.</div>';
-  else h+=`<div class="f">총 투입 <b>${won(spent)}</b> · 모델상 기대 회수 약 <b>${won(ev)}</b> (${(ev/spent*100).toFixed(0)}%)</div>
+  else h+=`<div class="f">총 투입 <b>${won(spent)}</b> (적중금은 공식 규정대로 계산: 합산배당 소수 둘째 자리, 원 단위 절상 · 세금은 미반영) · 모델상 기대 회수 약 <b>${won(ev)}</b> (${(ev/spent*100).toFixed(0)}%)</div>
   <div class="warn">💡 100%에 못 미치면 '길게 하면 잃는 구조'라는 뜻입니다. 확률은 배당 역산 + 유튜버 일치도로 추정한 값이라 실제와 다를 수 있습니다. 한 장이라도 전부 맞아야 하므로 폴더 수가 늘수록 적중률이 급감합니다. 보통 2폴(안정)을 중심으로, 도전 조합은 소액만 권장합니다.</div>`;
   h+='</div>';
   $('out').innerHTML=h;
