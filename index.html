@@ -76,6 +76,9 @@ td.l{text-align:left;min-width:150px}td select{padding:3px;font-size:12px}
         <input id="budget" type="number" inputmode="numeric" min="1000" step="1000" value="50000" style="text-align:center;font-weight:700">
         <button class="btn sec" id="bPlus" type="button" aria-label="1,000원 증가">＋</button></div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px" id="bChips"></div></div>
+      <div><label>배당 데이터</label>
+        <button class="btn" id="refresh" type="button">🔄 배당 최신화</button>
+        <div id="refreshMsg" class="note" style="margin-top:4px"></div></div>
       <div><label>작전 성향</label>
         <select id="mode"><option value="stable">🛡 안정형 (방어 위주)</option><option value="balanced" selected>⚖ 균형형</option><option value="aggressive">🔥 공격형 (고배당 비중↑)</option></select></div>
     </div>
@@ -214,14 +217,18 @@ function sample(){
 
 /* ---------- 계산 ---------- */
 function selLabel(m,k){const hc=m.hcap?' ('+m.hcap+')':'';if(k=='HH')return '핸디 '+m.home+' 승'+hc;if(k=='HD')return '핸디 무'+hc;if(k=='HA')return '핸디 '+m.away+' 승'+hc;return k=='H'?m.home+' 승':k=='A'?m.away+' 승':k=='D'?'무승부':k=='O'?'오버'+(m.line?' '+m.line:''):'언더'+(m.line?' '+m.line:'')}
+let SKIPPED=[];
 function candidates(){
-  const now=Date.now(),out=[];
+  SKIPPED=[];const now=Date.now(),out=[];
   S.matches.filter(m=>new Date(m.time).getTime()>now).forEach(m=>{
     const mp=S.picks[m.id]||{};
     const groups=[['H','D','A'],['HH','HD','HA'],['O','U']];
     groups.forEach(g=>{
       const ks=g.filter(k=>m.odds[k]>1);if(ks.length<2)return;
       const inv=ks.reduce((a,k)=>a+1/m.odds[k],0);
+      // 배당 검증: 한 항목의 역수 합(마진 포함 확률 합)이 1.0~1.35 밖이거나, 축구 무승부 배당이 2.4 미만이면 데이터 오류로 보고 제외
+      const mk=g[0]=='H'?'승무패':g[0]=='HH'?'핸디캡':'언오버';
+      if(inv<1.0||inv>1.35||(m.sport=='축구'&&g[0]=='H'&&m.odds.D&&m.odds.D<2.4)){SKIPPED.push(`${m.home} vs ${m.away} (${mk})`);return}
       // 항목별 집계: 분모 = 이 항목(승무패/핸디캡/언오버)에서 픽을 낸 유튜버, 분자 = 그중 해당 선택을 고른 유튜버
       const an=CH.filter(c=>ks.includes(mp[c])),anW=an.reduce((a,c)=>a+S.weights[c],0);
       ks.forEach(k=>{
@@ -297,6 +304,7 @@ function run(){
   const wC=chal.map(c=>c.ev),tC=wC.reduce((a,b)=>a+b,0)||1;
   const rd=n=>Math.floor(n/1000)*1000;
   let h='';
+  if(SKIPPED.length)h+=`<div class="panel" style="border-left-color:var(--red)"><h2>⚠ 배당 검증 제외 ${SKIPPED.length}건</h2><div class="note">배당 합이 비정상이거나 무승부 배당이 너무 낮아 수집 오류로 의심되는 항목은 계산에서 뺐습니다. [배당 최신화]로 다시 수집해 보세요.<br>${SKIPPED.slice(0,8).map(esc).join(' · ')}${SKIPPED.length>8?' …':''}</div></div>`;
   if(!safe.length&&!chal.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
   h+=`<div class="panel"><h2>▌ 📺 안정 픽 ① 유튜버 일치 — 같은 항목을 고른 유튜버 60%↑가 같은 선택</h2>`+(safeYt.length?safeYt.map((c,i)=>pickCard(c,i,aY[i],'s')).join(''):'<div class="note">조건(2명 이상 일치 + 같은 항목 유튜버의 60%↑ 일치, 보정확률 40%↑, 배당 1.20↑)에 맞는 경기가 없습니다. 유튜버 픽을 더 채우거나 아래 ②를 참고하세요.</div>')+
    `<div class="note">'유튜버 3/4명'은 같은 항목(승무패·핸디캡·언오버 각각)에서 픽을 낸 4명 중 3명이 이 선택을 골랐다는 뜻입니다. 오버·언더를 고른 채널은 승무패 집계에 들어가지 않습니다. 다만 일치도와 배당 확률은 별개라, 등급이 낮으면(C) 유튜버는 몰렸어도 배당상 안정권은 아니라는 뜻입니다.</div></div>`;
@@ -395,6 +403,19 @@ $('budget').onchange=fixBudget;
 $('bMinus').onclick=()=>{$('budget').value=fixBudget()-1000;fixBudget()};
 $('bPlus').onclick=()=>{$('budget').value=fixBudget()+1000};
 [10000,20000,30000,50000,100000].forEach(v=>{const b=document.createElement('button');b.type='button';b.className='btn sec';b.style.padding='3px 10px';b.textContent=(v/10000)+'만원';b.onclick=()=>{$('budget').value=v;fixBudget()};$('bChips').appendChild(b)});
+function stamp(){const t=(window.TOTO_DATA&&window.TOTO_DATA.collectedAt)||'';if(t){$('refreshMsg').textContent='마지막 수집: '+new Date(t).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false,month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+' (한국시간)'}}
+$('refresh').onclick=async()=>{
+  const msg=$('refreshMsg'),btn=$('refresh');btn.disabled=true;msg.textContent='베트맨에서 최신 배당을 가져오는 중… (1~2분)';
+  try{
+    const r=await fetch('/api/refresh',{method:'POST'});
+    if(!r.ok)throw new Error('server '+r.status);
+    const j=await r.json();
+    if(!j.ok)throw new Error(j.error||'수집 실패');
+    window.TOTO_DATA=j.data;importData(j.data);run();stamp();msg.textContent='✅ '+j.data.matches.length+'경기 최신화 완료. '+msg.textContent;
+  }catch(e){
+    msg.innerHTML='⚠ 이 화면에서는 직접 수집할 수 없습니다. 노트북에서 <b>앱열기.bat</b>로 연 화면에서 눌러주세요. (사이트 버전은 수집 후 Claude가 다시 게시해야 갱신됩니다)';
+  }finally{btn.disabled=false}
+};
 $('fire').onclick=()=>{run();$('out').scrollIntoView({behavior:'smooth'})};
 function importData(d){
   const ms=(d&&d.matches)||[];if(!ms.length)return 0;
@@ -408,6 +429,7 @@ $('dataFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new Fi
   r.onload=()=>{try{const n=importData(JSON.parse(r.result));$('dataRes').textContent=n?n+'경기를 불러왔습니다.':'경기가 없는 파일입니다.'}catch(x){$('dataRes').textContent='읽기 실패: '+x.message}};r.readAsText(f)};
 load();$('f_time').value=localStr(new Date(Date.now()+3600e3));renderIntel();bar();
 if(window.TOTO_DATA&&importData(window.TOTO_DATA)){$('dataRes').textContent='수집 데이터 '+S.matches.length+'경기를 자동으로 불러왔습니다 ('+(window.TOTO_DATA.collectedAt||'')+')';run()}
+stamp();
 if(!window.TOTO_DATA)fetch('data.json').then(r=>r.ok?r.json():null).then(d=>{if(d&&d.matches&&d.matches.length){importData(d);run()}}).catch(()=>{});
 </script>
 </body>

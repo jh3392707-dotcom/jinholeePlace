@@ -13,7 +13,7 @@ function parse(json){
   const groups={};
   for(const r of cs.datas){
     const home=r[idx('homeName')],away=r[idx('awayName')],gameDate=r[idx('gameDate')];
-    if(!home||!away||!gameDate)continue;
+    if(!home||!away||!gameDate||/미정/.test(home+away))continue;
     const key=`${home}|${away}|${gameDate}`;
     const g=groups[key]=groups[key]||{id:'b'+Buffer.from(key).toString('hex').slice(0,16),
       time:toISO(gameDate),sport:sportOf(r[idx('itemCode')]),league:r[idx('leagueName')]||'',
@@ -22,7 +22,7 @@ function parse(json){
     const hasDraw=r[idx('drawTxt')]&&r[idx('drawTxt')]!=='-';
     if(/핸디캡/.test(bt)){
       g.hcap=String(r[idx('winHandi')]??g.hcap);
-      g.odds.HH=win;if(hasDraw)g.odds.HD=draw;g.odds.HA=lose;
+      g.odds.HH=win;if(hasDraw)g.odds.HD=draw;else delete g.odds.HD;g.odds.HA=lose;
     }else if(/언더오버/.test(bt)){
       g.line=String(r[idx('winHandi')]??r[idx('loseHandi')]??g.line);
       g.odds.U=win;g.odds.O=lose;
