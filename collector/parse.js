@@ -1,41 +1,35 @@
-// 베트맨 응답 JSON → 앱 형식 matches 로 변환 (필드명 추정 기반, 실제 응답과 다르면 raw 파일로 보정 필요)
-const pick=(o,res)=>{for(const re of res){for(const k of Object.keys(o)){if(re.test(k)&&o[k]!=null&&o[k]!=='')return o[k]}}return null};
-const num=v=>{const n=parseFloat(String(v).replace(/[^\d.\-]/g,''));return isFinite(n)?n:0};
-function findRows(node,out=[]){
-  if(Array.isArray(node)){
-    if(node.length&&typeof node[0]==='object'&&node[0]){
-      const ks=Object.keys(node[0]).join(' ');
-      if(/home/i.test(ks)&&/away/i.test(ks))out.push(node);
-    }
-    node.forEach(n=>findRows(n,out));
-  }else if(node&&typeof node==='object')Object.values(node).forEach(n=>findRows(n,out));
-  return out;
+// 베트맨 gameInfoInq.do 응답(json.compSchedules.keys/datas 테이블) → 앱 형식 matches 로 변환
+const sportOf=c=>({SC:'축구',BK:'농구',BS:'야구',VL:'배구'}[c]||c||'기타');
+function toISO(ms){ // 베트맨 타임스탬프는 KST 기준이므로 UTC+9로 고정 변환
+  const d=new Date(ms+9*3600*1000),p=n=>String(n).padStart(2,'0');
+  return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())}T${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
 }
-function normTime(v){
-  if(v==null)return '';const s=String(v);
-  let m=s.match(/(\d{4})[-.\/]?(\d{2})[-.\/]?(\d{2})[ T]?(\d{2}):?(\d{2})/);
-  if(m)return `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}`;
-  if(/^\d{13}$/.test(s)){const d=new Date(+s),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`}
-  return '';
-}
-const sportOf=s=>/SC|축구|soccer/i.test(s)?'축구':/BS|야구|base/i.test(s)?'야구':/BK|농구|basket/i.test(s)?'농구':/VL|배구|volley/i.test(s)?'배구':'기타';
 function parse(json){
+  const cs=json&&json.compSchedules;
+  if(!cs||!Array.isArray(cs.keys)||!Array.isArray(cs.datas))return [];
+  const keys=cs.keys,idx=k=>keys.indexOf(k);
+  const need=['itemCode','leagueName','homeName','awayName','gameDate','betTypNm','winTxt','winAllot','drawTxt','drawAllot','loseTxt','loseAllot','winHandi','loseHandi'];
+  if(need.some(k=>idx(k)<0))return [];
   const groups={};
-  for(const rows of findRows(json))for(const o of rows){
-    const home=pick(o,[/^home(team)?(name|nm)?$/i,/home.*(name|nm)/i,/^home/i]),away=pick(o,[/^away(team)?(name|nm)?$/i,/away.*(name|nm)/i,/^away/i]);
-    if(!home||!away)continue;
-    const time=normTime(pick(o,[/gameDate|startDate|matchDate|gameTime|dateTime|^date/i]));
-    const id=`${home}|${away}|${time}`;
-    const g=groups[id]=groups[id]||{id,time,home:String(home),away:String(away),sport:'기타',league:'',line:'',hcap:'',odds:{}};
-    g.league=pick(o,[/league.*(name|nm)/i,/lg.*nm/i])||g.league;
-    g.sport=sportOf(String(pick(o,[/item(code|nm|name)?$/i,/sport/i])||''))||g.sport;
-    const type=String(pick(o,[/(game|gm|win)?type(nm|name|cd)?$/i,/kind/i])||'')+' '+String(pick(o,[/mark|gameName|gmNm/i])||'');
-    const win=num(pick(o,[/win.*(allot|odds|rate)/i,/^(h|home)(allot|odds)$/i])),draw=num(pick(o,[/draw.*(allot|odds|rate)/i])),lose=num(pick(o,[/lose.*(allot|odds|rate)/i,/^(a|away)(allot|odds)$/i]));
-    const handi=pick(o,[/handi/i,/hdcp/i,/baseP|standard/i]);
-    if(/핸디|handi|H\b/i.test(type)&&!/언|오버/.test(type)){g.hcap=String(handi??g.hcap);Object.assign(g.odds,{HH:win,HD:draw,HA:lose})}
-    else if(/언더|오버|U\/O|언오버|under|over/i.test(type)){g.line=String(handi??g.line);Object.assign(g.odds,{O:lose&&!win?lose:win,U:draw&&!lose?draw:lose})}
-    else Object.assign(g.odds,{H:win,D:draw,A:lose});
+  for(const r of cs.datas){
+    const home=r[idx('homeName')],away=r[idx('awayName')],gameDate=r[idx('gameDate')];
+    if(!home||!away||!gameDate)continue;
+    const key=`${home}|${away}|${gameDate}`;
+    const g=groups[key]=groups[key]||{id:'b'+Buffer.from(key).toString('hex').slice(0,16),
+      time:toISO(gameDate),sport:sportOf(r[idx('itemCode')]),league:r[idx('leagueName')]||'',
+      home:String(home),away:String(away),line:'',hcap:'',odds:{}};
+    const bt=String(r[idx('betTypNm')]||''),win=+r[idx('winAllot')]||0,draw=+r[idx('drawAllot')]||0,lose=+r[idx('loseAllot')]||0;
+    const hasDraw=r[idx('drawTxt')]&&r[idx('drawTxt')]!=='-';
+    if(/핸디캡/.test(bt)){
+      g.hcap=String(r[idx('winHandi')]??g.hcap);
+      g.odds.HH=win;if(hasDraw)g.odds.HD=draw;g.odds.HA=lose;
+    }else if(/언더오버/.test(bt)){
+      g.line=String(r[idx('winHandi')]??r[idx('loseHandi')]??g.line);
+      g.odds.U=win;g.odds.O=lose;
+    }else if(/승무패|승패|승N패|승5패/.test(bt)){
+      g.odds.H=win;if(hasDraw)g.odds.D=draw;g.odds.A=lose;
+    }
   }
-  return Object.values(groups).filter(g=>g.odds.H||g.odds.HH||g.odds.O).map(g=>({...g,id:'b'+Buffer.from(g.id).toString('hex').slice(0,16)}));
+  return Object.values(groups).filter(g=>g.odds.H||g.odds.HH||g.odds.O);
 }
 module.exports={parse};
