@@ -71,7 +71,11 @@ td.l{text-align:left;min-width:150px}td select{padding:3px;font-size:12px}
   <div class="panel">
     <h2>▌ 투입 병력(예산)</h2>
     <div class="budget">
-      <div><label>오늘 투자할 금액(원)</label><input id="budget" type="number" min="1000" step="1000" value="50000"></div>
+      <div><label>오늘 투자할 금액 (1,000원 단위)</label>
+        <div style="display:flex;gap:6px"><button class="btn sec" id="bMinus" type="button" aria-label="1,000원 감소">−</button>
+        <input id="budget" type="number" inputmode="numeric" min="1000" step="1000" value="50000" style="text-align:center;font-weight:700">
+        <button class="btn sec" id="bPlus" type="button" aria-label="1,000원 증가">＋</button></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px" id="bChips"></div></div>
       <div><label>작전 성향</label>
         <select id="mode"><option value="stable">🛡 안정형 (방어 위주)</option><option value="balanced" selected>⚖ 균형형</option><option value="aggressive">🔥 공격형 (고배당 비중↑)</option></select></div>
     </div>
@@ -279,7 +283,7 @@ function pickCard(c,i,amt,kind){
    <div><div class="odds">x${c.odds.toFixed(2)}</div><div class="stake">${won(amt)}</div></div></div>`;
 }
 function run(){
-  const budget=Math.max(1000,+$('budget').value||0),mode=$('mode').value;
+  const budget=fixBudget(),mode=$('mode').value;
   const {safe,safeYt,safeCl,chal}=build();
   const sb=budget*.6,cb=budget*.4;
   const alloc=l=>{const w=l.map(c=>Math.pow(c.pa,3)),t=w.reduce((a,b)=>a+b,0)||1;return l.map((c,i)=>Math.floor(Math.min(sb*w[i]/t/2,budget*0.12)/1000)*1000)};
@@ -379,6 +383,12 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x==b));
   ['ops','intel','ch'].forEach(t=>$('tab-'+t).classList.toggle('hide',t!=b.dataset.tab));
 });
+const fixBudget=()=>{let v=Math.round((+$('budget').value||0)/1000)*1000;if(v<1000)v=1000;$('budget').value=v;try{localStorage.setItem('toto_budget',v)}catch(e){}return v};
+try{const sv=+localStorage.getItem('toto_budget');if(sv>=1000)$('budget').value=sv}catch(e){}
+$('budget').onchange=fixBudget;
+$('bMinus').onclick=()=>{$('budget').value=fixBudget()-1000;fixBudget()};
+$('bPlus').onclick=()=>{$('budget').value=fixBudget()+1000};
+[10000,20000,30000,50000,100000].forEach(v=>{const b=document.createElement('button');b.type='button';b.className='btn sec';b.style.padding='3px 10px';b.textContent=(v/10000)+'만원';b.onclick=()=>{$('budget').value=v;fixBudget()};$('bChips').appendChild(b)});
 $('fire').onclick=()=>{run();$('out').scrollIntoView({behavior:'smooth'})};
 function importData(d){
   const ms=(d&&d.matches)||[];if(!ms.length)return 0;
