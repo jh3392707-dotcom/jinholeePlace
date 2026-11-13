@@ -1,5 +1,6 @@
 window.TOTO_DATA={
- "collectedAt": "2026-11-13T12:55:43.207Z",
+ "collectedAt": "2026-11-13T13:44:26.506Z",
+ "parserVersion": 2,
  "matches": [
   {
    "id": "bec9584eba5b4ed97",
@@ -48,17 +49,17 @@ window.TOTO_DATA={
    "league": "남자축구 국제친선경기",
    "home": "사우디아라비아",
    "away": "한국",
-   "line": "1.5",
-   "hcap": "1",
+   "line": "2.5",
+   "hcap": "+1",
    "odds": {
-    "H": 4.15,
-    "D": 2.07,
-    "A": 2.35,
-    "HH": 1.44,
-    "HD": 3.35,
-    "HA": 6.4,
-    "U": 1.28,
-    "O": 2.72
+    "H": 3.9,
+    "D": 3.45,
+    "A": 1.66,
+    "HH": 1.98,
+    "HD": 3.15,
+    "HA": 3.05,
+    "U": 1.64,
+    "O": 1.85
    }
   },
   {
@@ -69,7 +70,7 @@ window.TOTO_DATA={
    "home": "카타르",
    "away": "호주",
    "line": "2.5",
-   "hcap": "1",
+   "hcap": "+1",
    "odds": {
     "H": 3.25,
     "D": 3.05,
@@ -109,14 +110,14 @@ window.TOTO_DATA={
    "home": "슬로바키아",
    "away": "페로제도",
    "line": "2.5",
-   "hcap": "-3.5",
+   "hcap": "-1",
    "odds": {
     "H": 1.27,
     "D": 4.15,
     "A": 8.3,
-    "HH": 6.28,
-    "HD": 3.7,
-    "HA": 1.01,
+    "HH": 1.96,
+    "HD": 3.15,
+    "HA": 3.1,
     "U": 1.84,
     "O": 1.65
    }
@@ -149,7 +150,7 @@ window.TOTO_DATA={
    "home": "불가리아",
    "away": "아이슬란드",
    "line": "2.5",
-   "hcap": "1",
+   "hcap": "+1",
    "odds": {
     "H": 4.1,
     "D": 3.3,
@@ -189,14 +190,14 @@ window.TOTO_DATA={
    "home": "리히텐슈타인",
    "away": "아제르바이잔",
    "line": "2.5",
-   "hcap": "3.5",
+   "hcap": "+2",
    "odds": {
     "H": 11,
     "D": 4.6,
     "A": 1.19,
-    "HH": 1.04,
+    "HH": 1.94,
     "HD": 3.4,
-    "HA": 5.32,
+    "HA": 2.95,
     "U": 1.58,
     "O": 1.94
    }
@@ -209,14 +210,14 @@ window.TOTO_DATA={
    "home": "네덜란드",
    "away": "그리스",
    "line": "2.5",
-   "hcap": "-3.5",
+   "hcap": "-1",
    "odds": {
     "H": 1.46,
     "D": 3.8,
     "A": 4.95,
-    "HH": 6.28,
-    "HD": 4.25,
-    "HA": 1.01,
+    "HH": 2.45,
+    "HD": 3.2,
+    "HA": 2.33,
     "U": 2.13,
     "O": 1.47
    }
@@ -229,14 +230,14 @@ window.TOTO_DATA={
    "home": "세르비아",
    "away": "독일",
    "line": "3.5",
-   "hcap": "3.5",
+   "hcap": "+2",
    "odds": {
     "H": 8.1,
     "D": 5,
     "A": 1.21,
-    "HH": 1.09,
+    "HH": 2.01,
     "HD": 3.75,
-    "HA": 4.31,
+    "HA": 2.6,
     "U": 1.66,
     "O": 1.83
    }
@@ -249,14 +250,14 @@ window.TOTO_DATA={
    "home": "스코틀랜드",
    "away": "북마케도니아",
    "line": "2.5",
-   "hcap": "-3.5",
+   "hcap": "-2",
    "odds": {
     "H": 1.13,
     "D": 5.2,
     "A": 14,
-    "HH": 4.02,
+    "HH": 2.4,
     "HD": 3.45,
-    "HA": 1.11,
+    "HA": 2.26,
     "U": 2.02,
     "O": 1.53
    }
@@ -269,7 +270,7 @@ window.TOTO_DATA={
    "home": "슬로베니아",
    "away": "스위스",
    "line": "2.5",
-   "hcap": "1",
+   "hcap": "+1",
    "odds": {
     "H": 4.95,
     "D": 3.15,
@@ -329,7 +330,7 @@ window.TOTO_DATA={
    "home": "인디애나 페이서스",
    "away": "뉴욕 닉스",
    "line": "220.5",
-   "hcap": "6.5",
+   "hcap": "+6.5",
    "odds": {
     "H": 3.03,
     "A": 1.22,
@@ -403,7 +404,7 @@ window.TOTO_DATA={
    "home": "시카고 불스",
    "away": "애틀랜타 호크스",
    "line": "244.5",
-   "hcap": "6.5",
+   "hcap": "+6.5",
    "odds": {
     "H": 2.92,
     "A": 1.24,
@@ -421,7 +422,7 @@ window.TOTO_DATA={
    "home": "뉴올리언스 펠리컨스",
    "away": "멤피스 그리즐리스",
    "line": "234.5",
-   "hcap": "3.5",
+   "hcap": "+3.5",
    "odds": {
     "H": 2.22,
     "A": 1.43,
@@ -457,7 +458,7 @@ window.TOTO_DATA={
    "home": "과테말라",
    "away": "캐나다",
    "line": "2.5",
-   "hcap": "1",
+   "hcap": "+1",
    "odds": {
     "H": 4.95,
     "D": 3.5,
@@ -495,7 +496,7 @@ window.TOTO_DATA={
    "home": "새크라멘토 킹스",
    "away": "포틀랜드 트레일블레이저스",
    "line": "230.5",
-   "hcap": "10.5",
+   "hcap": "+10.5",
    "odds": {
     "H": 4.85,
     "A": 1.06,
@@ -513,7 +514,7 @@ window.TOTO_DATA={
    "home": "LA 클리퍼스",
    "away": "오클라호마시티 썬더",
    "line": "223.5",
-   "hcap": "7.5",
+   "hcap": "+7.5",
    "odds": {
     "H": 3.16,
     "A": 1.2,
@@ -531,7 +532,7 @@ window.TOTO_DATA={
    "home": "일본",
    "away": "브라질",
    "line": "2.5",
-   "hcap": "1",
+   "hcap": "+1",
    "odds": {
     "H": 3.4,
     "D": 3.4,
@@ -591,14 +592,14 @@ window.TOTO_DATA={
    "home": "노르웨이",
    "away": "웨일스",
    "line": "3.5",
-   "hcap": "-3.5",
+   "hcap": "-2",
    "odds": {
     "H": 1.16,
     "D": 5.4,
     "A": 9.8,
-    "HH": 4.02,
+    "HH": 2.4,
     "HD": 3.65,
-    "HA": 1.11,
+    "HA": 2.18,
     "U": 1.6,
     "O": 1.91
    }
@@ -611,7 +612,7 @@ window.TOTO_DATA={
    "home": "조지아",
    "away": "헝가리",
    "line": "2.5",
-   "hcap": "1",
+   "hcap": "+1",
    "odds": {
     "H": 2.8,
     "D": 2.8,
@@ -651,7 +652,7 @@ window.TOTO_DATA={
    "home": "루마니아",
    "away": "폴란드",
    "line": "2.5",
-   "hcap": "1",
+   "hcap": "+1",
    "odds": {
     "H": 3.65,
     "D": 3.3,
@@ -671,14 +672,14 @@ window.TOTO_DATA={
    "home": "포르투갈",
    "away": "덴마크",
    "line": "3.5",
-   "hcap": "-3.5",
+   "hcap": "-1",
    "odds": {
     "H": 1.4,
     "D": 4.05,
     "A": 5.3,
-    "HH": 6.28,
-    "HD": 4.15,
-    "HA": 1.01,
+    "HH": 2.18,
+    "HD": 3.45,
+    "HA": 2.5,
     "U": 1.48,
     "O": 2.11
    }
@@ -731,14 +732,14 @@ window.TOTO_DATA={
    "home": "아이티",
    "away": "미국",
    "line": "2.5",
-   "hcap": "3.5",
+   "hcap": "+1",
    "odds": {
     "H": 7.6,
     "D": 4.35,
     "A": 1.27,
-    "HH": 1.01,
-    "HD": 3.75,
-    "HA": 6.28,
+    "HH": 3.1,
+    "HD": 3.35,
+    "HA": 1.89,
     "U": 2.15,
     "O": 1.46
    }
@@ -751,7 +752,7 @@ window.TOTO_DATA={
    "home": "자메이카",
    "away": "멕시코",
    "line": "2.5",
-   "hcap": "1",
+   "hcap": "+1",
    "odds": {
     "H": 5.1,
     "D": 3.5,
@@ -771,34 +772,16 @@ window.TOTO_DATA={
    "home": "뉴질랜드",
    "away": "인도",
    "line": "3.5",
-   "hcap": "-3.5",
+   "hcap": "-2",
    "odds": {
     "H": 1.23,
     "D": 4.6,
     "A": 8.4,
-    "HH": 5.6,
+    "HH": 2.9,
     "HD": 3.7,
-    "HA": 1.03,
+    "HA": 1.87,
     "U": 1.45,
     "O": 2.18
-   }
-  },
-  {
-   "id": "bebafb8eca0957ceb",
-   "time": "2026-11-13T00:00",
-   "sport": "축구",
-   "league": "남자축구 국제친선경기",
-   "home": "미정",
-   "away": "미정",
-   "line": "0",
-   "hcap": "0",
-   "odds": {
-    "H": 1,
-    "A": 1,
-    "HH": 1,
-    "HA": 1,
-    "U": 1,
-    "O": 1
    }
   },
   {
@@ -809,7 +792,7 @@ window.TOTO_DATA={
    "home": "퀴라소",
    "away": "파나마",
    "line": "2.5",
-   "hcap": "1",
+   "hcap": "+1",
    "odds": {
     "H": 3.5,
     "D": 3,
@@ -847,7 +830,7 @@ window.TOTO_DATA={
    "home": "워싱턴 위저즈",
    "away": "디트로이트 피스톤스",
    "line": "222.5",
-   "hcap": "10.5",
+   "hcap": "+10.5",
    "odds": {
     "H": 4.02,
     "A": 1.11,
@@ -901,7 +884,7 @@ window.TOTO_DATA={
    "home": "호주",
    "away": "대만",
    "line": "8.5",
-   "hcap": "1.5",
+   "hcap": "+1.5",
    "odds": {
     "H": 2.52,
     "A": 1.33,
@@ -939,9 +922,8 @@ window.TOTO_DATA={
    "line": "177.5",
    "hcap": "-5.5",
    "odds": {
-    "H": 1.75,
-    "A": 4.4,
-    "D": 2.85,
+    "H": 1.31,
+    "A": 2.59,
     "HH": 1.75,
     "HA": 1.73,
     "U": 1.77,
@@ -958,9 +940,8 @@ window.TOTO_DATA={
    "line": "127.5",
    "hcap": "-1.5",
    "odds": {
-    "H": 2.4,
-    "A": 3,
-    "D": 2.5,
+    "H": 1.58,
+    "A": 1.94,
     "HH": 1.7,
     "HA": 1.78,
     "U": 1.77,
@@ -975,12 +956,10 @@ window.TOTO_DATA={
    "home": "한국전력 빅스톰",
    "away": "KB손해보험 스타즈",
    "line": "183.5",
-   "hcap": "-1.5",
+   "hcap": "",
    "odds": {
     "H": 1.24,
     "A": 2.92,
-    "HH": 1.45,
-    "HA": 2.18,
     "U": 1.85,
     "O": 1.64
    }
@@ -993,12 +972,10 @@ window.TOTO_DATA={
    "home": "IBK기업은행 알토스",
    "away": "흥국생명 핑크스파이더스",
    "line": "177.5",
-   "hcap": "-1.5",
+   "hcap": "",
    "odds": {
     "H": 1.23,
     "A": 2.97,
-    "HH": 1.47,
-    "HA": 2.13,
     "U": 2.07,
     "O": 1.5
    }
@@ -1011,80 +988,405 @@ window.TOTO_DATA={
    "home": "싱가포르",
    "away": "파라과이",
    "line": "3.5",
-   "hcap": "4.5",
+   "hcap": "+3",
    "odds": {
     "H": 20,
     "D": 9.1,
     "A": 1.01,
-    "HH": 1.15,
+    "HH": 2,
     "HD": 3.9,
-    "HA": 3.57,
+    "HA": 2.55,
     "U": 1.75,
     "O": 1.73
    }
   }
  ],
  "picks": {
-  "bec9dbcebb3b87ceb": {
-   "오늘의 매치업": "H",
-   "토토엉클": "H",
-   "쿠노": "H",
+  "bec9584eb9e8dec97": {
    "앞산할배": "H",
-   "두포리": "H",
-   "토토홈즈": "U"
-  },
-  "bec9dbcebb3b87ced": {
-   "오늘의 매치업": "H",
-   "토토엉클": "H",
-   "쿠노": "H",
-   "프리뷰N": "A",
-   "앞산할배": "A",
-   "두포리": "H",
-   "토토홈즈": "A",
-   "스포츠분석:정프로": "A"
+   "토토홈즈": "A"
   },
   "bec82acec9ab0eb94": {
-   "토토엉클": "A",
-   "쿠노": "A",
-   "프리뷰N": "A",
-   "앞산할배": "A",
-   "두포리": "O",
-   "토토홈즈": "A",
-   "스포츠분석:정프로": "A"
+   "앞산할배": "U",
+   "토토홈즈": "A"
   },
   "becb9b4ed8380eba5": {
-   "토토엉클": "A",
-   "토토홈즈": "O"
-  },
-  "bed98b8eca3bc7ceb": {
-   "토토엉클": "H",
-   "토토홈즈": "O",
-   "스포츠분석:정프로": "U"
+   "앞산할배": "U",
+   "토토홈즈": "A"
   },
   "bebaab0eb8f84ebb0": {
    "앞산할배": "H"
   },
   "bec8aaceba19cebb0": {
-   "앞산할배": "H"
+   "앞산할배": "U"
   },
   "beba3a9ec8588ebb6": {
-   "앞산할배": "A"
+   "앞산할배": "U"
   },
-  "bebb688eab080eba6": {
-   "앞산할배": "D"
+  "beba6aced9e88ed85": {
+   "앞산할배": "A"
   },
   "beb84a4eb8d9ceb9e": {
    "앞산할배": "H"
   },
-  "bec8aaceba19cebb2": {
+  "bec84b8eba5b4ebb9": {
    "앞산할배": "A"
   },
-  "bec8bb1eab080ed8f": {
-   "앞산할배": "A",
-   "토토홈즈": "O"
+  "bec8aa4ecbd94ed8b": {
+   "앞산할배": "H"
   },
+  "bec8aaceba19cebb2": {
+   "앞산할배": "U"
+  },
+  "bec9db8eb9494ec95": {
+   "오늘의 매치업": "A",
+   "쿠노": "A",
+   "프리뷰N": "A"
+  },
+  "bec98aceb9e9ceb8f": {
+   "오늘의 매치업": "H",
+   "쿠노": "H",
+   "프리뷰N": "H"
+  },
+  "beba788ec9db4ec95": {
+   "오늘의 매치업": "A",
+   "쿠노": "H",
+   "프리뷰N": "A"
+  },
+  "bec8b9cecb9b4eab3": {
+   "오늘의 매치업": "HH",
+   "쿠노": "HH",
+   "프리뷰N": "HA"
+  },
+  "beb89b4ec98aceba6": {
+   "오늘의 매치업": "A",
+   "쿠노": "A",
+   "프리뷰N": "A"
+  },
+  "bec838cec9588ed86": {
+   "오늘의 매치업": "H",
+   "쿠노": "HA",
+   "프리뷰N": "H"
+  },
+  "bec8388ed81aceb9d": {
+   "오늘의 매치업": "A",
+   "쿠노": "A",
+   "프리뷰N": "A"
+  },
+  "bed9cb4ec8aa4ed84": {
+   "쿠노": "HH"
+  },
+  "b4c4120ed81b4eba6": {
+   "쿠노": "O",
+   "프리뷰N": "A"
+  }
+ },
+ "evidence": {
   "bec9584eb9e8dec97": {
-   "토토홈즈": "U"
+   "앞산할배": {
+    "k": "H",
+    "quote": "결론을 말씀드리면 조금 더 세졌다. 더 좋아졌다. 이번은 또 홈이다.요 좀 보신다면은 출익물에 또 일단 아랍 사이드의 작근 포인트에 고려해 보실 수 있겠다.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   },
+   "토토홈즈": {
+    "k": "A",
+    "quote": "온두라스의 승리와 언더를 추천드리는 경기입니다.",
+    "url": "https://www.youtube.com/watch?v=OKUZKVrEVek",
+    "videoTitle": "Toto Analysis, Sports Analysis, Proto Analysis, November 13 Domestic Basketball, Domestic Volleyball...",
+    "via": "claude-session"
+   }
+  },
+  "bec82acec9ab0eb94": {
+   "앞산할배": {
+    "k": "U",
+    "quote": "결론은 조금 언더가 더 좋아 보인다. ... 승패보다는 역시 또 2(언더) 먼저 생각하신다면은 추구로 일단 좋은 방향이 될 수 있겠다.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   },
+   "토토홈즈": {
+    "k": "A",
+    "quote": "한국의 승리와 언더를 추천드리며 조합 픽은 댓글을 확인해 주시기 바랍니다.",
+    "url": "https://www.youtube.com/watch?v=OKUZKVrEVek",
+    "videoTitle": "Toto Analysis, Sports Analysis, Proto Analysis, November 13 Domestic Basketball, Domestic Volleyball...",
+    "via": "claude-session"
+   }
+  },
+  "becb9b4ed8380eba5": {
+   "앞산할배": {
+    "k": "U",
+    "quote": "여기는 약간 조금 2.5 뭐 언더 언더를 한번 또 공략 포인트로 고려하신다면은 수근 일단 좋은 방향이 될 수 있겠다.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   },
+   "토토홈즈": {
+    "k": "A",
+    "quote": "호주의 승리와 오버를 추천드리며 조합 픽은 댓글을 확인해 주시기 바랍니다.",
+    "url": "https://www.youtube.com/watch?v=OKUZKVrEVek",
+    "videoTitle": "Toto Analysis, Sports Analysis, Proto Analysis, November 13 Domestic Basketball, Domestic Volleyball...",
+    "via": "claude-session"
+   }
+  },
+  "bebaab0eb8f84ebb0": {
+   "앞산할배": {
+    "k": "H",
+    "quote": "일단 용단 몰도바 홈이라면은... 일단 여기는 일단 승을 조금 더 좋게 보고 있다.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   }
+  },
+  "bec8aaceba19cebb0": {
+   "앞산할배": {
+    "k": "U",
+    "quote": "저는 약간 먼저 추천드리는 패턴은... 저는 언더를 조금은 더 좋게 보고 있는 경기다 좀 보시면 될 것 같습니다.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   }
+  },
+  "beba3a9ec8588ebb6": {
+   "앞산할배": {
+    "k": "U",
+    "quote": "저 득점을 또 고려하시는 것도 역시 나쁘지 않은 가능성을 조금 보고 있다. ... 저 득점 가운데 요길은 무승부 프랜 한번 공략 포인트를 두시길 바래요.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   }
+  },
+  "beba6aced9e88ed85": {
+   "앞산할배": {
+    "k": "A",
+    "quote": "아제르바이젠 사이드 아버더 공략 포인트 조금 고려 보셔도 좋을 것 같다.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   }
+  },
+  "beb84a4eb8d9ceb9e": {
+   "앞산할배": {
+    "k": "H",
+    "quote": "초용 일단 저는 네덜란드의 동기 부여를 조금 더 좋게 보시고... 네덜란드 사이드 한번 또 고를 해 보시는 것도 나쁘지 않은 흐름이 될 수 있겠다.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   }
+  },
+  "bec84b8eba5b4ebb9": {
+   "앞산할배": {
+    "k": "A",
+    "quote": "요런 약간 독일 사이드 한번 더 고려해 보시는 것도 역시 나비자는 방향이 될 수 있겠다.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   }
+  },
+  "bec8aa4ecbd94ed8b": {
+   "앞산할배": {
+    "k": "H",
+    "quote": "일단 중근 또 일단 스코트랜드의 우세를 조금 고려해 보시는 것도 나쁘지 않은 방생이 될 수 있겠다.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   }
+  },
+  "bec8aaceba19cebb2": {
+   "앞산할배": {
+    "k": "U",
+    "quote": "저는 약간 먼저 추천드리는 패턴은 2(언더)가 될 거 같고요.",
+    "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
+    "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
+    "via": "claude-session"
+   }
+  },
+  "bec9db8eb9494ec95": {
+   "오늘의 매치업": {
+    "k": "A",
+    "quote": "양 팀의 느린 템포까지 고려해 본다면 220.5점이라도 5점이라도 언더사이즈와 함께 뉴욕승, 뉴욕 6.5점 5점 마인승까지 충분히 가져갈 만한 매첩이다.",
+    "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
+    "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
+    "via": "claude-session"
+   },
+   "쿠노": {
+    "k": "A",
+    "quote": "이 경기는 유욕(뉴욕)승 보도록 하겠고 그리고 이제 핸디캡 같은 경우는 전 인디가 어쩌면 홈에서 좀 비빌 수도 있다.",
+    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
+    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
+    "via": "claude-session"
+   },
+   "프리뷰N": {
+    "k": "A",
+    "quote": "저 뉴욕승의 어 마인승 언더 요렇게 보겠습니다.",
+    "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
+    "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
+    "via": "claude-session"
+   }
+  },
+  "bec98aceb9e9ceb8f": {
+   "오늘의 매치업": {
+    "k": "H",
+    "quote": "8.5점의 5점의 기준점이라면 저는 올랜드승 올랜드 마인승 쪽으로 가져가시는게 좋아 보입니다.",
+    "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
+    "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
+    "via": "claude-session"
+   },
+   "쿠노": {
+    "k": "H",
+    "quote": "그래서 이 경기는 올랜도 쪽으로 보도록 하겠고 언오브어도 역시나 언더 쪽으로 보도록 하겠습니다.",
+    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
+    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
+    "via": "claude-session"
+   },
+   "프리뷰N": {
+    "k": "H",
+    "quote": "그래서 올랜드 승의 미러키 프랜승 언더 요렇게 보도록 하겠습니다.",
+    "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
+    "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
+    "via": "claude-session"
+   }
+  },
+  "beba788ec9db4ec95": {
+   "오늘의 매치업": {
+    "k": "A",
+    "quote": "클블 역백 클블 프랜 그리고 235.5점이라는 모점이라는 기준점에서도 오버 적근까지 충분히 가져갈 만한 그런 매첩이 될 것이다.",
+    "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
+    "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
+    "via": "claude-session"
+   },
+   "쿠노": {
+    "k": "H",
+    "quote": "이 경기는 마이미 사이드로 보도록 하겠고 언노버 같은 경우는 오바 쪽으로 보도록 할게요.",
+    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
+    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
+    "via": "claude-session"
+   },
+   "프리뷰N": {
+    "k": "A",
+    "quote": "클리블랜드 승 프랜승의 언더 요렇게 예상해 보겠습니다.",
+    "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
+    "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
+    "via": "claude-session"
+   }
+  },
+  "bec8b9cecb9b4eab3": {
+   "오늘의 매치업": {
+    "k": "HH",
+    "quote": "애틀의 똥배당보다는 저는 시카고 프랜 그리고 244.5점이라도 5점이라도... 오버도 좋은 선택지라고 생각합니다.",
+    "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
+    "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
+    "via": "claude-session"
+   },
+   "쿠노": {
+    "k": "HH",
+    "quote": "시카고 프랜에다가 오바 쪽으로 보도록 할게요.",
+    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
+    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
+    "via": "claude-session"
+   },
+   "프리뷰N": {
+    "k": "HA",
+    "quote": "이 경기는 저는 음, 애틀란타 쪽으로 보는게 맞지 않나? 6.5 기준이면은 마인승에 244.5 기준이면 오버 쪽으로 보는게 전 맞지 않나라는 생각이 듭니다.",
+    "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
+    "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
+    "via": "claude-session"
+   }
+  },
+  "beb89b4ec98aceba6": {
+   "오늘의 매치업": {
+    "k": "A",
+    "quote": "멤피스승, 맨피스 마인승 그리고 오버사이드까지 충분히 가져갈 만한 그런 게임이 될 것이다.",
+    "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
+    "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
+    "via": "claude-session"
+   },
+   "쿠노": {
+    "k": "A",
+    "quote": "멤피스 승에다가 오바 쪽으로 보도록 할게요.",
+    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
+    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
+    "via": "claude-session"
+   },
+   "프리뷰N": {
+    "k": "A",
+    "quote": "멤피스승, 마인승, 그다음에 언더 요렇게 예상해 보겠습니다.",
+    "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
+    "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
+    "via": "claude-session"
+   }
+  },
+  "bec838cec9588ed86": {
+   "오늘의 매치업": {
+    "k": "H",
+    "quote": "13.5점이라도 저는 그냥 세란 마인승 쪽으로 가져가시는게 좋은 경기라고 생각을 하고요. ... 이 경기는 언더사이즈까지 보도록 하겠습니다.",
+    "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
+    "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
+    "via": "claude-session"
+   },
+   "쿠노": {
+    "k": "HA",
+    "quote": "저는 그래도 골스가 어쨌든 커리가 없을 때도 나름대로 좀 잘 비빈... 골프렌에다가 오바 쪽으로 보도록 할게요.",
+    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
+    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
+    "via": "claude-session"
+   },
+   "프리뷰N": {
+    "k": "H",
+    "quote": "샌안토니오 마인승을 보는게 예 맞다라고 생각은 합니다. ... 난토니오 마인승의 언더 보겠습니다.",
+    "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
+    "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
+    "via": "claude-session"
+   }
+  },
+  "bec8388ed81aceb9d": {
+   "오늘의 매치업": {
+    "k": "A",
+    "quote": "10.5점이라고 하더라도 호텔(포틀) 마인 쪽으로 가져가시는게 가장 좋은 경기가 될 것이다.",
+    "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
+    "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
+    "via": "claude-session"
+   },
+   "쿠노": {
+    "k": "A",
+    "quote": "포틀 마인 그리고 오후보는 언더 보도록 할게요.",
+    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
+    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
+    "via": "claude-session"
+   },
+   "프리뷰N": {
+    "k": "A",
+    "quote": "이 경기는 포틀, 포틀랜드 승, 마인승 그다음에 230점은 언더 보는게 맞다라고 생각을 하고.",
+    "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
+    "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
+    "via": "claude-session"
+   }
+  },
+  "bed9cb4ec8aa4ed84": {
+   "쿠노": {
+    "k": "HH",
+    "quote": "경기는 결국에는 ... 휴턴 마인 쪽으로 보도록 하겠고 언어오브는 오바.",
+    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
+    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
+    "via": "claude-session"
+   }
+  },
+  "b4c4120ed81b4eba6": {
+   "쿠노": {
+    "k": "O",
+    "quote": "내일은 그냥 숫자로만 봤을 때도 어 좀 다득점이 가장 좋아 보이는 그런 경기가 되지 않을까 싶네요. 경기는 오바 쪽으로 보도록 할게요.",
+    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
+    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
+    "via": "claude-session"
+   },
+   "프리뷰N": {
+    "k": "A",
+    "quote": "오케시승, 마인승. 그다음에 223.5면은 언더 보는게 맞지 않나?",
+    "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
+    "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
+    "via": "claude-session"
+   }
   }
  }
 };
