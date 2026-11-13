@@ -25,7 +25,8 @@ function parse(json){
     if(!home||!away||!gameDate||/미정/.test(home+away))continue;
     const kind=kindOf(val(r,'betNm'));if(!kind)continue;
     const key=`${home}|${away}|${gameDate}`;
-    const g=groups[key]=groups[key]||{key,time:toISO(gameDate),sport:sportOf(val(r,'itemCode')),league:val(r,'leagueName')||'',home:String(home),away:String(away),WDL:[],HC:[],OU:[]};
+    const g=groups[key]=groups[key]||{key,time:toISO(gameDate),sport:sportOf(val(r,'itemCode')),league:val(r,'leagueName')||'',home:String(home),away:String(away),WDL:[],HC:[],OU:[],endMs:null};
+    const ed=+val(r,'endDate');if(ed>0&&(g.endMs==null||ed<g.endMs))g.endMs=ed;
     g[kind].push({win:+val(r,'winAllot')||0,draw:+val(r,'drawAllot')||0,lose:+val(r,'loseAllot')||0,
       hasDraw:!!val(r,'drawTxt')&&val(r,'drawTxt')!=='-',winTxt:val(r,'winTxt'),winHandi:val(r,'winHandi'),loseHandi:val(r,'loseHandi')});
   }
@@ -37,7 +38,7 @@ function parse(json){
     const h=balanced(g.HC);if(h){odds.HH=h.win;if(h.hasDraw)odds.HD=h.draw;odds.HA=h.lose;const v=+h.winHandi;hcap=isFinite(v)?(v>0?'+'+v:String(v)):''}
     const u=balanced(g.OU);if(u){const under=/언더/.test(u.winTxt||'언더');odds.U=under?u.win:u.lose;odds.O=under?u.lose:u.win;line=String(u.winHandi??u.loseHandi??'')}
     if(!(odds.H||odds.HH||odds.O))continue;
-    out.push({id:'b'+Buffer.from(g.key).toString('hex').slice(0,16),time:g.time,sport:g.sport,league:g.league,home:g.home,away:g.away,line,hcap,odds});
+    out.push({id:'b'+Buffer.from(g.key).toString('hex').slice(0,16),time:g.time,deadline:g.endMs?toISO(g.endMs):'',sport:g.sport,league:g.league,home:g.home,away:g.away,line,hcap,odds});
   }
   return out;
 }

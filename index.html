@@ -179,6 +179,15 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .pa-v b{font-family:'Black Ops One','Noto Sans KR',sans-serif;font-size:19px;color:#ffd77a;font-weight:400}
 .bar.cl i{background:#5fb3c8}
 .pc-s .bar.cl{margin:6px 0 3px}
+
+/* 구매 마감 타이머 */
+.cb{display:inline-block;font-weight:900;font-size:13px;color:#7fc8e8;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cb-soon{color:var(--amber)}.cb-hot{color:#ff6b57}.cb-end{color:var(--mute)}
+.pc-cd .cd,.pc-cd .cb{display:block;font-size:14px}
+.pk-m .cb{display:block;margin-top:2px;font-size:16px}
+.tk2-dl{margin:2px 0 8px;font-size:14px;color:var(--mute);font-weight:700}
+.cb-big{font-size:20px;font-family:'Black Ops One','Noto Sans KR',sans-serif}
+.stale.ow{border-color:#7fc8e8}.cw{font-weight:900;font-size:18px;color:#7fc8e8;font-variant-numeric:tabular-nums}.cw-hot{color:#ff6b57}
 </style>
 </head>
 <body>
@@ -205,6 +214,7 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 
 <details class="adv">
 <summary>⚙ 고급 설정 (평소엔 필요 없음)</summary>
+<div class="panel"><label>🛒 베트맨 온라인 구매 가능 시간대 (직접 입력 · 비우면 표시 안 함)</label><div style="display:flex;gap:8px;align-items:center"><input type="time" id="ow_s" style="flex:1"><span>~</span><input type="time" id="ow_e" style="flex:1"></div><div class="note" style="margin-top:6px">공식 시간은 베트맨 공지로 확인한 뒤 입력하세요. 입력하면 맨 위에 오늘 남은 시간이 표시됩니다.</div></div>
 <nav>
   <button data-tab="intel">📋 경기·픽 직접 입력</button>
   <button data-tab="ch">📺 채널 신뢰도</button>
@@ -426,16 +436,38 @@ function evidenceHtml(c,openAll){
       (e&&e.url?`<a class="evl" href="${esc(e.url)}" target="_blank" rel="noopener">▶ ${esc(e.videoTitle||'영상 보기')}</a>`:'')+`</div>`}).join('');
   return `<details class="ev"${openAll?' open':''}><summary>🔎 근거 보기 (${who.length}명 · ✅ ${who.filter(ch=>mp[ch]===c.k).length}명 이 선택)</summary>${rows}<div class="note">✅ 이 선택을 고른 유튜버, ❌ 같은 항목에서 다른 선택을 고른 유튜버입니다. 문장은 영상 자막에서 프로그램이 자동으로 찾은 것이라, 뜻을 잘못 읽었을 수 있으니 의심되면 영상 링크로 확인하세요.</div></details>`;
 }
-// 경기 시작까지 카운트다운 (경기 시각은 한국시간 기준)
+// 구매 마감 시각: 베트맨이 준 마감(deadline)을 쓰고, 없으면 경기 시작 30분 전으로 추정(est)
+const dlMs=m=>m.deadline?Date.parse(m.deadline+':00+09:00'):Date.parse(m.time+':00+09:00')-30*60000;
+const dlEst=m=>!m.deadline;
+const fmtHMS=sec=>{const d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),mi=Math.floor(sec%3600/60),ss=sec%60;return (d?d+'일 ':'')+h+':'+String(mi).padStart(2,'0')+':'+String(ss).padStart(2,'0')};
+const fmtLong=sec=>{const d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),mi=Math.floor(sec%3600/60),ss=sec%60;return (d?d+'일 ':'')+h+'시간 '+String(mi).padStart(2,'0')+'분 '+String(ss).padStart(2,'0')+'초'};
+const cbSpan=(m,short)=>`<span class="cb" ${short?'data-s="1" ':''}data-ms="${dlMs(m)}" data-e="${dlEst(m)?1:0}"></span>`;
+// 경기 시작까지 + 구매 마감까지 카운트다운 (경기 시각은 한국시간 기준)
 function tickCd(){
   const now=Date.now();
   document.querySelectorAll('.cd').forEach(el=>{
     const t=Date.parse(el.dataset.t+':00+09:00');if(isNaN(t)){el.textContent='';return}
-    let ms=t-now;
-    if(ms<=0){el.className='cd cd-end';el.textContent=el.dataset.s?'⛔ 시작됨':'⛔ 경기 시작됨';return}
-    const sec=Math.floor(ms/1000),d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60),ss=sec%60;
+    const sec=Math.floor((t-now)/1000);
+    if(sec<=0){el.className='cd cd-end';el.textContent=el.dataset.s?'⛔ 경기 시작됨':'⛔ 경기 시작됨';return}
     el.className='cd '+(sec<600?'cd-hot':sec<3600?'cd-soon':'');
-    el.textContent=el.dataset.s?('⏱ '+(d?d+'일 ':'')+h+':'+String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0')):('⏱ '+(d?d+'일 ':'')+h+'시간 '+String(m).padStart(2,'0')+'분 '+String(ss).padStart(2,'0')+'초 남음');
+    el.textContent=el.dataset.s?('⏱ 경기 '+fmtHMS(sec)):('⏱ 경기 시작까지 '+fmtLong(sec));
+  });
+  document.querySelectorAll('.cb').forEach(el=>{
+    const ms=+el.dataset.ms;if(!ms){el.textContent='';return}
+    const sec=Math.floor((ms-now)/1000),est=el.dataset.e==='1';
+    if(sec<=0){el.className='cb cb-end'+(el.classList.contains('cb-big')?' cb-big':'');el.textContent='🛒 구매 마감됨';return}
+    const big=el.classList.contains('cb-big');
+    el.className='cb '+(sec<600?'cb-hot':sec<3600?'cb-soon':'')+(big?' cb-big':'');
+    el.textContent=el.dataset.s?('🛒 마감'+(est?'~':'')+' '+fmtHMS(sec)):('🛒 구매 마감까지 '+fmtLong(sec)+(est?' (추정)':''));
+  });
+  // 온라인 구매 가능 시간대(직접 입력) 타이머
+  document.querySelectorAll('.cw').forEach(el=>{
+    const a=(el.dataset.s||'').split(':'),b=(el.dataset.e||'').split(':');if(a.length<2||b.length<2){el.textContent='';return}
+    const k=new Date(now+9*3600e3),Y=k.getUTCFullYear(),Mo=k.getUTCMonth(),D=k.getUTCDate();
+    const st=Date.UTC(Y,Mo,D,+a[0]-9,+a[1]),en=Date.UTC(Y,Mo,D,+b[0]-9,+b[1]);
+    if(now<st){el.textContent='🛒 온라인 구매 시작까지 '+fmtHMS(Math.floor((st-now)/1000))}
+    else if(now<en){const sec=Math.floor((en-now)/1000);el.textContent='🛒 오늘 온라인 구매 가능 시간 남음 '+fmtHMS(sec);el.className='cw '+(sec<1800?'cw-hot':'')}
+    else{el.textContent='🛒 오늘 온라인 구매 가능 시간이 끝났습니다'}
   });
 }
 setInterval(tickCd,1000);
@@ -450,7 +482,7 @@ function pickCard(c,i,amt,kind,openAll,showCl){
    <div class="pc-top"><span class="rk">${i+1}</span>${chip}<span class="pc-o">x${c.odds.toFixed(2)}</span></div>
    <div class="pc-t">${esc(c.label)}</div>
    <div class="pc-m">${esc(c.m.home)} vs ${esc(c.m.away)}</div>
-   <div class="pc-cd"><span class="cd" data-s="1" data-t="${esc(c.m.time)}"></span></div>
+   <div class="pc-cd"><span class="cd" data-s="1" data-t="${esc(c.m.time)}"></span>${cbSpan(c.m,true)}</div>
    <div class="bar"><i style="width:${pct}%"></i></div>
    <div class="pc-gl">유튜버 <b>${c.votes}/${c.nPick||0}</b>명 ${pct}%${one?' <span class="b1 sm">⚠1명</span>':''}${c.warn?' <span class="warnic">⚠</span>':''}</div>
    ${showCl?`<div class="bar cl"><i style="width:${Math.round(c.pa*100)}%"></i></div><div class="pc-gl">🤖 클로드 확률 <b>${(c.pa*100).toFixed(0)}%</b> <span class="mute">(등급 ${grade(c.pa)})</span></div>`:''}
@@ -458,7 +490,7 @@ function pickCard(c,i,amt,kind,openAll,showCl){
    <div class="pc-more">눌러서 자세히</div>
   </summary>
   <div class="pc-d">
-   <div class="pk-m">${esc(c.m.sport)} · ${esc(c.m.league)}<br>${esc(c.m.home)} vs ${esc(c.m.away)} · <b>${fmtT(c.m.time)}</b> <span class="cd" data-t="${esc(c.m.time)}"></span></div>
+   <div class="pk-m">${esc(c.m.sport)} · ${esc(c.m.league)}<br>${esc(c.m.home)} vs ${esc(c.m.away)} · <b>${fmtT(c.m.time)}</b><br><span class="cd" data-t="${esc(c.m.time)}"></span><br>${cbSpan(c.m,false)}</div>
    <div class="pk-g"><div class="pk-gl">유튜버 의견일치 <b>${c.votes}/${c.nPick||0}명 (${pct}%)</b></div></div>
    <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}${opp?'<span class="tag r oppt">🚫 구매 금지 — 유튜버 의견이 배당과 반대입니다. 분석 오류 가능성이 있어 구매하지 마세요</span>':''}${viaRule(c)?'<span class="tag r">키워드 추정(정확도 낮음)</span>':''}</div>
    ${evidenceHtml(c,openAll)}
@@ -482,15 +514,17 @@ function run(){
     h+=`<div class="stale big ${mins>15?'bad':''}"><div class="sb-n">${mins}<small>분 경과</small></div><div class="sb-t">${mins>15?'🚨 ':''}배당 수집 후 시간이 지났습니다.<br>배당은 실시간으로 바뀝니다 — 구매 직전엔 <b>대위 이진호</b>에게 최신화를 요청하십시오! 🫡</div></div>`}
   if(!perfect.length&&!yt.length&&!cl.length&&!high.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
   const sec=(id,ico,title,desc,body)=>`<section class="rs" id="${id}"><h2 class="rs-t"><span>${ico}</span>${title}</h2><div class="rs-d">${desc}</div>${body.startsWith('<details')?`<div class="pgrid">${body}</div>`:body}</section>`;
-  const legend=`<div class="legend"><span class="lg-r">🚫 빨간 카드</span> = 유튜버 의견이 <b>배당과 반대</b>입니다. <b>분석 오류 가능성이 있어 구매 금지</b>이며, 적중금 조합에서 제외됩니다.<br>💰 카드의 적중금은 <b>그 픽 하나에 투자했을 때</b>의 참고값입니다. 승부식은 2경기 이상 조합이 기본이라 실제 구매는 ⑤ 조합 카드를 보세요.</div>`;
+  let ow=null;try{ow=JSON.parse(localStorage.getItem('toto_ow')||'null')}catch(e){}
+  const owBanner=(ow&&ow.s&&ow.e)?`<div class="stale ow"><span class="cw" data-s="${esc(ow.s)}" data-e="${esc(ow.e)}"></span><div class="note">내가 입력한 온라인 구매 가능 시간 ${esc(ow.s)}~${esc(ow.e)} 기준 · 공식 시간은 베트맨 공지로 확인하세요</div></div>`:'';
+  const legend=`<div class="legend"><span class="lg-r">🚫 빨간 카드</span> = 유튜버 의견이 <b>배당과 반대</b>입니다. <b>분석 오류 가능성이 있어 구매 금지</b>이며, 적중금 조합에서 제외됩니다.<br>💰 카드의 적중금은 <b>그 픽 하나에 투자했을 때</b>의 참고값입니다. 승부식은 2경기 이상 조합이 기본이라 실제 구매는 ⑤ 조합 카드를 보세요.<br>🛒 <b>구매 마감</b> 타이머는 경기 시작 타이머와 별개입니다. 베트맨이 준 마감 시각 기준이며 <b>~</b> 표시는 마감 시각 정보가 없어 <b>경기 30분 전으로 추정</b>한 값입니다.</div>`;
   const none=t=>`<div class="none">${t}</div>`;
-  h+=legend+`<div class="jump">${[['s1','◆◆◆ 대위 추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
+  h+=owBanner+legend+`<div class="jump">${[['s1','◆◆◆ 대위 추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
   h+=sec('s1','<span class="dia">◆◆◆</span>','대위 이진호의 추천픽 <small class="mx">(최대 8개)</small>','<div class="crit">유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고 배당 확률도 <b>50% 이상</b>인 경기</div>',
     perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
   h+=sec('s2','📺','유튜버 추천픽 <small class="mx">(최대 8개)</small>','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
-    yt.length?yt.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('유튜버 픽이 없습니다. 유튜버 분석을 먼저 수집하세요.'));
+    yt.length?yt.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('유튜버 픽이 없습니다. 유튜버 분석을 먼저 수집하세요.'));
   h+=sec('s3','🤖','클로드 추천픽 <small class="mx">(최대 8개)</small>','배당에서 역산한 승리 확률이 높은 순 (50%↑, 배당 1.20↑). 선수·부상 같은 정보는 반영되지 않았습니다.',
-    cl.length?cl.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('조건에 맞는 경기가 없습니다.'));
+    cl.length?cl.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('조건에 맞는 경기가 없습니다.'));
   h+=sec('s4','💥','오늘의 고배당 <small class="mx">(최대 8개)</small>','배당 <b>1.8배 이상</b>이면서 유튜버가 다수 일치했거나, 확률 대비 배당이 유리(기대값 0.95↑)한 픽',
     high.length?high.map((c,i)=>pickCard(c,i,amtH(c),'r')).join(''):none('조건에 맞는 고배당 픽이 없습니다.'));
   const groups=tickets(safe,chal),CAP=100000000;
@@ -499,8 +533,10 @@ function run(){
     h+=`<div class="tk-g">${g.name} <span class="note">(${g.t.length}장)</span></div>`;
     g.t.forEach(t=>{
       const pay=payoutOf(budget,t.odds),over=pay>CAP,prof=pay-budget,ev=pay*t.p;
+      const first=t.legs.map(l=>l.m).sort((a,b)=>dlMs(a)-dlMs(b))[0];
       h+=`<div class="tk2"><div class="tk2-h"><span>${t.legs.length}폴더</span><span>합산배당 <b>x${t.odds.toFixed(2)}</b></span></div>
-      <ul class="tk2-l">${t.legs.map(l=>`<li><b>${esc(l.label)}</b><span class="note"> ${esc(l.m.home)} vs ${esc(l.m.away)} · x${l.odds.toFixed(2)}</span> <span class="cd" data-t="${esc(l.m.time)}"></span></li>`).join('')}</ul>
+      <div class="tk2-dl">가장 빠른 구매 마감 · <span class="cb cb-big" data-ms="${dlMs(first)}" data-e="${dlEst(first)?1:0}"></span></div>
+      <ul class="tk2-l">${t.legs.map(l=>`<li><b>${esc(l.label)}</b><span class="note"> ${esc(l.m.home)} vs ${esc(l.m.away)} · x${l.odds.toFixed(2)}</span> <span class="cd" data-s="1" data-t="${esc(l.m.time)}"></span> ${cbSpan(l.m,true)}</li>`).join('')}</ul>
       <div class="tk2-big">
         <div class="bx"><small>🎯 적중확률</small><b>${(t.p*100).toFixed(1)}<i>%</i></b><div class="bar"><i style="width:${Math.max(3,Math.min(100,t.p*100))}%"></i></div></div>
         <div class="bx gold"><small>💰 적중 시 수령액</small><b>${over?'1억 초과':won(pay)}</b><span>${over?'1장 최대 적중금 1억원 규정으로 발매 제한':'+'+won(prof)+' 수익'}</span></div>
@@ -595,6 +631,9 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
 });
 const fixBudget=()=>{let v=Math.round((+$('budget').value||0)/1000)*1000;if(v<1000)v=1000;$('budget').value=v;try{localStorage.setItem('toto_budget',v)}catch(e){}return v};
 try{const sv=+localStorage.getItem('toto_budget');if(sv>=1000)$('budget').value=sv}catch(e){}
+try{const o=JSON.parse(localStorage.getItem('toto_ow')||'null');if(o){$('ow_s').value=o.s||'';$('ow_e').value=o.e||''}}catch(e){}
+const saveOw=()=>{try{localStorage.setItem('toto_ow',JSON.stringify({s:$('ow_s').value,e:$('ow_e').value}))}catch(e){}run()};
+$('ow_s').onchange=saveOw;$('ow_e').onchange=saveOw;
 $('budget').onchange=()=>{fixBudget();run()};
 $('bMinus').onclick=()=>{$('budget').value=fixBudget()-1000;fixBudget();run()};
 $('bPlus').onclick=()=>{$('budget').value=fixBudget()+1000;run()};
