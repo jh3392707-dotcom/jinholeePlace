@@ -213,6 +213,13 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .rc-msg.win{background:#16301a;border:2px solid #7fb04a;color:#cfe8a0}.rc-msg.win b{color:#9be05a}
 .rc-msg.lose{background:#34161a;border:2px solid #ff6b57;color:#ffd2c9}.rc-msg.lose b{color:#ff8a70}
 .rc-msg.wait{background:#1d2113;border:2px dashed var(--line);color:var(--mute);font-size:15px;font-weight:700}
+
+.rc-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.rc-g{background:#12160d;border:1px solid var(--line);border-radius:8px;padding:8px 6px;text-align:center;min-width:0}
+.rc-gh{font-size:12px;font-weight:900;color:var(--khaki);line-height:1.3}.rc-gh small{color:var(--mute);font-weight:700}
+.rc-gv{font-family:'Black Ops One','Noto Sans KR',sans-serif;font-size:16px;margin:4px 0;color:var(--mute);overflow-wrap:anywhere}
+.rc-gv.win{color:#9be05a}.rc-gv.lose{color:#ff8a70}
+.rc-gs{font-size:12px;color:var(--mute)}
 </style>
 
 <div class="wrap">
@@ -2495,20 +2502,24 @@ function evalPick(p,res){
   return{st:'wait'};
 }
 // '추천대로 샀다면' 손익: 조합 카드마다 저장된 투자금(budget)을 넣었다고 가정. 비적중=투입금 손실, 적중=적중금 회수, 무효 경기는 배당 1.0배, 전부 무효면 환불, 대기 조합은 제외
+// 조합 하나의 결과: 비적중=투입금 손실, 적중=적중금 회수(무효 경기는 배당 1.0배), 전부 무효면 환불, 대기면 판정 보류
+function evalTicket(snap,res,t){
+  const bud=snap.budget;
+  const legs=t.legs.map(id=>{const [mid,sel]=id.split('|'),p=snap.picks.find(x=>x.matchId===mid&&x.sel===sel);return p?{p,e:evalPick(p,res[mid])}:{p:null,e:{st:'wait'}}});
+  if(legs.some(l=>l.e.st==='miss'))return{t,legs,st:'miss',net:-bud,inv:bud,ret:0};
+  if(legs.some(l=>l.e.st==='wait'))return{t,legs,st:'wait',net:0,inv:0,ret:0};
+  const live=legs.filter(l=>l.e.st==='hit');
+  if(!live.length)return{t,legs,st:'void',net:0,inv:0,ret:0};
+  const odds=offOdds(live.reduce((a,l)=>a*l.p.odds,1)),ret=payoutOf(bud,odds);
+  return{t,legs,st:'hit',net:ret-bud,inv:bud,ret,odds};
+}
+const sumTk=L=>({inv:L.reduce((a,x)=>a+x.inv,0),ret:L.reduce((a,x)=>a+x.ret,0),net:L.reduce((a,x)=>a+x.net,0),hit:L.filter(x=>x.st==='hit').length,miss:L.filter(x=>x.st==='miss').length,vd:L.filter(x=>x.st==='void').length,wait:L.filter(x=>x.st==='wait').length});
 function simSnap(snap,res){
-  const bud=snap.budget;let inv=0,ret=0,hit=0,miss=0,vd=0,wait=0;
-  (snap.tickets||[]).forEach(t=>{
-    const legs=t.legs.map(id=>{const [mid,sel]=id.split('|'),p=snap.picks.find(x=>x.matchId===mid&&x.sel===sel);return p?{p,e:evalPick(p,res[mid])}:{p:null,e:{st:'wait'}}});
-    if(legs.some(l=>l.e.st==='miss')){inv+=bud;miss++;return}
-    if(legs.some(l=>l.e.st==='wait')){wait++;return}
-    const live=legs.filter(l=>l.e.st==='hit');
-    if(!live.length){vd++;return}
-    inv+=bud;ret+=payoutOf(bud,offOdds(live.reduce((a,l)=>a*l.p.odds,1)));hit++;
-  });
+  const bud=snap.budget,E=(snap.tickets||[]).map(t=>evalTicket(snap,res,t)),all=sumTk(E);
   // 참고: 대위 추천픽(◆◆◆) 각각에 단일로 투자했다면
   let sInv=0,sRet=0,sH=0,sM=0;
   snap.picks.filter(p=>!p.ban&&p.sections.includes('perfect')).forEach(p=>{const e=evalPick(p,res[p.matchId]);if(e.st==='hit'){sInv+=bud;sRet+=payoutOf(bud,p.odds);sH++}else if(e.st==='miss'){sInv+=bud;sM++}});
-  return{inv,ret,net:ret-inv,hit,miss,vd,wait,bud,single:{inv:sInv,net:sRet-sInv,h:sH,m:sM}};
+  return{...all,bud,E,single:{inv:sInv,net:sRet-sInv,h:sH,m:sM}};
 }
 const wonAbs=n=>Math.abs(Math.round(n)).toLocaleString('ko-KR')+'원';
 function recBanner(){
@@ -2521,13 +2532,13 @@ function recBanner(){
   const H=cnt(live,'hit'),M=cnt(live,'miss'),V=cnt(live,'void'),W=cnt(live,'wait'),J=H+M;
   // 누적(모든 스냅샷, 구매 금지 제외, 같은 경기·선택 중복 제외)
   const seen=new Set();let aH=0,aJ=0;snaps.forEach(sn=>sn.picks.forEach(p=>{if(p.ban)return;const key=p.matchId+'|'+p.sel;if(seen.has(key))return;seen.add(key);const e=evalPick(p,res[p.matchId]);if(e.st==='hit'){aH++;aJ++}else if(e.st==='miss')aJ++}));
-  const sec=Object.keys(SEC_NAME).map(k=>{const L=live.filter(x=>x.p.sections.includes(k)),h=cnt(L,'hit'),m=cnt(L,'miss');return `<div class="rc-sec"><span>${SEC_NAME[k]}</span><b>${h}/${h+m}</b><small>${h+m?Math.round(h/(h+m)*100)+'%':'대기'}</small></div>`}).join('');
+  const GR=[['🛡 안정 2폴더','안정 2폴더'],['🛡 안정 3폴더','안정 3폴더'],['💥 도전 조합','도전 조합']];
+  const smAll=simSnap(snap,res);
+  const grp=GR.map(([key,label])=>{const L=smAll.E.filter(x=>x.t.group===key);return{key,label,L,s:sumTk(L)}}).filter(g=>g.L.length);
+  const sec=grp.map(g=>{const d=g.s.hit+g.s.miss;return `<div class="rc-g"><div class="rc-gh">${g.label} <small>${g.L.length}장</small></div><div class="rc-gv ${!d?'':g.s.net>=0?'win':'lose'}">${d?(g.s.net>=0?'+':'-')+wonAbs(g.s.net):'대기'}</div><div class="rc-gs">✅${g.s.hit} ❌${g.s.miss} ⏳${g.s.wait}</div></div>`}).join('');
   const ic={hit:'✅',miss:'❌',void:'⚪',wait:'⏳'},lb={hit:'적중',miss:'비적중',void:'무효(1.0배)',wait:'대기'};
   const list=rows.slice().sort((a,b)=>({miss:0,hit:1,void:2,wait:3}[a.e.st]-{miss:0,hit:1,void:2,wait:3}[b.e.st])||a.p.time.localeCompare(b.p.time)).map(({p,e})=>{const r=res[p.matchId],sc=r&&r.home!=null?`<b>${r.home}:${r.away}</b>`:'';
     return `<div class="rc-r rc-${e.st}${p.ban?' rc-ban':''}"><span class="rc-i">${p.ban?'🚫':ic[e.st]}</span><div><b>${esc(p.label)}</b> <span class="note">x${p.odds.toFixed(2)}</span><div class="note">${esc(p.home)} vs ${esc(p.away)} · ${fmtT(p.time)} ${sc} · ${p.ban?'구매 금지 픽(집계 제외)':lb[e.st]} · ${p.sections.map(k=>SEC_NAME[k]).join(' ')}</div></div></div>`}).join('');
-  const tkRows=(snap.tickets||[]).map(t=>{const sts=t.legs.map(id=>{const [mid,sel]=id.split('|'),p=snap.picks.find(x=>x.matchId===mid&&x.sel===sel);return p?evalPick(p,res[mid]).st:'wait'});
-    const st=sts.includes('miss')?'miss':sts.includes('wait')?'wait':sts.every(x=>x==='void')?'void':'hit';return{t,st,pay:st==='hit'?payoutOf(snap.budget,t.odds):0}});
-  const tH=tkRows.filter(x=>x.st==='hit').length,tM=tkRows.filter(x=>x.st==='miss').length,tW=tkRows.filter(x=>x.st==='wait').length;
   const pending=!J&&!V;
   const sm=simSnap(snap,res);let allNet=0,allJ=0;snaps.forEach(sn=>{const q=simSnap(sn,res);allNet+=q.net;allJ+=q.hit+q.miss});
   const done=sm.hit+sm.miss>0;
@@ -2539,9 +2550,10 @@ function recBanner(){
    ${msg}${msgSub}${msgAll}
    <div class="rc-top"><div class="rc-n hit">✅ 적중 <b>${H}</b></div><div class="rc-n miss">❌ 비적중 <b>${M}</b></div><div class="rc-n wait">⏳ 대기 <b>${W}</b></div>${V?`<div class="rc-n void">⚪ 무효 <b>${V}</b></div>`:''}</div>
    <div class="note">저장 시각 ${fmtT(snap.savedAt.slice(0,16))} 기준 추천픽 ${live.length}개 · 배당 수집 ${snap.collectedAt?fmtT(snap.collectedAt.slice(0,16)):'-'}</div>
-   <div class="rc-secs">${sec}</div>
-   ${tkRows.length?`<div class="rc-tk">🧾 조합 ${tkRows.length}장 · ✅ ${tH} · ❌ ${tM} · ⏳ ${tW}${tH?` <span class="rc-pay">(적중 조합: ${snap.budget.toLocaleString('ko-KR')}원 투자 시 최대 ${Math.max(...tkRows.map(x=>x.pay)).toLocaleString('ko-KR')}원)</span>`:''}</div>`:''}
+   <div class="rc-groups">${sec}</div>
    ${pending?`<div class="note" style="margin:8px 0">경기가 끝나면 결과가 정리되어 적중/비적중이 표시됩니다. 이 채팅에 <b>"결과 정리"</b>라고 하시면 최종 스코어를 찾아 반영합니다.</div>`:''}
+   ${grp.map(g=>`<details class="rc-list"><summary>${g.label} 결과 보기 (${g.L.length}장)</summary>${g.L.map(x=>{const ic2={hit:'✅',miss:'❌',void:'⚪',wait:'⏳'}[x.st];const names=x.legs.map(l=>l.p?esc(l.p.label):'?').join(' + ');const oddsT=(x.t.odds||0).toFixed(2);
+     return `<div class="rc-r rc-${x.st}"><span class="rc-i">${ic2}</span><div><b>${names}</b><div class="note">합산 x${oddsT} · ${x.st==='hit'?`적중금 ${wonAbs(x.ret)} (+${wonAbs(x.net)})`:x.st==='miss'?`${wonAbs(snap.budget)} 손실`:x.st==='void'?'전부 무효 — 환불':'결과 대기'} · 경기별 ${x.legs.map(l=>({hit:'✅',miss:'❌',void:'⚪',wait:'⏳'})[l.e.st]).join('')}</div></div></div>`}).join('')}</details>`).join('')}
    <details class="rc-list"><summary>픽별 결과 보기 (${rows.length}개)</summary>${list}</details>
    ${snaps.length>1?`<div class="note" style="margin-top:8px">📚 누적: 저장 ${snaps.length}회 · 판정된 추천픽 ${aJ}개 중 적중 ${aH}개${aJ?` (${Math.round(aH/aJ*100)}%)`:''}</div>`:''}
   </div></details>`;
