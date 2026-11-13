@@ -1064,17 +1064,14 @@ window.TOTO_DATA={
    "프리뷰N": "A"
   },
   "bec838cec9588ed86": {
-   "오늘의 매치업": "H",
+   "오늘의 매치업": "HH",
    "쿠노": "HA",
-   "프리뷰N": "H"
+   "프리뷰N": "HH"
   },
   "bec8388ed81aceb9d": {
-   "오늘의 매치업": "A",
-   "쿠노": "A",
+   "오늘의 매치업": "HA",
+   "쿠노": "HA",
    "프리뷰N": "A"
-  },
-  "bed9cb4ec8aa4ed84": {
-   "쿠노": "HH"
   },
   "b4c4120ed81b4eba6": {
    "쿠노": "O",
@@ -1088,14 +1085,16 @@ window.TOTO_DATA={
     "quote": "결론을 말씀드리면 조금 더 세졌다. 더 좋아졌다. 이번은 또 홈이다.요 좀 보신다면은 출익물에 또 일단 아랍 사이드의 작근 포인트에 고려해 보실 수 있겠다.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "토토홈즈": {
     "k": "A",
     "quote": "온두라스의 승리와 언더를 추천드리는 경기입니다.",
     "url": "https://www.youtube.com/watch?v=OKUZKVrEVek",
     "videoTitle": "Toto Analysis, Sports Analysis, Proto Analysis, November 13 Domestic Basketball, Domestic Volleyball...",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec82acec9ab0eb94": {
@@ -1104,14 +1103,16 @@ window.TOTO_DATA={
     "quote": "결론은 조금 언더가 더 좋아 보인다. ... 승패보다는 역시 또 2(언더) 먼저 생각하신다면은 추구로 일단 좋은 방향이 될 수 있겠다.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "토토홈즈": {
     "k": "A",
     "quote": "한국의 승리와 언더를 추천드리며 조합 픽은 댓글을 확인해 주시기 바랍니다.",
     "url": "https://www.youtube.com/watch?v=OKUZKVrEVek",
     "videoTitle": "Toto Analysis, Sports Analysis, Proto Analysis, November 13 Domestic Basketball, Domestic Volleyball...",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "becb9b4ed8380eba5": {
@@ -1120,14 +1121,16 @@ window.TOTO_DATA={
     "quote": "여기는 약간 조금 2.5 뭐 언더 언더를 한번 또 공략 포인트로 고려하신다면은 수근 일단 좋은 방향이 될 수 있겠다.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "토토홈즈": {
     "k": "A",
     "quote": "호주의 승리와 오버를 추천드리며 조합 픽은 댓글을 확인해 주시기 바랍니다.",
     "url": "https://www.youtube.com/watch?v=OKUZKVrEVek",
     "videoTitle": "Toto Analysis, Sports Analysis, Proto Analysis, November 13 Domestic Basketball, Domestic Volleyball...",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bebaab0eb8f84ebb0": {
@@ -1136,16 +1139,18 @@ window.TOTO_DATA={
     "quote": "일단 용단 몰도바 홈이라면은... 일단 여기는 일단 승을 조금 더 좋게 보고 있다.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec8aaceba19cebb0": {
    "앞산할배": {
     "k": "U",
-    "quote": "저는 약간 먼저 추천드리는 패턴은... 저는 언더를 조금은 더 좋게 보고 있는 경기다 좀 보시면 될 것 같습니다.",
+    "quote": "저는 언더를 조금은 더 좋게 보고 있는 경기다 좀 보시면 될 것 같습니다.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "beba3a9ec8588ebb6": {
@@ -1154,7 +1159,8 @@ window.TOTO_DATA={
     "quote": "저 득점을 또 고려하시는 것도 역시 나쁘지 않은 가능성을 조금 보고 있다. ... 저 득점 가운데 요길은 무승부 프랜 한번 공략 포인트를 두시길 바래요.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "beba6aced9e88ed85": {
@@ -1163,7 +1169,8 @@ window.TOTO_DATA={
     "quote": "아제르바이젠 사이드 아버더 공략 포인트 조금 고려 보셔도 좋을 것 같다.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "beb84a4eb8d9ceb9e": {
@@ -1172,7 +1179,8 @@ window.TOTO_DATA={
     "quote": "초용 일단 저는 네덜란드의 동기 부여를 조금 더 좋게 보시고... 네덜란드 사이드 한번 또 고를 해 보시는 것도 나쁘지 않은 흐름이 될 수 있겠다.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec84b8eba5b4ebb9": {
@@ -1181,7 +1189,8 @@ window.TOTO_DATA={
     "quote": "요런 약간 독일 사이드 한번 더 고려해 보시는 것도 역시 나비자는 방향이 될 수 있겠다.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec8aa4ecbd94ed8b": {
@@ -1190,7 +1199,8 @@ window.TOTO_DATA={
     "quote": "일단 중근 또 일단 스코트랜드의 우세를 조금 고려해 보시는 것도 나쁘지 않은 방생이 될 수 있겠다.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec8aaceba19cebb2": {
@@ -1199,7 +1209,8 @@ window.TOTO_DATA={
     "quote": "저는 약간 먼저 추천드리는 패턴은 2(언더)가 될 거 같고요.",
     "url": "https://www.youtube.com/watch?v=gOSR_rbaA58",
     "videoTitle": "[11월 13일] 해외축구 분석 [ 스포츠 분석 ]",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec9db8eb9494ec95": {
@@ -1208,21 +1219,24 @@ window.TOTO_DATA={
     "quote": "양 팀의 느린 템포까지 고려해 본다면 220.5점이라도 5점이라도 언더사이즈와 함께 뉴욕승, 뉴욕 6.5점 5점 마인승까지 충분히 가져갈 만한 매첩이다.",
     "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
     "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "쿠노": {
     "k": "A",
     "quote": "이 경기는 유욕(뉴욕)승 보도록 하겠고 그리고 이제 핸디캡 같은 경우는 전 인디가 어쩌면 홈에서 좀 비빌 수도 있다.",
     "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
     "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "프리뷰N": {
     "k": "A",
     "quote": "저 뉴욕승의 어 마인승 언더 요렇게 보겠습니다.",
     "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
     "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec98aceb9e9ceb8f": {
@@ -1231,21 +1245,24 @@ window.TOTO_DATA={
     "quote": "8.5점의 5점의 기준점이라면 저는 올랜드승 올랜드 마인승 쪽으로 가져가시는게 좋아 보입니다.",
     "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
     "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "쿠노": {
     "k": "H",
     "quote": "그래서 이 경기는 올랜도 쪽으로 보도록 하겠고 언오브어도 역시나 언더 쪽으로 보도록 하겠습니다.",
     "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
     "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "프리뷰N": {
     "k": "H",
     "quote": "그래서 올랜드 승의 미러키 프랜승 언더 요렇게 보도록 하겠습니다.",
     "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
     "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "beba788ec9db4ec95": {
@@ -1254,21 +1271,24 @@ window.TOTO_DATA={
     "quote": "클블 역백 클블 프랜 그리고 235.5점이라는 모점이라는 기준점에서도 오버 적근까지 충분히 가져갈 만한 그런 매첩이 될 것이다.",
     "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
     "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "쿠노": {
     "k": "H",
     "quote": "이 경기는 마이미 사이드로 보도록 하겠고 언노버 같은 경우는 오바 쪽으로 보도록 할게요.",
     "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
     "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "프리뷰N": {
     "k": "A",
     "quote": "클리블랜드 승 프랜승의 언더 요렇게 예상해 보겠습니다.",
     "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
     "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec8b9cecb9b4eab3": {
@@ -1277,21 +1297,24 @@ window.TOTO_DATA={
     "quote": "애틀의 똥배당보다는 저는 시카고 프랜 그리고 244.5점이라도 5점이라도... 오버도 좋은 선택지라고 생각합니다.",
     "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
     "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "쿠노": {
     "k": "HH",
     "quote": "시카고 프랜에다가 오바 쪽으로 보도록 할게요.",
     "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
     "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "프리뷰N": {
     "k": "HA",
     "quote": "이 경기는 저는 음, 애틀란타 쪽으로 보는게 맞지 않나? 6.5 기준이면은 마인승에 244.5 기준이면 오버 쪽으로 보는게 전 맞지 않나라는 생각이 듭니다.",
     "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
     "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "beb89b4ec98aceba6": {
@@ -1300,76 +1323,76 @@ window.TOTO_DATA={
     "quote": "멤피스승, 맨피스 마인승 그리고 오버사이드까지 충분히 가져갈 만한 그런 게임이 될 것이다.",
     "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
     "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "쿠노": {
     "k": "A",
     "quote": "멤피스 승에다가 오바 쪽으로 보도록 할게요.",
     "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
     "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "프리뷰N": {
     "k": "A",
     "quote": "멤피스승, 마인승, 그다음에 언더 요렇게 예상해 보겠습니다.",
     "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
     "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec838cec9588ed86": {
    "오늘의 매치업": {
-    "k": "H",
+    "k": "HH",
     "quote": "13.5점이라도 저는 그냥 세란 마인승 쪽으로 가져가시는게 좋은 경기라고 생각을 하고요. ... 이 경기는 언더사이즈까지 보도록 하겠습니다.",
     "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
     "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "쿠노": {
     "k": "HA",
     "quote": "저는 그래도 골스가 어쨌든 커리가 없을 때도 나름대로 좀 잘 비빈... 골프렌에다가 오바 쪽으로 보도록 할게요.",
     "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
     "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "프리뷰N": {
-    "k": "H",
+    "k": "HH",
     "quote": "샌안토니오 마인승을 보는게 예 맞다라고 생각은 합니다. ... 난토니오 마인승의 언더 보겠습니다.",
     "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
     "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "bec8388ed81aceb9d": {
    "오늘의 매치업": {
-    "k": "A",
+    "k": "HA",
     "quote": "10.5점이라고 하더라도 호텔(포틀) 마인 쪽으로 가져가시는게 가장 좋은 경기가 될 것이다.",
     "url": "https://www.youtube.com/watch?v=qn2Wmv7Ci64",
     "videoTitle": "[스포츠분석] 11월 14일 토요일 미국농구 NBA 경기분석",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "쿠노": {
-    "k": "A",
+    "k": "HA",
     "quote": "포틀 마인 그리고 오후보는 언더 보도록 할게요.",
     "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
     "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "프리뷰N": {
     "k": "A",
     "quote": "이 경기는 포틀, 포틀랜드 승, 마인승 그다음에 230점은 언더 보는게 맞다라고 생각을 하고.",
     "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
     "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
-    "via": "claude-session"
-   }
-  },
-  "bed9cb4ec8aa4ed84": {
-   "쿠노": {
-    "k": "HH",
-    "quote": "경기는 결국에는 ... 휴턴 마인 쪽으로 보도록 하겠고 언어오브는 오바.",
-    "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
-    "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   },
   "b4c4120ed81b4eba6": {
@@ -1378,14 +1401,16 @@ window.TOTO_DATA={
     "quote": "내일은 그냥 숫자로만 봤을 때도 어 좀 다득점이 가장 좋아 보이는 그런 경기가 되지 않을까 싶네요. 경기는 오바 쪽으로 보도록 할게요.",
     "url": "https://www.youtube.com/watch?v=MmAoABURSrA",
     "videoTitle": "[11월14일 토요일]NBA 느바 프리뷰 및 예측",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    },
    "프리뷰N": {
     "k": "A",
     "quote": "오케시승, 마인승. 그다음에 223.5면은 언더 보는게 맞지 않나?",
     "url": "https://www.youtube.com/watch?v=D7exOnXtpEw",
     "videoTitle": "스포츠 분석 : 11월 14일 NBA 분석 by 프리뷰N",
-    "via": "claude-session"
+    "via": "claude-session",
+    "verified": true
    }
   }
  }
