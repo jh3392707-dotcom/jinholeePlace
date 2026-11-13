@@ -23,20 +23,23 @@ function transcript(id){
   fs.writeFileSync(path.join(tdir,id+'.txt'),text);return text;
 }
 (async()=>{
-  data.picks=data.picks||{};
+  data.picks=data.picks||{};data.evidence=data.evidence||{};
   for(const name of Object.keys(chans)){
     process.stdout.write(`[${name}] `);
     try{
       const vs=latestVideos(name,chans[name]);if(!vs.length){console.log('영상 못 찾음 (channels.json에 URL 권장)');continue}
-      const agg={};let used=0;
-      for(const [i,v] of vs.entries()){
+      const agg={},evd={};let used=0;
+      for(const v of vs){
         const text=transcript(v.id);if(!text){console.log(`\n   - 자막 없음: ${v.title}`);continue}
         const {picks,via}=await extract(text,data.matches,name);used++;
         console.log(`\n   - "${v.title}" → ${Object.keys(picks).length}경기 (${via})`);
-        // 최신 영상 우선: 이미 정해진 경기는 덮어쓰지 않음
-        for(const[id,k]of Object.entries(picks)){if(!agg[id])agg[id]=k}
+        // 최신 영상 우선: 이미 정해진 경기는 덮어쓰지 않음. 근거(원문 문장·영상 링크)를 함께 저장
+        for(const [id,pk] of Object.entries(picks)){
+          if(agg[id])continue;
+          agg[id]=pk.k;evd[id]={quote:pk.quote||'',url:'https://www.youtube.com/watch?v='+v.id,videoTitle:v.title||'',via};
+        }
       }
-      for(const[id,k]of Object.entries(agg)){(data.picks[id]=data.picks[id]||{})[name]=k}
+      for(const[id,k]of Object.entries(agg)){(data.picks[id]=data.picks[id]||{})[name]=k;(data.evidence[id]=data.evidence[id]||{})[name]={k,quote:evd[id].quote,url:evd[id].url||'',videoTitle:evd[id].videoTitle||'',via:evd[id].via}}
       console.log(`   => ${name}: 영상 ${used}/${vs.length}개 분석, ${Object.keys(agg).length}경기 픽`);
     }catch(e){console.log('실패:',e.message.split('\n')[0])}
   }

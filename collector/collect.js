@@ -22,9 +22,9 @@ const url=`https://www.betman.co.kr/main/mainPage/gamebuy/gameSlip.do?gmId=G101&
   const matches=bag.flatMap(j=>parse(j));
   const uniq=Object.values(Object.fromEntries(matches.map(m=>[m.id,m])));
   if(!uniq.length){console.log('⚠ 경기 0건 — 기존 data.json 유지');process.exit(2)}
-  let oldPicks={};try{oldPicks=JSON.parse(fs.readFileSync(path.join(__dirname,'..','data.json'),'utf8')).picks||{}}catch(e){}
-  const ids=new Set(uniq.map(m=>m.id)),picks=Object.fromEntries(Object.entries(oldPicks).filter(([id])=>ids.has(id)));
-  fs.writeFileSync(path.join(__dirname,'..','data.json'),JSON.stringify({collectedAt:new Date().toISOString(),parserVersion:PARSER_VERSION,matches:uniq,picks},null,1));
+  let oldPicks={},oldEv={};try{const od=JSON.parse(fs.readFileSync(path.join(__dirname,'..','data.json'),'utf8'));oldPicks=od.picks||{};oldEv=od.evidence||{}}catch(e){}
+  const ids=new Set(uniq.map(m=>m.id)),picks=Object.fromEntries(Object.entries(oldPicks).filter(([id])=>ids.has(id))),evidence=Object.fromEntries(Object.entries(oldEv).filter(([id])=>ids.has(id)));
+  fs.writeFileSync(path.join(__dirname,'..','data.json'),JSON.stringify({collectedAt:new Date().toISOString(),parserVersion:PARSER_VERSION,matches:uniq,picks,evidence},null,1));
   fs.writeFileSync(path.join(__dirname,'..','data.js'),'window.TOTO_DATA='+fs.readFileSync(path.join(__dirname,'..','data.json'),'utf8')+';');
   console.log(`응답 ${n}개 저장(raw/), 경기 ${uniq.length}건 → ../data.json`);
   if(!uniq.length)console.log('⚠ 경기를 못 찾았습니다. collector/raw 폴더의 파일을 Claude에게 보내주세요. 파서를 맞춰드립니다.');

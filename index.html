@@ -75,6 +75,14 @@ body{font-size:16px}
 .b1{background:var(--amber);color:#1a1200;font-weight:900;font-size:14px;padding:3px 10px;border-radius:4px}
 .pk-s{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:15px;color:var(--green)}.pk-s b{font-size:18px}
 @media(max-width:560px){.wrap{padding:0 12px 60px}.panel{padding:12px}}
+
+.ev{margin:8px 0 2px;border:1px solid var(--line);border-radius:6px;background:#1b2114}
+.ev summary{cursor:pointer;padding:10px 12px;font-weight:700;color:var(--khaki);font-size:14px}
+.evr{padding:8px 12px;border-top:1px solid var(--line)}
+.evh{font-size:14px}.evr.no .evh{color:#ffb5a5}
+.evq{margin:4px 0;font-size:13px;color:var(--text);line-height:1.55;overflow-wrap:anywhere}.evq.none{color:var(--mute)}
+.evl{display:block;font-size:13px;color:var(--amber);overflow-wrap:anywhere}
+.ev .note{padding:8px 12px 10px}
 </style>
 </head>
 <body>
@@ -320,12 +328,25 @@ function plan(safe,chal,budget,mode){
 /* ---------- 렌더 ---------- */
 const fmtT=s=>{const d=new Date(s);return `${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`};
 const grade=p=>p>=.75?'S':p>=.65?'A':p>=.55?'B':'C';
+const GROUPS=[['H','D','A'],['HH','HD','HA'],['O','U']];
+function evidenceHtml(c){
+  const m=c.m,g=GROUPS.find(x=>x.includes(c.k)),mp=S.picks[m.id]||{},ev=(S.evidence||{})[m.id]||{};
+  const who=CH.filter(ch=>g.includes(mp[ch])).sort((a,b)=>(mp[b]===c.k)-(mp[a]===c.k));
+  if(!who.length)return '';
+  const rows=who.map(ch=>{
+    const same=mp[ch]===c.k,e=ev[ch];
+    return `<div class="evr ${same?'ok':'no'}"><div class="evh">${same?'✅':'❌'} <b>${esc(ch)}</b> → ${esc(selLabel(m,mp[ch]))}</div>`+
+      (e&&e.quote?`<div class="evq">“${esc(e.quote)}”</div>`:`<div class="evq none">${e?'근거 문장이 저장되지 않았습니다':'근거 데이터 없음 (직접 입력했거나 예전 수집) — 오늘분석.bat으로 유튜버 분석을 다시 돌리면 채워집니다'}</div>`)+
+      (e&&e.url?`<a class="evl" href="${esc(e.url)}" target="_blank" rel="noopener">▶ ${esc(e.videoTitle||'영상 보기')}</a>`:'')+`</div>`}).join('');
+  return `<details class="ev"><summary>🔎 근거 보기 (${who.length}명 · ✅ ${who.filter(ch=>mp[ch]===c.k).length}명 이 선택)</summary>${rows}<div class="note">✅ 이 선택을 고른 유튜버, ❌ 같은 항목에서 다른 선택을 고른 유튜버입니다. 문장은 영상 자막에서 프로그램이 자동으로 찾은 것이라, 뜻을 잘못 읽었을 수 있으니 의심되면 영상 링크로 확인하세요.</div></details>`;
+}
 function pickCard(c,i,amt,kind){
   const pct=Math.round((c.ratio||0)*100),one=c.nPick===1;
   return `<div class="pk${one?' pk1':''}"><div class="pk-h"><span class="rk">${i+1}</span><div class="pk-t">${esc(c.label)}</div><div class="pk-o">x${c.odds.toFixed(2)}</div></div>
    <div class="pk-m">${esc(c.m.sport)} · ${esc(c.m.league)}<br>${esc(c.m.home)} vs ${esc(c.m.away)} · <b>${fmtT(c.m.time)}</b></div>
    <div class="pk-g"><div class="pk-gl">유튜버 의견일치 <b>${c.votes}/${c.nPick||0}명 (${pct}%)</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>
    <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}</div>
+   ${evidenceHtml(c)}
    <div class="pk-s">${amt>=1000?`추천금액 <b>${won(amt)}</b>`:`<span style="color:var(--mute)">추천금액 없음 (1,000원 미만이라 제외)</span>`}</div></div>`;
 }
 function run(){
@@ -480,7 +501,7 @@ function importData(d){
   const key=m=>m.home+'|'+m.away,old={};S.matches.forEach(m=>old[key(m)]=m.id);
   const np={};
   ms.forEach(m=>{const o=old[key(m)];if(o&&S.picks[o]){np[m.id]=S.picks[o]}});
-  S.matches=ms;S.picks=np;S.sample=false;S.verified={};
+  S.matches=ms;S.picks=np;S.sample=false;S.verified={};S.evidence=d.evidence||{};
   Object.entries(d.picks||{}).forEach(([id,o])=>{S.picks[id]=Object.assign(S.picks[id]||{},o)});save();renderIntel();bar();return ms.length;
 }
 $('dataFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
