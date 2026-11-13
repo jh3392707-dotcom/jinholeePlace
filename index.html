@@ -194,6 +194,31 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .pc-ended,.tk2-ended{opacity:.45;filter:saturate(.55)}
 .li-ended{opacity:.5}
 .pc-ended:hover,.pc-ended[open],.tk2-ended:hover{opacity:.8}
+
+/* 성적표 배너 */
+.rec{background:linear-gradient(#22301c,#1b2614);border:2px solid #8a7a3a;border-radius:10px;margin:0 0 10px}
+.rec>summary{cursor:pointer;padding:12px 14px;font-weight:900;font-size:17px;color:#ffd77a;list-style:none}
+.rec>summary::-webkit-details-marker{display:none}
+.rc-s{float:right;font-size:14px;color:#cfe8a0;font-weight:900}
+.rec-b{padding:0 14px 14px}
+.rc-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin:4px 0 8px}
+.rc-n{background:#12160d;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;font-size:13px;color:var(--mute)}
+.rc-n b{display:block;font-family:'Black Ops One',sans-serif;font-size:28px;line-height:1.2}
+.rc-n.hit b{color:#7fb04a}.rc-n.miss b{color:#ff6b57}.rc-n.wait b{color:#cdbd80}.rc-n.void b{color:#a3a68c}
+.rc-secs{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:8px 0}
+.rc-sec{display:flex;align-items:center;gap:6px;background:#12160d;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:13px}
+.rc-sec b{margin-left:auto;font-size:15px;color:#ffd77a}.rc-sec small{color:var(--mute);min-width:34px;text-align:right}
+.rc-tk{margin:6px 0;font-size:14px;font-weight:700}.rc-pay{color:#ffd77a;font-size:12px}
+.rc-list>summary{cursor:pointer;color:var(--khaki);font-weight:700;font-size:14px;padding:8px 0}
+.rc-r{display:flex;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.rc-i{flex:0 0 26px;font-size:18px}
+.rc-miss b{color:#ffb5a5}.rc-hit b{color:#cfe8a0}.rc-ban{opacity:.55}
+
+.rc-msg{font-size:19px;font-weight:900;line-height:1.45;border-radius:8px;padding:12px 14px;margin:2px 0 6px}
+.rc-msg b{font-family:'Black Ops One','Noto Sans KR',sans-serif;font-size:26px;display:inline-block;margin:0 2px}
+.rc-msg.win{background:#16301a;border:2px solid #7fb04a;color:#cfe8a0}.rc-msg.win b{color:#9be05a}
+.rc-msg.lose{background:#34161a;border:2px solid #ff6b57;color:#ffd2c9}.rc-msg.lose b{color:#ff8a70}
+.rc-msg.wait{background:#1d2113;border:2px dashed var(--line);color:var(--mute);font-size:15px;font-weight:700}
 </style>
 </head>
 <body>
@@ -308,6 +333,7 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 </div>
 
 <script src="data.js" onerror="void 0"></script>
+<script src="records.js" onerror="void 0"></script>
 <script>
 const CH=['오늘의 매치업','토토엉클','쿠노','프리뷰N','앞산할배','두포리','토토홈즈','스포츠분석:정프로'];
 const KEYS=['H','D','A','HH','HD','HA','O','U'];
@@ -457,6 +483,81 @@ function effDl(m){
 const fmtHMS=sec=>{const d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),mi=Math.floor(sec%3600/60),ss=sec%60;return (d?d+'일 ':'')+h+':'+String(mi).padStart(2,'0')+':'+String(ss).padStart(2,'0')};
 const fmtLong=sec=>{const d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),mi=Math.floor(sec%3600/60),ss=sec%60;return (d?d+'일 ':'')+h+'시간 '+String(mi).padStart(2,'0')+'분 '+String(ss).padStart(2,'0')+'초'};
 const cbSpan=(m,short)=>{const x=effDl(m);return `<span class="cb" ${short?'data-s="1" ':''}data-ms="${x.ms}" data-e="${dlEst(m)?1:0}" data-h="${x.sh?1:0}" data-l="${esc(OW.e)}"></span>`};
+/* ---------- 추천픽 기록(스냅샷)과 적중 판정 ---------- */
+const SEC_NAME={perfect:'◆◆◆ 대위',yt:'📺 유튜버',cl:'🤖 클로드',high:'💥 고배당'};
+// 현재 추천픽을 그대로 저장용 객체로 만든다 (collector/snapshot.js가 호출)
+function makeSnapshot(){
+  const {perfect,yt,cl,high,safe,chal}=build(),budget=Math.max(1000,+$('budget').value||50000),pk=new Map();
+  const add=(l,sec)=>l.forEach(c=>{const k=c.m.id+'|'+c.k;let o=pk.get(k);
+    if(!o){o={matchId:c.m.id,home:c.m.home,away:c.m.away,sport:c.m.sport,league:c.m.league,time:c.m.time,sel:c.k,label:c.label,odds:c.odds,pa:Math.round(c.pa*1000)/1000,ytVotes:c.votes,ytN:c.nPick,hcap:c.m.hcap||'',line:c.m.line||'',hasDraw:!!c.m.odds.D,hasHD:!!c.m.odds.HD,ban:isOpp(c),sections:[]};pk.set(k,o)}
+    if(!o.sections.includes(sec))o.sections.push(sec)});
+  add(perfect,'perfect');add(yt,'yt');add(cl,'cl');add(high,'high');
+  const tk=tickets(safe,chal).flatMap(g=>g.t.map(t=>({group:g.name,odds:t.odds,p:Math.round(t.p*1000)/1000,legs:t.legs.map(l=>l.m.id+'|'+l.k)})));
+  return{savedAt:new Date().toISOString(),collectedAt:(window.TOTO_DATA&&window.TOTO_DATA.collectedAt)||'',budget,picks:[...pk.values()],tickets:tk};
+}
+window.__snap=makeSnapshot;
+// 최종 점수로 적중 판정: st = hit | miss | void(무효, 배당 1.0배) | wait(결과 대기)
+function evalPick(p,res){
+  if(!res||res.home==null||res.away==null)return{st:'wait'};
+  const h=+res.home,a=+res.away;if(isNaN(h)||isNaN(a))return{st:'wait'};
+  const k=p.sel;
+  if(k==='H'||k==='D'||k==='A'){const o=h>a?'H':h<a?'A':'D';if(o==='D'&&!p.hasDraw)return{st:'void'};return{st:o===k?'hit':'miss'}}
+  if(k==='HH'||k==='HD'||k==='HA'){const hv=parseFloat(p.hcap);if(isNaN(hv))return{st:'wait'};const ad=h+hv,o=ad>a?'HH':ad<a?'HA':'HD';if(o==='HD'&&!p.hasHD)return{st:'void'};return{st:o===k?'hit':'miss'}}
+  if(k==='O'||k==='U'){const ln=parseFloat(p.line);if(isNaN(ln))return{st:'wait'};const t=res.total!=null?+res.total:h+a;if(t===ln)return{st:'void'};return{st:(t>ln?'O':'U')===k?'hit':'miss'}}
+  return{st:'wait'};
+}
+// '추천대로 샀다면' 손익: 조합 카드마다 저장된 투자금(budget)을 넣었다고 가정. 비적중=투입금 손실, 적중=적중금 회수, 무효 경기는 배당 1.0배, 전부 무효면 환불, 대기 조합은 제외
+function simSnap(snap,res){
+  const bud=snap.budget;let inv=0,ret=0,hit=0,miss=0,vd=0,wait=0;
+  (snap.tickets||[]).forEach(t=>{
+    const legs=t.legs.map(id=>{const [mid,sel]=id.split('|'),p=snap.picks.find(x=>x.matchId===mid&&x.sel===sel);return p?{p,e:evalPick(p,res[mid])}:{p:null,e:{st:'wait'}}});
+    if(legs.some(l=>l.e.st==='miss')){inv+=bud;miss++;return}
+    if(legs.some(l=>l.e.st==='wait')){wait++;return}
+    const live=legs.filter(l=>l.e.st==='hit');
+    if(!live.length){vd++;return}
+    inv+=bud;ret+=payoutOf(bud,offOdds(live.reduce((a,l)=>a*l.p.odds,1)));hit++;
+  });
+  // 참고: 대위 추천픽(◆◆◆) 각각에 단일로 투자했다면
+  let sInv=0,sRet=0,sH=0,sM=0;
+  snap.picks.filter(p=>!p.ban&&p.sections.includes('perfect')).forEach(p=>{const e=evalPick(p,res[p.matchId]);if(e.st==='hit'){sInv+=bud;sRet+=payoutOf(bud,p.odds);sH++}else if(e.st==='miss'){sInv+=bud;sM++}});
+  return{inv,ret,net:ret-inv,hit,miss,vd,wait,bud,single:{inv:sInv,net:sRet-sInv,h:sH,m:sM}};
+}
+const wonAbs=n=>Math.abs(Math.round(n)).toLocaleString('ko-KR')+'원';
+function recBanner(){
+  const R=window.TOTO_RECORDS||{},snaps=R.snapshots||[],res=R.results||{};
+  if(!snaps.length)return `<details class="rec"><summary>🏁 추천픽 성적표 <span class="rc-s">기록 없음</span></summary><div class="rec-b note">분석을 하면 그때의 추천픽이 자동으로 저장되고, 경기가 끝나면 적중/비적중이 여기에 정리됩니다.</div></details>`;
+  const snap=snaps[snaps.length-1];
+  const rows=snap.picks.map(p=>({p,e:evalPick(p,res[p.matchId])}));
+  const cnt=(arr,st)=>arr.filter(x=>x.e.st===st).length;
+  const live=rows.filter(x=>!x.p.ban);
+  const H=cnt(live,'hit'),M=cnt(live,'miss'),V=cnt(live,'void'),W=cnt(live,'wait'),J=H+M;
+  // 누적(모든 스냅샷, 구매 금지 제외, 같은 경기·선택 중복 제외)
+  const seen=new Set();let aH=0,aJ=0;snaps.forEach(sn=>sn.picks.forEach(p=>{if(p.ban)return;const key=p.matchId+'|'+p.sel;if(seen.has(key))return;seen.add(key);const e=evalPick(p,res[p.matchId]);if(e.st==='hit'){aH++;aJ++}else if(e.st==='miss')aJ++}));
+  const sec=Object.keys(SEC_NAME).map(k=>{const L=live.filter(x=>x.p.sections.includes(k)),h=cnt(L,'hit'),m=cnt(L,'miss');return `<div class="rc-sec"><span>${SEC_NAME[k]}</span><b>${h}/${h+m}</b><small>${h+m?Math.round(h/(h+m)*100)+'%':'대기'}</small></div>`}).join('');
+  const ic={hit:'✅',miss:'❌',void:'⚪',wait:'⏳'},lb={hit:'적중',miss:'비적중',void:'무효(1.0배)',wait:'대기'};
+  const list=rows.slice().sort((a,b)=>({miss:0,hit:1,void:2,wait:3}[a.e.st]-{miss:0,hit:1,void:2,wait:3}[b.e.st])||a.p.time.localeCompare(b.p.time)).map(({p,e})=>{const r=res[p.matchId],sc=r&&r.home!=null?`<b>${r.home}:${r.away}</b>`:'';
+    return `<div class="rc-r rc-${e.st}${p.ban?' rc-ban':''}"><span class="rc-i">${p.ban?'🚫':ic[e.st]}</span><div><b>${esc(p.label)}</b> <span class="note">x${p.odds.toFixed(2)}</span><div class="note">${esc(p.home)} vs ${esc(p.away)} · ${fmtT(p.time)} ${sc} · ${p.ban?'구매 금지 픽(집계 제외)':lb[e.st]} · ${p.sections.map(k=>SEC_NAME[k]).join(' ')}</div></div></div>`}).join('');
+  const tkRows=(snap.tickets||[]).map(t=>{const sts=t.legs.map(id=>{const [mid,sel]=id.split('|'),p=snap.picks.find(x=>x.matchId===mid&&x.sel===sel);return p?evalPick(p,res[mid]).st:'wait'});
+    const st=sts.includes('miss')?'miss':sts.includes('wait')?'wait':sts.every(x=>x==='void')?'void':'hit';return{t,st,pay:st==='hit'?payoutOf(snap.budget,t.odds):0}});
+  const tH=tkRows.filter(x=>x.st==='hit').length,tM=tkRows.filter(x=>x.st==='miss').length,tW=tkRows.filter(x=>x.st==='wait').length;
+  const pending=!J&&!V;
+  const sm=simSnap(snap,res);let allNet=0,allJ=0;snaps.forEach(sn=>{const q=simSnap(sn,res);allNet+=q.net;allJ+=q.hit+q.miss});
+  const done=sm.hit+sm.miss>0;
+  const msg=done?(sm.net>=0?`<div class="rc-msg win">💰 제 말만 따랐다면 <b>${wonAbs(sm.net)}</b>을 버셨을 겁니다</div>`:`<div class="rc-msg lose">😢 제 말만 따랐다면 <b>${wonAbs(sm.net)}</b>을 잃으셨을 겁니다</div>`)
+    :`<div class="rc-msg wait">⏳ 아직 판정된 조합이 없습니다 — 결과가 나오면 "제 말만 따랐다면 얼마를 버셨을지" 계산해 드립니다</div>`;
+  const msgSub=done?`<div class="note">조합 ${sm.hit+sm.miss}장에 각 ${sm.bud.toLocaleString('ko-KR')}원씩 투자 → 투입 ${wonAbs(sm.inv)}, 회수 ${wonAbs(sm.ret)} (적중 ${sm.hit}장 · 비적중 ${sm.miss}장${sm.wait?` · 진행 중 ${sm.wait}장 제외`:''}${sm.vd?` · 전부 무효 ${sm.vd}장 환불`:''})${(sm.single.h+sm.single.m)?`<br>◆◆◆ 추천픽 각각에 ${sm.bud.toLocaleString('ko-KR')}원씩(단일) 걸었다면 ${sm.single.net>=0?'+':'-'}${wonAbs(sm.single.net)} (${sm.single.h}적중 ${sm.single.m}비적중)`:''}</div>`:'';
+  const msgAll=snaps.length>1&&allJ?`<div class="note">📚 지금까지 저장된 ${snaps.length}회 추천을 모두 따랐다면 누적 ${allNet>=0?'+':'-'}${wonAbs(allNet)} (판정된 조합 ${allJ}장, 매 분석 기준 합산)</div>`:'';
+  return `<details class="rec" ${(J||done)?'open':''}><summary>🏁 마지막 추천픽 성적표 <span class="rc-s">${done?(sm.net>=0?'+':'-')+wonAbs(sm.net):J?`적중률 ${Math.round(H/J*100)}%`:'결과 대기 중'}</span></summary><div class="rec-b">
+   ${msg}${msgSub}${msgAll}
+   <div class="rc-top"><div class="rc-n hit">✅ 적중 <b>${H}</b></div><div class="rc-n miss">❌ 비적중 <b>${M}</b></div><div class="rc-n wait">⏳ 대기 <b>${W}</b></div>${V?`<div class="rc-n void">⚪ 무효 <b>${V}</b></div>`:''}</div>
+   <div class="note">저장 시각 ${fmtT(snap.savedAt.slice(0,16))} 기준 추천픽 ${live.length}개 · 배당 수집 ${snap.collectedAt?fmtT(snap.collectedAt.slice(0,16)):'-'}</div>
+   <div class="rc-secs">${sec}</div>
+   ${tkRows.length?`<div class="rc-tk">🧾 조합 ${tkRows.length}장 · ✅ ${tH} · ❌ ${tM} · ⏳ ${tW}${tH?` <span class="rc-pay">(적중 조합: ${snap.budget.toLocaleString('ko-KR')}원 투자 시 최대 ${Math.max(...tkRows.map(x=>x.pay)).toLocaleString('ko-KR')}원)</span>`:''}</div>`:''}
+   ${pending?`<div class="note" style="margin:8px 0">경기가 끝나면 결과가 정리되어 적중/비적중이 표시됩니다. 이 채팅에 <b>"결과 정리"</b>라고 하시면 최종 스코어를 찾아 반영합니다.</div>`:''}
+   <details class="rc-list"><summary>픽별 결과 보기 (${rows.length}개)</summary>${list}</details>
+   ${snaps.length>1?`<div class="note" style="margin-top:8px">📚 누적: 저장 ${snaps.length}회 · 판정된 추천픽 ${aJ}개 중 적중 ${aH}개${aJ?` (${Math.round(aH/aJ*100)}%)`:''}</div>`:''}
+  </div></details>`;
+}
 // 경기 시작까지 + 구매 마감까지 카운트다운 (경기 시각은 한국시간 기준)
 const OW_S=()=>OW.s;
 function tickCd(){
@@ -541,7 +642,7 @@ function run(){
   const owBanner=`<div class="stale ow"><span class="cw" data-s="${esc(OW.s)}" data-e="${esc(OW.e)}"></span><div class="note">베트맨 발매 시간 <b>매일 ${esc(OW.s)}~${esc(OW.e)}</b> · ${esc(OW.e)}~${esc(OW.s)}는 시스템 점검으로 <b>발매 중단</b></div>${nightN?`<div class="nightw">🌙 발매 중단 시간대에 마감되는 경기 <b>${nightN}개</b> — <b>${esc(OW.e)} 전에 미리 구매</b>해야 합니다 (카드의 🌙 표시)</div>`:''}</div>`;
   const legend=`<div class="legend"><span class="lg-r">🚫 빨간 카드</span> = 유튜버 의견이 <b>배당과 반대</b>입니다. <b>분석 오류 가능성이 있어 구매 금지</b>이며, 적중금 조합에서 제외됩니다.<br>💰 카드의 적중금은 <b>그 픽 하나에 투자했을 때</b>의 참고값입니다. 승부식은 2경기 이상 조합이 기본이라 실제 구매는 ⑤ 조합 카드를 보세요.<br>🛒 <b>구매 마감</b> 타이머는 경기 시작 타이머와 별개입니다. 베트맨이 준 마감 시각 기준이며 <b>~</b> 표시는 마감 시각 정보가 없어 <b>경기 30분 전으로 추정</b>한 값입니다.<br>🌙 <b>미리</b> 표시 = 마감이 발매 중단(점검) 시간대라서 <b>전날 발매 종료 시각 전에 미리 구매</b>해야 하는 경기입니다.</div>`;
   const none=t=>`<div class="none">${t}</div>`;
-  h+=owBanner+legend+`<div class="jump">${[['s1','◆◆◆ 대위 추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
+  h+=owBanner+recBanner()+legend+`<div class="jump">${[['s1','◆◆◆ 대위 추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
   h+=sec('s1','<span class="dia">◆◆◆</span>','대위 이진호의 추천픽 <small class="mx">(최대 8개)</small>','<div class="crit">유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고 배당 확률도 <b>50% 이상</b>인 경기</div>',
     perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
   h+=sec('s2','📺','유튜버 추천픽 <small class="mx">(최대 8개)</small>','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
@@ -680,7 +781,7 @@ $('refresh').onclick=async()=>{
       btn.disabled=false;
       if(st.error||!st.data){msg.innerHTML+=`<div class="note" style="color:#ffb5a5">⛔ ${esc(st.error||'결과가 없습니다')}</div>`;return}
       const prev={};S.matches.forEach(m=>prev[m.id]=Object.assign({},m.odds));
-      window.TOTO_DATA=st.data;importData(st.data,true);
+      window.TOTO_DATA=st.data;if(st.records)window.TOTO_RECORDS=st.records;importData(st.data,true);
       LASTDIFF=[];S.matches.forEach(m=>{const o=prev[m.id];if(!o)return;KEYS.forEach(k=>{if(o[k]>1&&m.odds[k]>1&&Math.abs(o[k]-m.odds[k])>0.001)LASTDIFF.push({m,k,old:o[k],nw:m.odds[k]})})});
       run();draw(st);stamp();
       const done=document.createElement('div');done.className='note';done.style.color='var(--green)';done.textContent=`🎖 대위 이진호: 임무 완료! 충성! (${S.matches.length}경기${st.warn?' · 일부 단계는 대체 방식':''})`;msg.appendChild(done);

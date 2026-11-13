@@ -1,0 +1,439 @@
+{
+ "snapshots": [
+  {
+   "savedAt": "2026-11-13T15:12:36.395Z",
+   "collectedAt": "2026-11-13T14:27:23.718Z",
+   "budget": 50000,
+   "picks": [
+    {
+     "matchId": "bec9db8eb9494ec95",
+     "home": "인디애나 페이서스",
+     "away": "뉴욕 닉스",
+     "sport": "농구",
+     "league": "NBA",
+     "time": "2026-11-14T09:00",
+     "sel": "A",
+     "label": "뉴욕 닉스 승",
+     "odds": 1.22,
+     "pa": 0.747,
+     "ytVotes": 4,
+     "ytN": 4,
+     "hcap": "+6.5",
+     "line": "220.5",
+     "hasDraw": false,
+     "hasHD": false,
+     "ban": false,
+     "sections": [
+      "perfect",
+      "yt",
+      "cl"
+     ]
+    },
+    {
+     "matchId": "b4c4120ed81b4eba6",
+     "home": "LA 클리퍼스",
+     "away": "오클라호마시티 썬더",
+     "sport": "농구",
+     "league": "NBA",
+     "time": "2026-11-14T12:30",
+     "sel": "A",
+     "label": "오클라호마시티 썬더 승",
+     "odds": 1.2,
+     "pa": 0.75,
+     "ytVotes": 2,
+     "ytN": 2,
+     "hcap": "+7.5",
+     "line": "223.5",
+     "hasDraw": false,
+     "hasHD": false,
+     "ban": false,
+     "sections": [
+      "perfect",
+      "yt",
+      "cl"
+     ]
+    },
+    {
+     "matchId": "beb89b4ec98aceba6",
+     "home": "뉴올리언스 펠리컨스",
+     "away": "멤피스 그리즐리스",
+     "sport": "농구",
+     "league": "NBA",
+     "time": "2026-11-14T10:00",
+     "sel": "A",
+     "label": "멤피스 그리즐리스 승",
+     "odds": 1.43,
+     "pa": 0.655,
+     "ytVotes": 4,
+     "ytN": 4,
+     "hcap": "+3.5",
+     "line": "234.5",
+     "hasDraw": false,
+     "hasHD": false,
+     "ban": false,
+     "sections": [
+      "perfect",
+      "yt"
+     ]
+    },
+    {
+     "matchId": "bec8388ed81aceb9d",
+     "home": "새크라멘토 킹스",
+     "away": "포틀랜드 트레일블레이저스",
+     "sport": "농구",
+     "league": "NBA",
+     "time": "2026-11-14T12:00",
+     "sel": "HA",
+     "label": "핸디 포틀랜드 트레일블레이저스 승 (+10.5)",
+     "odds": 1.72,
+     "pa": 0.559,
+     "ytVotes": 3,
+     "ytN": 3,
+     "hcap": "+10.5",
+     "line": "230.5",
+     "hasDraw": false,
+     "hasHD": false,
+     "ban": false,
+     "sections": [
+      "perfect",
+      "yt"
+     ]
+    },
+    {
+     "matchId": "bec8b9cecb9b4eab3",
+     "home": "시카고 불스",
+     "away": "애틀랜타 호크스",
+     "sport": "농구",
+     "league": "NBA",
+     "time": "2026-11-14T10:00",
+     "sel": "HH",
+     "label": "핸디 시카고 불스 승 (+6.5)",
+     "odds": 1.75,
+     "pa": 0.551,
+     "ytVotes": 3,
+     "ytN": 3,
+     "hcap": "+6.5",
+     "line": "244.5",
+     "hasDraw": false,
+     "hasHD": false,
+     "ban": false,
+     "sections": [
+      "perfect",
+      "yt"
+     ]
+    },
+    {
+     "matchId": "bec838cec9588ed86",
+     "home": "샌안토니오 스퍼스",
+     "away": "골든스테이트 워리어스",
+     "sport": "농구",
+     "league": "NBA",
+     "time": "2026-11-14T11:30",
+     "sel": "HH",
+     "label": "핸디 샌안토니오 스퍼스 승 (-13.5)",
+     "odds": 1.76,
+     "pa": 0.525,
+     "ytVotes": 3,
+     "ytN": 4,
+     "hcap": "-13.5",
+     "line": "219.5",
+     "hasDraw": false,
+     "hasHD": false,
+     "ban": false,
+     "sections": [
+      "perfect"
+     ]
+    },
+    {
+     "matchId": "bec98aceb9e9ceb8f",
+     "home": "올랜도 매직",
+     "away": "밀워키 벅스",
+     "sport": "농구",
+     "league": "NBA",
+     "time": "2026-11-14T09:00",
+     "sel": "H",
+     "label": "올랜도 매직 승",
+     "odds": 1.13,
+     "pa": 0.797,
+     "ytVotes": 4,
+     "ytN": 4,
+     "hcap": "-8.5",
+     "line": "223.5",
+     "hasDraw": false,
+     "hasHD": false,
+     "ban": false,
+     "sections": [
+      "yt"
+     ]
+    },
+    {
+     "matchId": "bec8aa4ecbd94ed8b",
+     "home": "스코틀랜드",
+     "away": "북마케도니아",
+     "sport": "축구",
+     "league": "UEFA 네이션스리그",
+     "time": "2026-11-14T04:45",
+     "sel": "H",
+     "label": "스코틀랜드 승",
+     "odds": 1.13,
+     "pa": 0.784,
+     "ytVotes": 1,
+     "ytN": 1,
+     "hcap": "-2",
+     "line": "2.5",
+     "hasDraw": true,
+     "hasHD": true,
+     "ban": false,
+     "sections": [
+      "yt"
+     ]
+    },
+    {
+     "matchId": "beba6aced9e88ed85",
+     "home": "리히텐슈타인",
+     "away": "아제르바이잔",
+     "sport": "축구",
+     "league": "UEFA 네이션스리그",
+     "time": "2026-11-14T04:45",
+     "sel": "A",
+     "label": "아제르바이잔 승",
+     "odds": 1.19,
+     "pa": 0.748,
+     "ytVotes": 1,
+     "ytN": 1,
+     "hcap": "+2",
+     "line": "2.5",
+     "hasDraw": true,
+     "hasHD": true,
+     "ban": false,
+     "sections": [
+      "yt"
+     ]
+    },
+    {
+     "matchId": "bec84b8eba5b4ebb9",
+     "home": "세르비아",
+     "away": "독일",
+     "sport": "축구",
+     "league": "UEFA 네이션스리그",
+     "time": "2026-11-14T04:45",
+     "sel": "A",
+     "label": "독일 승",
+     "odds": 1.21,
+     "pa": 0.736,
+     "ytVotes": 1,
+     "ytN": 1,
+     "hcap": "+2",
+     "line": "3.5",
+     "hasDraw": true,
+     "hasHD": true,
+     "ban": false,
+     "sections": [
+      "cl"
+     ]
+    },
+    {
+     "matchId": "bec8b9cecb9b4eab3",
+     "home": "시카고 불스",
+     "away": "애틀랜타 호크스",
+     "sport": "농구",
+     "league": "NBA",
+     "time": "2026-11-14T10:00",
+     "sel": "A",
+     "label": "애틀랜타 호크스 승",
+     "odds": 1.24,
+     "pa": 0.72,
+     "ytVotes": 1,
+     "ytN": 1,
+     "hcap": "+6.5",
+     "line": "244.5",
+     "hasDraw": false,
+     "hasHD": false,
+     "ban": false,
+     "sections": [
+      "cl"
+     ]
+    },
+    {
+     "matchId": "beb89b4eca788eb9e",
+     "home": "뉴질랜드",
+     "away": "인도",
+     "sport": "축구",
+     "league": "남자축구 국제친선경기",
+     "time": "2026-11-15T12:00",
+     "sel": "H",
+     "label": "뉴질랜드 승",
+     "odds": 1.23,
+     "pa": 0.707,
+     "ytVotes": 0,
+     "ytN": 0,
+     "hcap": "-2",
+     "line": "3.5",
+     "hasDraw": true,
+     "hasHD": true,
+     "ban": false,
+     "sections": [
+      "cl"
+     ]
+    },
+    {
+     "matchId": "bec9588eb8f84eb9d",
+     "home": "안도라",
+     "away": "지브롤터",
+     "sport": "축구",
+     "league": "UEFA 네이션스리그",
+     "time": "2026-11-14T04:45",
+     "sel": "U",
+     "label": "언더 2.5",
+     "odds": 1.25,
+     "pa": 0.696,
+     "ytVotes": 0,
+     "ytN": 0,
+     "hcap": "-1",
+     "line": "2.5",
+     "hasDraw": true,
+     "hasHD": true,
+     "ban": false,
+     "sections": [
+      "cl"
+     ]
+    },
+    {
+     "matchId": "bec8aaceba19cebb0",
+     "home": "슬로바키아",
+     "away": "페로제도",
+     "sport": "축구",
+     "league": "UEFA 네이션스리그",
+     "time": "2026-11-14T04:45",
+     "sel": "H",
+     "label": "슬로바키아 승",
+     "odds": 1.27,
+     "pa": 0.685,
+     "ytVotes": 0,
+     "ytN": 0,
+     "hcap": "-1",
+     "line": "2.5",
+     "hasDraw": true,
+     "hasHD": true,
+     "ban": false,
+     "sections": [
+      "cl"
+     ]
+    },
+    {
+     "matchId": "bec9584ec9db4ed8b",
+     "home": "아이티",
+     "away": "미국",
+     "sport": "축구",
+     "league": "CONCACAF 네이션스리그",
+     "time": "2026-11-15T06:30",
+     "sel": "A",
+     "label": "미국 승",
+     "odds": 1.27,
+     "pa": 0.685,
+     "ytVotes": 0,
+     "ytN": 0,
+     "hcap": "+1",
+     "line": "2.5",
+     "hasDraw": true,
+     "hasHD": true,
+     "ban": false,
+     "sections": [
+      "cl"
+     ]
+    },
+    {
+     "matchId": "bebaab0eb8f84ebb0",
+     "home": "몰도바",
+     "away": "카자흐스탄",
+     "sport": "축구",
+     "league": "UEFA 네이션스리그",
+     "time": "2026-11-14T02:00",
+     "sel": "H",
+     "label": "몰도바 승",
+     "odds": 2.49,
+     "pa": 0.388,
+     "ytVotes": 1,
+     "ytN": 1,
+     "hcap": "-1",
+     "line": "2.5",
+     "hasDraw": true,
+     "hasHD": true,
+     "ban": false,
+     "sections": [
+      "high"
+     ]
+    }
+   ],
+   "tickets": [
+    {
+     "group": "🛡 안정 2폴더",
+     "odds": 1.75,
+     "p": 0.49,
+     "legs": [
+      "bec9db8eb9494ec95|A",
+      "beb89b4ec98aceba6|A"
+     ]
+    },
+    {
+     "group": "🛡 안정 2폴더",
+     "odds": 1.72,
+     "p": 0.491,
+     "legs": [
+      "b4c4120ed81b4eba6|A",
+      "beb89b4ec98aceba6|A"
+     ]
+    },
+    {
+     "group": "🛡 안정 2폴더",
+     "odds": 1.78,
+     "p": 0.472,
+     "legs": [
+      "bec8b9cecb9b4eab3|A",
+      "beb89b4ec98aceba6|A"
+     ]
+    },
+    {
+     "group": "🛡 안정 3폴더",
+     "odds": 2.1,
+     "p": 0.367,
+     "legs": [
+      "bec9db8eb9494ec95|A",
+      "b4c4120ed81b4eba6|A",
+      "beb89b4ec98aceba6|A"
+     ]
+    },
+    {
+     "group": "🛡 안정 3폴더",
+     "odds": 2.17,
+     "p": 0.352,
+     "legs": [
+      "bec9db8eb9494ec95|A",
+      "bec8b9cecb9b4eab3|A",
+      "beb89b4ec98aceba6|A"
+     ]
+    },
+    {
+     "group": "💥 도전 조합",
+     "odds": 3.04,
+     "p": 0.29,
+     "legs": [
+      "bec9db8eb9494ec95|A",
+      "bebaab0eb8f84ebb0|H"
+     ]
+    },
+    {
+     "group": "💥 도전 조합",
+     "odds": 3.65,
+     "p": 0.218,
+     "legs": [
+      "bec9db8eb9494ec95|A",
+      "b4c4120ed81b4eba6|A",
+      "bebaab0eb8f84ebb0|H"
+     ]
+    }
+   ]
+  }
+ ],
+ "results": {}
+}

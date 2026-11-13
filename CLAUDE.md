@@ -49,9 +49,11 @@
 3. `$env:YT_DOWNLOAD_ONLY=1; node yt.js` → 자막 다운로드 (`transcripts/manifest.json`).
 4. **1차 판단**: 자막을 읽고 채널별·경기별·항목별 픽과 원문 근거를 `collector/picks_today.json`에 저장 (위 '4.'와 '같은 팀 이름 주의' 규칙 적용).
 5. **2차 검증**: Agent 도구로 **독립된 서브에이전트**를 띄워 1차 결과를 믿지 말고 자막을 처음부터 다시 읽어 확인하게 한다('2회 확인 지침'). 통과한 것만 `verified:true`로 `collector/picks_verified.json`에 저장하고 `node collector/apply_picks.js collector/picks_verified.json --replace`.
-6. `node collector/build_artifact.js` 로 `artifact.html` 생성.
-7. 아티팩트 갱신: Artifact 도구로 `https://claude.ai/artifact/XufzzjjQw4Qq2YqZsioKwe` 를 먼저 read 한 뒤, `artifact.html`을 같은 `url`로 publish 한다 (capabilities·icon·title은 건드리지 않는다).
-8. 마지막에 한 줄 보고: 경기 수, 유튜버 픽 건수, 검증 통과/삭제 건수, 아티팩트 갱신 여부.
+6. **추천픽 저장(성적표용)**: `node collector/snapshot.js` — 지금 앱이 보여주는 추천픽(네 구역+조합)을 `records.json`에 스냅샷으로 저장한다. (Playwright 필요)
+7. **지난 추천픽 결과 최신화 (최신화 때마다 항상)**: `node collector/apply_results.js --list-pending` 로 결과가 필요한 경기를 확인하고, 각 경기의 **정규시간 기준 최종 점수**를 신뢰할 수 있는 출처(베트맨 경기결과 → 네이버스포츠·리그 공식 순)에서 찾아 `collector/results_today.json`에 `{"경기id":{"home":2,"away":1,"total":null,"source":"출처"}}`로 저장한 뒤 `node collector/apply_results.js collector/results_today.json`. 규칙: 축구는 정규 90분(연장·승부차기 제외), 농구·야구는 연장 포함 최종, 배구는 home/away=세트 스코어이고 `total`에 총 득점 합. **확실하지 않으면 넣지 말고 대기로 둔다. 출처를 반드시 적는다.**
+8. `node collector/build_artifact.js` 로 `artifact.html` 생성 (records.js가 함께 들어간다).
+9. 아티팩트 갱신: Artifact 도구로 `https://claude.ai/artifact/XufzzjjQw4Qq2YqZsioKwe` 를 먼저 read 한 뒤, `artifact.html`을 같은 `url`로 publish 한다 (capabilities·icon·title은 건드리지 않는다).
+10. 마지막에 한 줄 보고: 경기 수, 유튜버 픽 건수, 검증 통과/삭제 건수, **성적표(적중·비적중·대기, "제 말만 따랐다면 ±○○원")**, 아티팩트 갱신 여부.
 
 ## 배당과 반대인 다수 의견은 사용자에게 떠넘기지 말고 직접 해결한다 (지침)
 - `apply_picks.js`는 반영 직후 '재확인 대상'(유튜버 다수가 배당 약세·정반대 쪽을 고른 경우)을 출력한다. 출력이 있으면 **그 경기의 근거 문장을 자막 원문에서 다시 읽어** (1) 같은 팀 이름의 다른 경기·종목 발언을 섞지 않았는지 (2) 방향(홈/원정, 핸디캡 기준)이 맞는지 확인하고, 잘못이면 수정·삭제한 뒤 다시 반영한다.
@@ -60,3 +62,7 @@
 ## 베트맨 발매 시간 (사용자 제공 안내)
 - 발매 시간: 매일 08:00~23:00. 23:00~다음 날 08:00은 시스템 점검으로 발매 중단.
 - 앱은 경기별 구매 마감(베트맨 `endDate`, 없으면 경기 30분 전 추정)이 발매 중단 시간대이면 **직전 23:00**을 실질 마감으로 계산하고 🌙 "미리 구매"로 표시한다. 새벽 경기는 전날 23:00 전에 구매해야 한다고 사용자에게 알린다.
+
+## 성적표 / 손익 메시지 (records.json)
+- 최신화 때마다 ① 그때의 추천픽을 `snapshot.js`로 저장하고 ② 지난 추천픽의 결과를 `apply_results.js`로 반영한다. 앱 맨 위 🏁 성적표 배너가 적중/비적중/대기와 "제 말만 따랐다면 ○○원을 버셨을 겁니다/잃으셨을 겁니다"를 보여준다(조합 카드마다 저장된 투자금을 넣었다고 가정, 잃은 것 포함).
+- 사용자가 채팅에서 "결과 정리"라고 하면 `--list-pending` 대상 경기의 최종 점수를 웹에서 찾아 반영하고 출처를 알린다.
