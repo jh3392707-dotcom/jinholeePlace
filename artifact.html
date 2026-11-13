@@ -1967,7 +1967,7 @@ if(!LOCAL){
   let owner=false;try{const u=window.claude&&await window.claude.use('user');owner=!!(u&&u.isOwner&&u.isOwner())}catch(e){}
   if(!owner)return;
   $('refresh').style.display='';
-  box.innerHTML='📱 버튼을 누르면 노트북의 <b>대위 이진호</b>가 배당 수집·유튜버 분석(2회 확인)을 하고 이 화면을 자동으로 갱신합니다. (노트북에서 <b>본부열기.bat</b>이 켜져 있어야 합니다) <span class="note">※ 이 버튼은 주인에게만 보입니다.</span>';
+  box.innerHTML='📱 버튼을 누르면 노트북의 <b>대위 이진호</b>가 배당 수집·유튜버 분석(2회 확인)을 하고 이 화면을 자동으로 갱신합니다. (노트북에서 <b>Claude 앱이 켜져 있어야</b> 합니다) <span class="note">※ 이 버튼은 주인에게만 보입니다.</span>';
   const TRIGGER='trig_01KggNm7nAsiJqm6jpPQqW2k',SRV='Claude Code Remote';
   $('refresh').onclick=async()=>{
     const btn=$('refresh'),msg=$('refreshMsg');btn.disabled=true;
@@ -1987,8 +1987,8 @@ if(!LOCAL){
     }
     const t0=Date.now();
     const tick=()=>{const m=Math.floor((Date.now()-t0)/60000),sec=Math.floor((Date.now()-t0)/1000)%60;
-      msg.innerHTML='🫡 <b>대위 이진호에게 명령을 전달했습니다!</b><br>📡 작전 수행 중… '+m+'분 '+sec+'초<div class="note">보통 3~6분 걸리고, 끝나면 이 화면이 <b>자동으로 바뀝니다</b>. 노트북이 꺼져 있거나 본부(본부열기.bat)가 닫혀 있으면 진행되지 않습니다.</div>'};
-    tick();const iv=setInterval(()=>{if(Date.now()-t0>15*60000){clearInterval(iv);msg.innerHTML+='<div class="note" style="color:#ffb5a5">⏱ 15분이 지나도 갱신되지 않았습니다. 노트북의 본부(본부열기.bat)가 켜져 있는지 확인하세요.</div>';btn.disabled=false;return}tick()},1000);
+      msg.innerHTML='🫡 <b>대위 이진호에게 명령을 전달했습니다!</b><br>📡 작전 수행 중… '+m+'분 '+sec+'초<div class="note">보통 3~6분 걸리고, 끝나면 이 화면이 <b>자동으로 바뀝니다</b>. 노트북이 꺼져 있거나 Claude 앱이 닫혀 있으면 진행되지 않습니다.</div>'};
+    tick();const iv=setInterval(()=>{if(Date.now()-t0>15*60000){clearInterval(iv);msg.innerHTML+='<div class="note" style="color:#ffb5a5">⏱ 15분이 지나도 갱신되지 않았습니다. 노트북이 켜져 있고 Claude 앱이 열려 있는지 확인하세요.</div>';btn.disabled=false;return}tick()},1000);
   };
   })();
 }
