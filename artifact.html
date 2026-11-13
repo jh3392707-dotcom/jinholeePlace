@@ -145,6 +145,7 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .legend{font-size:13px;color:var(--mute);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:0 0 8px;line-height:1.5}
 .lg-r{display:inline-block;background:#d8321f;color:#fff;font-weight:900;padding:1px 8px;border-radius:4px;margin-right:2px}
 .mx{font-size:13px;color:var(--mute);font-weight:700;margin-left:4px}
+.ban{display:inline-block;background:#d8321f;color:#fff;font-weight:900;font-size:13px;padding:3px 10px;border-radius:4px}
 </style>
 
 <div class="wrap">
@@ -2344,9 +2345,9 @@ function build(){
   const high=top(all.filter(c=>c.odds>=1.8&&(isYt(c)||(c.pa>=0.28&&c.ev>=0.95))),c=>c.ev+0.1*c.ratio*c.cov);
   // 작전 배분용: 안정권 후보를 합쳐 상위 5, 고배당은 겹치지 않는 경기만
   const sc=c=>c.pa+0.05*c.ratio*c.cov;
-  const safe=top([...perfect,...cl,...yt.filter(c=>c.pa>=0.5&&c.odds>=1.2)],sc);
+  const safe=top([...perfect,...cl,...yt.filter(c=>c.pa>=0.5&&c.odds>=1.2)].filter(c=>!isOpp(c)),sc); // 구매 금지(배당과 반대) 픽은 조합에서 제외
   const used=new Set(safe.map(c=>c.m.id));
-  const chal=high.filter(c=>!used.has(c.m.id));
+  const chal=high.filter(c=>!used.has(c.m.id)&&!isOpp(c));
   return{perfect,yt,cl,high,safe,chal};
 }
 const combos=(arr,n)=>n==1?arr.map(x=>[x]):arr.flatMap((x,i)=>combos(arr.slice(i+1),n-1).map(r=>[x,...r]));
@@ -2404,8 +2405,8 @@ const isOpp=c=>(c.grp===0&&!c.isFav&&c.votes>=2&&c.ratio>=0.5)||(c.votes>=3&&c.r
 function pickCard(c,i,amt,kind){
   const pct=Math.round((c.ratio||0)*100),one=c.nPick===1,opp=isOpp(c);
   const chip=kind=='r'?`<span class="gr gr-r">EV ${c.ev.toFixed(2)}</span>`:`<span class="gr gr-${grade(c.pa)}">${grade(c.pa)}</span>`;
-  const amtTxt=amt>=1000?`<b>${won(amt)}</b>`:`<span class="mute">금액 없음</span>`;
-  return `<details class="pc${one?' pc1':''}${opp?' pc-opp':''}"><summary class="pc-s">${opp?'<div class="oppbar">🚨 배당과 반대 의견</div>':''}
+  const amtTxt=opp?`<span class="ban">🚫 구매 금지</span>`:(amt>=1000?`<b>${won(amt)}</b>`:`<span class="mute">금액 없음</span>`);
+  return `<details class="pc${one?' pc1':''}${opp?' pc-opp':''}"><summary class="pc-s">${opp?'<div class="oppbar">🚫 구매 금지 · 배당과 반대 의견 (분석 오류 가능)</div>':''}
    <div class="pc-top"><span class="rk">${i+1}</span>${chip}<span class="pc-o">x${c.odds.toFixed(2)}</span></div>
    <div class="pc-t">${esc(c.label)}</div>
    <div class="pc-m">${esc(c.m.home)} vs ${esc(c.m.away)}</div>
@@ -2418,9 +2419,9 @@ function pickCard(c,i,amt,kind){
   <div class="pc-d">
    <div class="pk-m">${esc(c.m.sport)} · ${esc(c.m.league)}<br>${esc(c.m.home)} vs ${esc(c.m.away)} · <b>${fmtT(c.m.time)}</b> <span class="cd" data-t="${esc(c.m.time)}"></span></div>
    <div class="pk-g"><div class="pk-gl">유튜버 의견일치 <b>${c.votes}/${c.nPick||0}명 (${pct}%)</b></div></div>
-   <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}${opp?'<span class="tag r oppt">🚨 유튜버 의견이 배당과 반대 (역배) — '+(allVer(c)?'근거 2회 확인됨':'근거 미확인, 꼭 확인')+'</span>':''}${viaRule(c)?'<span class="tag r">키워드 추정(정확도 낮음)</span>':''}</div>
+   <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}${opp?'<span class="tag r oppt">🚫 구매 금지 — 유튜버 의견이 배당과 반대입니다. 분석 오류 가능성이 있어 구매하지 마세요</span>':''}${viaRule(c)?'<span class="tag r">키워드 추정(정확도 낮음)</span>':''}</div>
    ${evidenceHtml(c)}
-   <div class="pk-s">${amt>=1000?`추천금액 <b>${won(amt)}</b>`:`<span style="color:var(--mute)">추천금액 없음 (1,000원 미만이라 제외)</span>`}</div>
+   <div class="pk-s">${opp?`<span class="ban">🚫 구매 금지 (배당과 반대 의견 = 분석 오류 가능성)</span>`:(amt>=1000?`추천금액 <b>${won(amt)}</b>`:`<span style="color:var(--mute)">추천금액 없음 (1,000원 미만이라 제외)</span>`)}</div>
   </div></details>`;
 }
 function run(){
@@ -2432,7 +2433,7 @@ function run(){
   const sb=budget*.6,cb=budget*.4,um=new Map();
   [...perfect,...yt,...cl].forEach(c=>um.set(c.m.id+c.k,c));
   const wS=[...um.values()].reduce((a,c)=>a+Math.pow(c.pa,3),0)||1,wH=high.reduce((a,c)=>a+c.ev,0)||1;
-  const amtS=c=>rd(Math.min(sb*Math.pow(c.pa,3)/wS,budget*0.12)),amtH=c=>rd(Math.min(cb*c.ev/wH,budget*0.12));
+  const amtS=c=>isOpp(c)?0:rd(Math.min(sb*Math.pow(c.pa,3)/wS,budget*0.12)),amtH=c=>isOpp(c)?0:rd(Math.min(cb*c.ev/wH,budget*0.12));
   let h='';
   if(oldData)h+=`<div class="stale bad" style="font-size:15px;line-height:1.6"><b>⛔ 예전 방식으로 수집된 배당입니다 (미리보기용)</b><br>전반전 배당 등이 섞여 <b>틀린 값</b>이 있습니다. 예: 사우디 vs 한국 한국 승 2.35 → 실제 1.66.<br>이 결과로는 구매하지 마세요. 대위 이진호에게 최신화를 먼저 요청하세요.</div>`;
   const colAt=window.TOTO_DATA&&window.TOTO_DATA.collectedAt;
@@ -2440,7 +2441,7 @@ function run(){
     h+=`<div class="stale big ${mins>15?'bad':''}"><div class="sb-n">${mins}<small>분 경과</small></div><div class="sb-t">${mins>15?'🚨 ':''}배당 수집 후 시간이 지났습니다.<br>배당은 실시간으로 바뀝니다 — 구매 직전엔 <b>대위 이진호</b>에게 최신화를 요청하십시오! 🫡</div></div>`}
   if(!perfect.length&&!yt.length&&!cl.length&&!high.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
   const sec=(id,ico,title,desc,body)=>`<section class="rs" id="${id}"><h2 class="rs-t"><span>${ico}</span>${title}</h2><div class="rs-d">${desc}</div>${body.startsWith('<details')?`<div class="pgrid">${body}</div>`:body}</section>`;
-  const legend=`<div class="legend"><span class="lg-r">🚨 빨간 카드</span> = 유튜버 의견이 <b>배당과 반대</b>(배당상 약한 쪽을 유튜버가 고름) · 근거 보기로 확인하세요</div>`;
+  const legend=`<div class="legend"><span class="lg-r">🚫 빨간 카드</span> = 유튜버 의견이 <b>배당과 반대</b>입니다. <b>분석 오류 가능성이 있어 구매 금지</b>이며, 추천금액과 조합에서 제외됩니다.</div>`;
   const none=t=>`<div class="none">${t}</div>`;
   h+=legend+`<div class="jump">${[['s1','① 완전추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
   h+=sec('s1','⭐','완전 추천픽 <small class="mx">(최대 8개)</small>','유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고, 배당 확률도 50% 이상인 경기 · 조건에 맞는 것만 보여줍니다',
