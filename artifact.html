@@ -1300,18 +1300,19 @@ function sample(){
 
 /* ---------- 계산 ---------- */
 function selLabel(m,k){const hc=m.hcap?' ('+m.hcap+')':'';if(k=='HH')return '핸디 '+m.home+' 승'+hc;if(k=='HD')return '핸디 무'+hc;if(k=='HA')return '핸디 '+m.away+' 승'+hc;return k=='H'?m.home+' 승':k=='A'?m.away+' 승':k=='D'?'무승부':k=='O'?'오버'+(m.line?' '+m.line:''):'언더'+(m.line?' '+m.line:'')}
-let SKIPPED=[];
+let LASTDIFF=[];
 function candidates(){
-  SKIPPED=[];const now=Date.now(),out=[];
+  const now=Date.now(),out=[];
   S.matches.filter(m=>new Date(m.time).getTime()>now).forEach(m=>{
     const mp=S.picks[m.id]||{};
     const groups=[['H','D','A'],['HH','HD','HA'],['O','U']];
     groups.forEach(g=>{
       const ks=g.filter(k=>m.odds[k]>1);if(ks.length<2)return;
       const inv=ks.reduce((a,k)=>a+1/m.odds[k],0);
-      // 배당 검증: 한 항목의 역수 합(마진 포함 확률 합)이 1.0~1.35 밖이거나, 축구 무승부 배당이 2.4 미만이면 데이터 오류로 보고 제외
-      const mk=g[0]=='H'?'승무패':g[0]=='HH'?'핸디캡':'언오버';
-      if(inv<1.0||inv>1.35||(m.sport=='축구'&&g[0]=='H'&&m.odds.D&&m.odds.D<2.4)){SKIPPED.push(`${m.home} vs ${m.away} (${mk})`);return}
+      // 배당 점검: 합이 비정상이거나 축구 무승부 배당이 너무 낮으면 '의심' 표시만 한다(제외하지 않음)
+      let warn='';
+      if(inv<1.0||inv>1.35)warn='배당 합 이상('+inv.toFixed(2)+')';
+      else if(m.sport=='축구'&&g[0]=='H'&&m.odds.D&&m.odds.D<2.4)warn='무승부 배당 낮음';
       // 항목별 집계: 분모 = 이 항목(승무패/핸디캡/언오버)에서 픽을 낸 유튜버, 분자 = 그중 해당 선택을 고른 유튜버
       const an=CH.filter(c=>ks.includes(mp[c])),anW=an.reduce((a,c)=>a+S.weights[c],0);
       ks.forEach(k=>{
@@ -1320,7 +1321,8 @@ function candidates(){
         // 표본이 적을수록 일치율을 덜 믿도록 n/(n+2)로 축소 (1명 분석 1명 일치 ≠ 100% 신뢰)
         const s=anW?vw/anW:0,cov=anW/(anW+2);
         const pa=anW?p+0.18*cov*(s-p):p;
-        out.push({m,k,odds:m.odds[k],p,pa,votes:vs.length,nPick:an.length,ratio:an.length?vs.length/an.length:0,cov,s,ev:pa*m.odds[k],label:selLabel(m,k)});
+        const ver=!!(S.verified||{})[m.id+k];
+        out.push({m,k,ver,warn:ver?'':warn,odds:m.odds[k],p,pa,votes:vs.length,nPick:an.length,ratio:an.length?vs.length/an.length:0,cov,s,ev:pa*m.odds[k],label:selLabel(m,k)});
       });
     });
   });
@@ -1375,11 +1377,12 @@ function pickCard(c,i,amt,kind){
    <div class="t">${esc(c.label)}</div>
    <div class="m">${esc(c.m.sport)} · ${esc(c.m.league)} · ${esc(c.m.home)} vs ${esc(c.m.away)} · ${fmtT(c.m.time)}</div>
    <div style="margin-top:4px"><span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'EV '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span>
-   <span class="tag">보정확률 ${(c.pa*100).toFixed(0)}%</span><span class="tag">유튜버 ${c.votes}/${c.nPick||0}명 (${Math.round((c.ratio||0)*100)}%)</span></div></div>
+   <span class="tag">보정확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}<span class="tag">유튜버 ${c.votes}/${c.nPick||0}명 (${Math.round((c.ratio||0)*100)}%)</span></div></div>
    <div><div class="odds">x${c.odds.toFixed(2)}</div><div class="stake">${won(amt)}</div></div></div>`;
 }
 function run(){
   const budget=fixBudget(),mode=$('mode').value;
+  if(window.TOTO_DATA&&!(window.TOTO_DATA.parserVersion>=2)){$('out').innerHTML='<div class="panel" style="border-left-color:var(--red)"><h2>⛔ 배당 데이터를 다시 수집해야 합니다</h2><div class="note">현재 데이터는 이전 수집기로 만들어져 <b>전반전 시장 등이 섞인 잘못된 배당</b>이 들어 있습니다(예: 사우디 vs 한국 한국 승 2.35 → 실제 1.66). 노트북에서 <b>앱열기.bat</b>로 연 화면의 [🔄 배당 최신화]를 누르거나 <b>오늘분석.bat</b>을 실행하세요.</div></div>';return}
   const {safe,safeYt,safeCl,chal}=build();
   const sb=budget*.6,cb=budget*.4;
   const alloc=l=>{const w=l.map(c=>Math.pow(c.pa,3)),t=w.reduce((a,b)=>a+b,0)||1;return l.map((c,i)=>Math.floor(Math.min(sb*w[i]/t/2,budget*0.12)/1000)*1000)};
@@ -1387,7 +1390,9 @@ function run(){
   const wC=chal.map(c=>c.ev),tC=wC.reduce((a,b)=>a+b,0)||1;
   const rd=n=>Math.floor(n/1000)*1000;
   let h='';
-  if(SKIPPED.length)h+=`<div class="panel" style="border-left-color:var(--red)"><h2>⚠ 배당 검증 제외 ${SKIPPED.length}건</h2><div class="note">배당 합이 비정상이거나 무승부 배당이 너무 낮아 수집 오류로 의심되는 항목은 계산에서 뺐습니다. [배당 최신화]로 다시 수집해 보세요.<br>${SKIPPED.slice(0,8).map(esc).join(' · ')}${SKIPPED.length>8?' …':''}</div></div>`;
+  const colAt=window.TOTO_DATA&&window.TOTO_DATA.collectedAt;
+  if(colAt){const mins=Math.round((Date.now()-new Date(colAt))/60000);
+    h+=`<div class="panel" style="border-left-color:${mins>15?'var(--red)':'var(--olive)'}"><div class="note" style="color:${mins>15?'#ffb5a5':'var(--mute)'}">${mins>15?'⚠ ':''}배당 수집 후 <b>${mins}분</b> 경과. 배당은 실시간으로 바뀌므로 구매 직전에 [🔄 배당 최신화]로 다시 분석하세요.</div></div>`}
   if(!safe.length&&!chal.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
   h+=`<div class="panel"><h2>▌ 📺 안정 픽 ① 유튜버 일치 — 같은 항목을 고른 유튜버 60%↑가 같은 선택</h2>`+(safeYt.length?safeYt.map((c,i)=>pickCard(c,i,aY[i],'s')).join(''):'<div class="note">조건(2명 이상 일치 + 같은 항목 유튜버의 60%↑ 일치, 보정확률 40%↑, 배당 1.20↑)에 맞는 경기가 없습니다. 유튜버 픽을 더 채우거나 아래 ②를 참고하세요.</div>')+
    `<div class="note">'유튜버 3/4명'은 같은 항목(승무패·핸디캡·언오버 각각)에서 픽을 낸 4명 중 3명이 이 선택을 골랐다는 뜻입니다. 오버·언더를 고른 채널은 승무패 집계에 들어가지 않습니다. 다만 일치도와 배당 확률은 별개라, 등급이 낮으면(C) 유튜버는 몰렸어도 배당상 안정권은 아니라는 뜻입니다.</div></div>`;
@@ -1409,7 +1414,18 @@ function run(){
   else h+=`<div class="f">총 투입 <b>${won(spent)}</b> (적중금은 공식 규정대로 계산: 합산배당 소수 둘째 자리, 원 단위 절상 · 세금은 미반영) · 모델상 기대 회수 약 <b>${won(ev)}</b> (${(ev/spent*100).toFixed(0)}%)</div>
   <div class="warn">💡 100%에 못 미치면 '길게 하면 잃는 구조'라는 뜻입니다. 확률은 배당 역산 + 유튜버 일치도로 추정한 값이라 실제와 다를 수 있습니다. 한 장이라도 전부 맞아야 하므로 폴더 수가 늘수록 적중률이 급감합니다. 보통 2폴(안정)을 중심으로, 도전 조합은 소액만 권장합니다.</div>`;
   h+='</div>';
+  // 배당 검증 표
+  const vmap=new Map();[...safeYt,...safeCl,...safe,...chal].forEach(c=>vmap.set(c.m.id+c.k,c));
+  h+=`<div class="panel"><h2>▌ 🔍 배당 검증 — 베트맨 화면과 대조</h2><div class="note" style="margin-bottom:8px">추천에 쓰인 선택의 배당입니다. 베트맨에서 본 값이 다르면 오른쪽 칸에 입력하세요. 입력하면 즉시 다시 분석하고 ✓로 표시됩니다.</div><div class="matrix"><table style="min-width:520px"><tr><th>경기</th><th>선택</th><th>앱 배당</th><th>내가 확인한 배당</th><th>상태</th></tr>`+
+   [...vmap.values()].map(c=>`<tr><td class="l">${esc(c.m.home)} vs ${esc(c.m.away)}<br><span class="note">${fmtT(c.m.time)}</span></td><td class="l">${esc(c.label)}</td><td><b>${c.odds.toFixed(2)}</b></td><td><input type="number" step="0.01" min="1.01" style="width:90px;padding:4px" data-vm="${esc(c.m.id)}" data-vk="${c.k}" placeholder="${c.odds.toFixed(2)}"></td><td>${c.ver?'✓ 직접 확인':c.warn?'⚠ '+esc(c.warn):'미확인'}</td></tr>`).join('')+
+   `</table></div>`+
+   (LASTDIFF.length?`<div style="margin-top:10px"><b style="color:var(--khaki)">최근 최신화로 바뀐 배당 ${LASTDIFF.length}건</b><div class="note">${LASTDIFF.slice().sort((a,b)=>Math.abs(b.nw/b.old-1)-Math.abs(a.nw/a.old-1)).slice(0,10).map(d=>`${esc(d.m.home)} vs ${esc(d.m.away)} ${esc(selLabel(d.m,d.k))}: ${d.old.toFixed(2)} → <b>${d.nw.toFixed(2)}</b>`).join('<br>')}${LASTDIFF.length>10?'<br>…':''}</div></div>`:'')+`</div>`;
   $('out').innerHTML=h;
+  document.querySelectorAll('[data-vm]').forEach(inp=>inp.onchange=()=>{
+    const v=parseFloat(inp.value);if(!(v>1))return;
+    const m=S.matches.find(x=>x.id==inp.dataset.vm);if(!m)return;
+    m.odds[inp.dataset.vk]=Math.round(v*100)/100;(S.verified=S.verified||{})[m.id+inp.dataset.vk]=1;save();run();
+  });
 }
 
 /* ---------- 입력 UI ---------- */
@@ -1494,7 +1510,10 @@ $('refresh').onclick=async()=>{
     if(!r.ok)throw new Error('server '+r.status);
     const j=await r.json();
     if(!j.ok)throw new Error(j.error||'수집 실패');
-    window.TOTO_DATA=j.data;importData(j.data);run();stamp();msg.textContent='✅ '+j.data.matches.length+'경기 최신화 완료. '+msg.textContent;
+    const prev={};S.matches.forEach(m=>prev[m.id]=Object.assign({},m.odds));
+    window.TOTO_DATA=j.data;importData(j.data);
+    LASTDIFF=[];S.matches.forEach(m=>{const o=prev[m.id];if(!o)return;KEYS.forEach(k=>{if(o[k]>1&&m.odds[k]>1&&Math.abs(o[k]-m.odds[k])>0.001)LASTDIFF.push({m,k,old:o[k],nw:m.odds[k]})})});
+    run();stamp();msg.textContent='✅ '+j.data.matches.length+'경기 최신화 완료. '+msg.textContent;
   }catch(e){
     msg.innerHTML='⚠ 이 화면에서는 직접 수집할 수 없습니다. 노트북에서 <b>앱열기.bat</b>로 연 화면에서 눌러주세요. (사이트 버전은 수집 후 Claude가 다시 게시해야 갱신됩니다)';
   }finally{btn.disabled=false}
@@ -1505,7 +1524,7 @@ function importData(d){
   const key=m=>m.home+'|'+m.away,old={};S.matches.forEach(m=>old[key(m)]=m.id);
   const np={};
   ms.forEach(m=>{const o=old[key(m)];if(o&&S.picks[o]){np[m.id]=S.picks[o]}});
-  S.matches=ms;S.picks=np;S.sample=false;
+  S.matches=ms;S.picks=np;S.sample=false;S.verified={};
   Object.entries(d.picks||{}).forEach(([id,o])=>{S.picks[id]=Object.assign(S.picks[id]||{},o)});save();renderIntel();bar();return ms.length;
 }
 $('dataFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
