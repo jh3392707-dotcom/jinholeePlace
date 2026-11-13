@@ -93,6 +93,31 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .cd{display:inline-block;font-weight:900;font-size:13px;color:var(--green);font-variant-numeric:tabular-nums;white-space:nowrap}
 .cd-soon{color:var(--amber)}.cd-hot{color:#ff6b57}.cd-end{color:var(--mute)}
 .pk-m .cd{display:block;margin-top:4px;font-size:16px}
+
+/* 2열 컴팩트 카드 */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.pc{background:var(--panel2);border:1px solid var(--line);border-radius:8px;min-width:0}
+.pc1{border-color:var(--amber);box-shadow:inset 3px 0 0 var(--amber)}
+.pc[open]{grid-column:1/-1}
+.pc-s{list-style:none;cursor:pointer;padding:10px;display:block}
+.pc-s::-webkit-details-marker{display:none}
+.pc-top{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.pc-top .rk{flex:0 0 24px;height:24px;font-size:13px}
+.gr{font-family:'Black Ops One','Noto Sans KR',sans-serif;font-size:12px;padding:1px 7px;border-radius:3px;background:#32431b;color:#cfe8a0}
+.gr-S{background:#7fb04a;color:#10170a}.gr-A{background:#4d6b2a;color:#e4f5c4}.gr-B{background:#6b5d1f;color:#ffe9a8}.gr-C{background:#5a2a20;color:#ffb5a5}.gr-r{background:#4a1f17;color:#ffcba8}
+.pc-o{margin-left:auto;font-family:'Black Ops One',sans-serif;font-size:20px;color:var(--amber)}
+.pc-t{font-size:16px;font-weight:900;line-height:1.25;overflow-wrap:anywhere;min-height:2.5em}
+.pc-m{font-size:12px;color:var(--mute);margin:3px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-cd .cd{font-size:14px}
+.pc-s .bar{height:7px;margin:6px 0 3px}
+.pc-gl{font-size:12px;color:var(--text)}
+.b1.sm{font-size:11px;padding:1px 6px}
+.warnic{color:#ff8a70;font-weight:900}
+.pc-a{margin-top:6px;font-size:13px;color:var(--green)}.pc-a b{font-size:16px}.mute{color:var(--mute)}
+.pc-more{margin-top:6px;font-size:11px;color:var(--mute);text-align:right}
+.pc[open] .pc-more{display:none}
+.pc-d{padding:0 12px 12px;border-top:1px dashed var(--line)}
+.pc-d .pk-m{margin-top:10px}
 </style>
 
 <div class="wrap">
@@ -2346,21 +2371,34 @@ function tickCd(){
   document.querySelectorAll('.cd').forEach(el=>{
     const t=Date.parse(el.dataset.t+':00+09:00');if(isNaN(t)){el.textContent='';return}
     let ms=t-now;
-    if(ms<=0){el.className='cd cd-end';el.textContent='⛔ 경기 시작됨';return}
+    if(ms<=0){el.className='cd cd-end';el.textContent=el.dataset.s?'⛔ 시작됨':'⛔ 경기 시작됨';return}
     const sec=Math.floor(ms/1000),d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60),ss=sec%60;
     el.className='cd '+(sec<600?'cd-hot':sec<3600?'cd-soon':'');
-    el.textContent='⏱ '+(d?d+'일 ':'')+h+'시간 '+String(m).padStart(2,'0')+'분 '+String(ss).padStart(2,'0')+'초 남음';
+    el.textContent=el.dataset.s?('⏱ '+(d?d+'일 ':'')+h+':'+String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0')):('⏱ '+(d?d+'일 ':'')+h+'시간 '+String(m).padStart(2,'0')+'분 '+String(ss).padStart(2,'0')+'초 남음');
   });
 }
 setInterval(tickCd,1000);
 function pickCard(c,i,amt,kind){
-  const pct=Math.round((c.ratio||0)*100),one=c.nPick===1;
-  return `<div class="pk${one?' pk1':''}"><div class="pk-h"><span class="rk">${i+1}</span><div class="pk-t">${esc(c.label)}</div><div class="pk-o">x${c.odds.toFixed(2)}</div></div>
+  const pct=Math.round((c.ratio||0)*100),one=c.nPick===1,opp=(c.votes>=3&&c.ratio>=0.6&&c.p<0.35);
+  const chip=kind=='r'?`<span class="gr gr-r">EV ${c.ev.toFixed(2)}</span>`:`<span class="gr gr-${grade(c.pa)}">${grade(c.pa)}</span>`;
+  const amtTxt=amt>=1000?`<b>${won(amt)}</b>`:`<span class="mute">금액 없음</span>`;
+  return `<details class="pc${one?' pc1':''}"><summary class="pc-s">
+   <div class="pc-top"><span class="rk">${i+1}</span>${chip}<span class="pc-o">x${c.odds.toFixed(2)}</span></div>
+   <div class="pc-t">${esc(c.label)}</div>
+   <div class="pc-m">${esc(c.m.home)} vs ${esc(c.m.away)}</div>
+   <div class="pc-cd"><span class="cd" data-s="1" data-t="${esc(c.m.time)}"></span></div>
+   <div class="bar"><i style="width:${pct}%"></i></div>
+   <div class="pc-gl">유튜버 <b>${c.votes}/${c.nPick||0}</b>명 ${pct}%${one?' <span class="b1 sm">⚠1명</span>':''}${(c.warn||opp)?' <span class="warnic">⚠</span>':''}</div>
+   <div class="pc-a">${amtTxt}</div>
+   <div class="pc-more">눌러서 자세히</div>
+  </summary>
+  <div class="pc-d">
    <div class="pk-m">${esc(c.m.sport)} · ${esc(c.m.league)}<br>${esc(c.m.home)} vs ${esc(c.m.away)} · <b>${fmtT(c.m.time)}</b> <span class="cd" data-t="${esc(c.m.time)}"></span></div>
-   <div class="pk-g"><div class="pk-gl">유튜버 의견일치 <b>${c.votes}/${c.nPick||0}명 (${pct}%)</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>
-   <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}${(c.votes>=3&&c.ratio>=0.6&&c.p<0.35)?'<span class="tag r">⚠ 유튜버 의견이 배당과 반대 — 근거 꼭 확인</span>':''}${viaRule(c)?'<span class="tag r">키워드 추정(정확도 낮음)</span>':''}</div>
+   <div class="pk-g"><div class="pk-gl">유튜버 의견일치 <b>${c.votes}/${c.nPick||0}명 (${pct}%)</b></div></div>
+   <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}${opp?'<span class="tag r">⚠ 유튜버 의견이 배당과 반대 — 근거 꼭 확인</span>':''}${viaRule(c)?'<span class="tag r">키워드 추정(정확도 낮음)</span>':''}</div>
    ${evidenceHtml(c)}
-   <div class="pk-s">${amt>=1000?`추천금액 <b>${won(amt)}</b>`:`<span style="color:var(--mute)">추천금액 없음 (1,000원 미만이라 제외)</span>`}</div></div>`;
+   <div class="pk-s">${amt>=1000?`추천금액 <b>${won(amt)}</b>`:`<span style="color:var(--mute)">추천금액 없음 (1,000원 미만이라 제외)</span>`}</div>
+  </div></details>`;
 }
 function run(){
   const budget=fixBudget(),mode=$('mode').value;
@@ -2378,7 +2416,7 @@ function run(){
   if(colAt){const mins=Math.round((Date.now()-new Date(colAt))/60000);
     h+=`<div class="stale big ${mins>15?'bad':''}"><div class="sb-n">${mins}<small>분 경과</small></div><div class="sb-t">${mins>15?'🚨 ':''}배당 수집 후 시간이 지났습니다.<br>배당은 실시간으로 바뀝니다 — 구매 직전엔 <b>대위 이진호</b>에게 최신화를 요청하십시오! 🫡</div></div>`}
   if(!perfect.length&&!yt.length&&!cl.length&&!high.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
-  const sec=(id,ico,title,desc,body)=>`<section class="rs" id="${id}"><h2 class="rs-t"><span>${ico}</span>${title}</h2><div class="rs-d">${desc}</div>${body}</section>`;
+  const sec=(id,ico,title,desc,body)=>`<section class="rs" id="${id}"><h2 class="rs-t"><span>${ico}</span>${title}</h2><div class="rs-d">${desc}</div>${body.startsWith('<details')?`<div class="pgrid">${body}</div>`:body}</section>`;
   const none=t=>`<div class="none">${t}</div>`;
   h+=`<div class="jump">${[['s1','① 완전추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 배분']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
   h+=sec('s1','⭐','완전 추천픽','유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고, 배당 확률도 50% 이상인 경기',
