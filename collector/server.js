@@ -4,7 +4,7 @@ const http=require('http'),fs=require('fs'),path=require('path'),{spawn}=require
 const root=path.join(__dirname,'..'),PORT=8787;
 const mime={'.html':'text/html;charset=utf-8','.js':'text/javascript;charset=utf-8','.json':'application/json;charset=utf-8'};
 let job=null;
-const PROMPT=`collector/transcripts/manifest.json 에 적힌 각 영상 자막(collector/transcripts/<영상id>.txt)과 data.json 의 matches 를 읽어라. 채널별로, 아직 시작 전인 경기마다 항목별(승무패 H/D/A, 핸디캡 HH/HD/HA, 언더오버 O/U) 픽을 판단한다. 자막에 그 경기 언급이 없거나 불확실하거나 부정("~는 어렵다")·조건부 발언이면 제외한다. 팀 이름은 Grep 으로 찾고 앞뒤 문맥을 읽어라. 결과를 collector/picks_today.json 에 {"채널명":{"경기id":{"pick":"H","quote":"자막 원문 문장 그대로","url":"영상주소","videoTitle":"영상제목"}}} 형식으로 저장하고, 마지막에 node collector/apply_picks.js collector/picks_today.json --replace 를 실행해라. 질문하지 말고 끝까지 수행하고, 마지막에 반영 건수만 한 줄로 출력해라.`;
+const PROMPT=`collector/transcripts/manifest.json 에 적힌 각 영상 자막(collector/transcripts/<영상id>.txt)과 data.json 의 matches 를 읽어라. 채널별로, 아직 시작 전인 경기마다 항목별(승무패 H/D/A, 핸디캡 HH/HD/HA, 언더오버 O/U) 픽을 판단한다. 자막에 그 경기 언급이 없거나 불확실하거나 부정("~는 어렵다")·조건부 발언이면 제외한다. 팀 이름은 Grep 으로 찾고 앞뒤 문맥을 읽어라. 같은 팀 이름이 여러 경기(예: 일본-브라질 축구, 일본-한국 야구)에 나오면 상대팀·종목·리그·날짜가 정확히 맞는 경기에만 연결하고, 팀 이름만 같다고 다른 종목 발언을 연결하지 마라. 판단 후 픽이 배당 우세 방향과 정반대이면(예: 배당 1.78 우세 팀 대신 3.40 팀을 5명이 추천) 인용 문장을 다시 읽고 경기가 맞는지 재확인해라. 결과를 collector/picks_today.json 에 {"채널명":{"경기id":{"pick":"H","quote":"자막 원문 문장 그대로","url":"영상주소","videoTitle":"영상제목"}}} 형식으로 저장하고, 마지막에 node collector/apply_picks.js collector/picks_today.json --replace 를 실행해라. 질문하지 말고 끝까지 수행하고, 마지막에 반영 건수만 한 줄로 출력해라.`;
 function run(cmd,args,opt={}){
   return new Promise(res=>{
     let log='';const p=spawn(cmd,args,Object.assign({shell:process.platform==='win32',cwd:__dirname},opt));

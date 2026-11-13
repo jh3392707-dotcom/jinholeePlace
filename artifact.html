@@ -77,6 +77,11 @@ body{font-size:16px}
 .evq{margin:4px 0;font-size:13px;color:var(--text);line-height:1.55;overflow-wrap:anywhere}.evq.none{color:var(--mute)}
 .evl{display:block;font-size:13px;color:var(--amber);overflow-wrap:anywhere}
 .ev .note{padding:8px 12px 10px}
+
+.adv{margin:18px 0}.adv>summary,.vd>summary{cursor:pointer;color:var(--mute);font-size:14px;padding:10px 4px;font-weight:700}
+.vd{margin-top:14px}.vd>summary{color:var(--khaki)}
+.fire{letter-spacing:.05em;font-size:24px;padding:20px}
+header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 </style>
 
 <div class="wrap">
@@ -86,34 +91,28 @@ body{font-size:16px}
   <div class="sub stencil">OPERATION · PICK · DRAW</div>
 </header>
 
-<nav>
-  <button data-tab="ops" class="on">🎖 작전실</button>
-  <button data-tab="intel">📋 정보수집</button>
-  <button data-tab="ch">📺 채널 신뢰도</button>
-</nav>
-
-<!-- 작전실 -->
+<div id="sampleBar" class="sample hide">⚠ 현재 <b>샘플 데이터</b>입니다(가상의 경기·배당). [🔄 분석 최신화]로 오늘 데이터를 받으세요.</div>
 <section id="tab-ops">
-  <div id="sampleBar" class="sample hide">⚠ 현재 <b>샘플 데이터</b>입니다(가상의 경기·배당). 실제로 쓰려면 [정보수집]에서 오늘 경기와 배당을 입력하세요.</div>
+  <button class="fire" id="refresh" type="button">🔄 분석 최신화</button>
+  <div id="refreshMsg" class="note" style="margin:-4px 0 12px"></div>
   <div class="panel">
-    <h2>▌ 투입 병력(예산)</h2>
-    <div class="budget">
-      <div><label>오늘 투자할 금액 (1,000원 단위)</label>
-        <div style="display:flex;gap:6px"><button class="btn sec" id="bMinus" type="button" aria-label="1,000원 감소">−</button>
-        <input id="budget" type="number" inputmode="numeric" min="1000" step="1000" value="50000" style="text-align:center;font-weight:700">
-        <button class="btn sec" id="bPlus" type="button" aria-label="1,000원 증가">＋</button></div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px" id="bChips"></div></div>
-      <div><label>분석 데이터</label>
-        <button class="btn" id="refresh" type="button">🔄 분석 최신화</button>
-        <div id="refreshMsg" class="note" style="margin-top:4px"></div></div>
-      <div><label>작전 성향</label>
-        <select id="mode"><option value="stable">🛡 안정형 (방어 위주)</option><option value="balanced" selected>⚖ 균형형</option><option value="aggressive">🔥 공격형 (고배당 비중↑)</option></select></div>
-    </div>
+    <label>오늘 투자할 금액 (1,000원 단위)</label>
+    <div style="display:flex;gap:6px"><button class="btn sec" id="bMinus" type="button" aria-label="1,000원 감소">−</button>
+    <input id="budget" type="number" inputmode="numeric" min="1000" step="1000" value="50000" style="text-align:center;font-weight:700;font-size:18px">
+    <button class="btn sec" id="bPlus" type="button" aria-label="1,000원 증가">＋</button></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px" id="bChips"></div>
   </div>
-  <button class="fire" id="fire">▶ 작전 개시</button>
   <div id="out"></div>
 </section>
 
+<details class="adv">
+<summary>⚙ 고급 설정 (평소엔 필요 없음)</summary>
+<div class="panel"><label>작전 성향 (예산 분배 방식)</label>
+  <select id="mode"><option value="stable">🛡 안정형 (방어 위주)</option><option value="balanced" selected>⚖ 균형형</option><option value="aggressive">🔥 공격형 (고배당 비중↑)</option></select></div>
+<nav>
+  <button data-tab="intel">📋 경기·픽 직접 입력</button>
+  <button data-tab="ch">📺 채널 신뢰도</button>
+</nav>
 <!-- 정보수집 -->
 <section id="tab-intel" class="hide">
   <div class="panel">
@@ -186,6 +185,7 @@ body{font-size:16px}
     <div class="w" id="wbox"></div>
   </div>
 </section>
+</details>
 
 <div class="panel">
   <div class="warn" style="border:0;margin:0;padding:0">
@@ -1412,6 +1412,7 @@ function plan(safe,chal,budget,mode){
 const fmtT=s=>{const d=new Date(s);return `${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`};
 const grade=p=>p>=.75?'S':p>=.65?'A':p>=.55?'B':'C';
 const GROUPS=[['H','D','A'],['HH','HD','HA'],['O','U']];
+function viaRule(c){const ev=(S.evidence||{})[c.m.id]||{},mp=S.picks[c.m.id]||{};return CH.some(ch=>mp[ch]===c.k&&ev[ch]&&ev[ch].via==='rule')}
 function evidenceHtml(c){
   const m=c.m,g=GROUPS.find(x=>x.includes(c.k)),mp=S.picks[m.id]||{},ev=(S.evidence||{})[m.id]||{};
   const who=CH.filter(ch=>g.includes(mp[ch])).sort((a,b)=>(mp[b]===c.k)-(mp[a]===c.k));
@@ -1428,7 +1429,7 @@ function pickCard(c,i,amt,kind){
   return `<div class="pk${one?' pk1':''}"><div class="pk-h"><span class="rk">${i+1}</span><div class="pk-t">${esc(c.label)}</div><div class="pk-o">x${c.odds.toFixed(2)}</div></div>
    <div class="pk-m">${esc(c.m.sport)} · ${esc(c.m.league)}<br>${esc(c.m.home)} vs ${esc(c.m.away)} · <b>${fmtT(c.m.time)}</b></div>
    <div class="pk-g"><div class="pk-gl">유튜버 의견일치 <b>${c.votes}/${c.nPick||0}명 (${pct}%)</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>
-   <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}</div>
+   <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}${(c.votes>=3&&c.ratio>=0.6&&c.p<0.35)?'<span class="tag r">⚠ 유튜버 의견이 배당과 반대 — 근거 꼭 확인</span>':''}${viaRule(c)?'<span class="tag r">키워드 추정(정확도 낮음)</span>':''}</div>
    ${evidenceHtml(c)}
    <div class="pk-s">${amt>=1000?`추천금액 <b>${won(amt)}</b>`:`<span style="color:var(--mute)">추천금액 없음 (1,000원 미만이라 제외)</span>`}</div></div>`;
 }
@@ -1475,10 +1476,10 @@ function run(){
   h+='</div>';
   // 배당 검증 표
   const vmap=new Map();[...perfect,...yt,...cl,...high,...safe].forEach(c=>vmap.set(c.m.id+c.k,c));
-  h+=`<div class="panel"><h2>▌ 🔍 배당 검증 — 베트맨 화면과 대조</h2><div class="note" style="margin-bottom:8px">추천에 쓰인 선택의 배당입니다. 베트맨에서 본 값이 다르면 오른쪽 칸에 입력하세요. 입력하면 즉시 다시 분석하고 ✓로 표시됩니다.</div><div class="matrix"><table style="min-width:520px"><tr><th>경기</th><th>선택</th><th>앱 배당</th><th>내가 확인한 배당</th><th>상태</th></tr>`+
+  h+=`<details class="panel vd"><summary>🔍 배당 검증 — 베트맨 화면과 대조 (눌러서 열기)</summary><div class="note" style="margin-bottom:8px">추천에 쓰인 선택의 배당입니다. 베트맨에서 본 값이 다르면 오른쪽 칸에 입력하세요. 입력하면 즉시 다시 분석하고 ✓로 표시됩니다.</div><div class="matrix"><table style="min-width:520px"><tr><th>경기</th><th>선택</th><th>앱 배당</th><th>내가 확인한 배당</th><th>상태</th></tr>`+
    [...vmap.values()].map(c=>`<tr><td class="l">${esc(c.m.home)} vs ${esc(c.m.away)}<br><span class="note">${fmtT(c.m.time)}</span></td><td class="l">${esc(c.label)}</td><td><b>${c.odds.toFixed(2)}</b></td><td><input type="number" step="0.01" min="1.01" style="width:90px;padding:4px" data-vm="${esc(c.m.id)}" data-vk="${c.k}" placeholder="${c.odds.toFixed(2)}"></td><td>${c.ver?'✓ 직접 확인':c.warn?'⚠ '+esc(c.warn):'미확인'}</td></tr>`).join('')+
    `</table></div>`+
-   (LASTDIFF.length?`<div style="margin-top:10px"><b style="color:var(--khaki)">최근 최신화로 바뀐 배당 ${LASTDIFF.length}건</b><div class="note">${LASTDIFF.slice().sort((a,b)=>Math.abs(b.nw/b.old-1)-Math.abs(a.nw/a.old-1)).slice(0,10).map(d=>`${esc(d.m.home)} vs ${esc(d.m.away)} ${esc(selLabel(d.m,d.k))}: ${d.old.toFixed(2)} → <b>${d.nw.toFixed(2)}</b>`).join('<br>')}${LASTDIFF.length>10?'<br>…':''}</div></div>`:'')+`</div>`;
+   (LASTDIFF.length?`<div style="margin-top:10px"><b style="color:var(--khaki)">최근 최신화로 바뀐 배당 ${LASTDIFF.length}건</b><div class="note">${LASTDIFF.slice().sort((a,b)=>Math.abs(b.nw/b.old-1)-Math.abs(a.nw/a.old-1)).slice(0,10).map(d=>`${esc(d.m.home)} vs ${esc(d.m.away)} ${esc(selLabel(d.m,d.k))}: ${d.old.toFixed(2)} → <b>${d.nw.toFixed(2)}</b>`).join('<br>')}${LASTDIFF.length>10?'<br>…':''}</div></div>`:'')+`</details>`;
   $('out').innerHTML=h;
   document.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{const t=document.getElementById(b.dataset.j);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
   document.querySelectorAll('[data-vm]').forEach(inp=>inp.onchange=()=>{
@@ -1554,15 +1555,16 @@ $('clearAll').onclick=()=>{if(confirm('모든 경기·픽을 삭제할까요?'))
 $('loadSample').onclick=()=>{sample();save();renderIntel();bar()};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x==b));
-  ['ops','intel','ch'].forEach(t=>$('tab-'+t).classList.toggle('hide',t!=b.dataset.tab));
+  ['intel','ch'].forEach(t=>$('tab-'+t).classList.toggle('hide',t!=b.dataset.tab));
 });
 const fixBudget=()=>{let v=Math.round((+$('budget').value||0)/1000)*1000;if(v<1000)v=1000;$('budget').value=v;try{localStorage.setItem('toto_budget',v)}catch(e){}return v};
 try{const sv=+localStorage.getItem('toto_budget');if(sv>=1000)$('budget').value=sv}catch(e){}
-$('budget').onchange=fixBudget;
-$('bMinus').onclick=()=>{$('budget').value=fixBudget()-1000;fixBudget()};
-$('bPlus').onclick=()=>{$('budget').value=fixBudget()+1000};
-[10000,20000,30000,50000,100000].forEach(v=>{const b=document.createElement('button');b.type='button';b.className='btn sec';b.style.padding='3px 10px';b.textContent=(v/10000)+'만원';b.onclick=()=>{$('budget').value=v;fixBudget()};$('bChips').appendChild(b)});
-function stamp(){const t=(window.TOTO_DATA&&window.TOTO_DATA.collectedAt)||'';if(t){$('refreshMsg').textContent='마지막 수집: '+new Date(t).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false,month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+' (한국시간)'}}
+$('budget').onchange=()=>{fixBudget();run()};
+$('bMinus').onclick=()=>{$('budget').value=fixBudget()-1000;fixBudget();run()};
+$('bPlus').onclick=()=>{$('budget').value=fixBudget()+1000;run()};
+[10000,20000,30000,50000,100000].forEach(v=>{const b=document.createElement('button');b.type='button';b.className='btn sec';b.style.padding='3px 10px';b.textContent=(v/10000)+'만원';b.onclick=()=>{$('budget').value=v;fixBudget();run()};$('bChips').appendChild(b)});
+const LOCAL=/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+function stamp(){const t=(window.TOTO_DATA&&window.TOTO_DATA.collectedAt)||'';if(t){$('refreshMsg').textContent='마지막 수집: '+new Date(t).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false,month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+' (한국시간)'+(LOCAL?'':' · 보기 전용 화면')}}
 let POLL=null;
 $('refresh').onclick=async()=>{
   const msg=$('refreshMsg'),btn=$('refresh');btn.disabled=true;
@@ -1591,7 +1593,6 @@ $('refresh').onclick=async()=>{
     msg.innerHTML='⚠ 이 화면에서는 직접 분석할 수 없습니다. 노트북에서 <b>앱열기.bat</b>로 연 화면에서 눌러주세요. (사이트 버전은 노트북에서 분석 후 Claude가 다시 게시해야 갱신됩니다)';
   }
 };
-$('fire').onclick=()=>{run();$('out').scrollIntoView({behavior:'smooth'})};
 function importData(d,replace){
   const ms=(d&&d.matches)||[];if(!ms.length)return 0;
   const key=m=>m.home+'|'+m.away,old={};S.matches.forEach(m=>old[key(m)]=m.id);
@@ -1606,6 +1607,8 @@ $('dataFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new Fi
 load();$('f_time').value=localStr(new Date(Date.now()+3600e3));renderIntel();bar();
 if(window.TOTO_DATA&&importData(window.TOTO_DATA)){$('dataRes').textContent='수집 데이터 '+S.matches.length+'경기를 자동으로 불러왔습니다 ('+(window.TOTO_DATA.collectedAt||'')+')';run()}
 stamp();
+if(!LOCAL){$('refresh').style.display='none';$('refreshMsg').style.margin='0 0 12px'}
+run();
 if(/[?&]auto=1/.test(location.search)&&location.protocol.startsWith('http'))setTimeout(()=>$('refresh').click(),400);
 if(!window.TOTO_DATA)fetch('data.json').then(r=>r.ok?r.json():null).then(d=>{if(d&&d.matches&&d.matches.length){importData(d);run()}}).catch(()=>{});
 </script>
