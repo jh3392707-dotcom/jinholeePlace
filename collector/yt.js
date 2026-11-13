@@ -7,11 +7,12 @@ fs.mkdirSync(tdir,{recursive:true});
 const data=JSON.parse(fs.readFileSync(dataPath,'utf8'));
 const chans=JSON.parse(fs.readFileSync(path.join(__dirname,'channels.json'),'utf8'));
 const ytdlp=(args)=>execFileSync('yt-dlp',args,{encoding:'utf8',maxBuffer:1<<28,timeout:180000});
-function latestVideo(name,url){
-  if(url){const j=JSON.parse(ytdlp(['--flat-playlist','-J','--playlist-end','3',url.replace(/\/$/,'')+'/videos']));const e=(j.entries||[])[0];return e&&{id:e.id,title:e.title}}
+const NV=+process.env.YT_VIDEOS||3;
+function latestVideos(name,url){
+  if(url){const j=JSON.parse(ytdlp(['--flat-playlist','-J','--playlist-end',String(NV),url.replace(/\/$/,'')+'/videos']));return (j.entries||[]).slice(0,NV).map(e=>({id:e.id,title:e.title}))}
   const core=name.replace(/[:\s]/g,'');
-  const out=ytdlp(['--dump-json','--skip-download',`ytsearchdate8:${name} 프로토 분석`]).trim().split('\n').map(l=>JSON.parse(l));
-  const hit=out.find(v=>(v.channel||v.uploader||'').replace(/[:\s]/g,'').includes(core.slice(0,3)));return hit&&{id:hit.id,title:hit.title}
+  const out=ytdlp(['--dump-json','--skip-download',`ytsearch15:${name} 프로토 분석`]).trim().split('\n').map(l=>JSON.parse(l));
+  return out.filter(v=>(v.channel||v.uploader||'').replace(/[:\s]/g,'').includes(core.slice(0,3))).slice(0,NV).map(v=>({id:v.id,title:v.title}))
 }
 function transcript(id){
   const base=path.join(tdir,id);
@@ -26,11 +27,17 @@ function transcript(id){
   for(const name of Object.keys(chans)){
     process.stdout.write(`[${name}] `);
     try{
-      const v=latestVideo(name,chans[name]);if(!v){console.log('영상 못 찾음 (channels.json에 URL 입력 권장)');continue}
-      const text=transcript(v.id);if(!text){console.log(`자막 없음: ${v.title}`);continue}
-      const {picks,via}=await extract(text,data.matches,name);
-      for(const[id,k]of Object.entries(picks)){(data.picks[id]=data.picks[id]||{})[name]=k}
-      console.log(`"${v.title}" → ${Object.keys(picks).length}경기 픽 (${via})`);
+      const vs=latestVideos(name,chans[name]);if(!vs.length){console.log('영상 못 찾음 (channels.json에 URL 권장)');continue}
+      const agg={};let used=0;
+      for(const [i,v] of vs.entries()){
+        const text=transcript(v.id);if(!text){console.log(`\n   - 자막 없음: ${v.title}`);continue}
+        const {picks,via}=await extract(text,data.matches,name);used++;
+        console.log(`\n   - "${v.title}" → ${Object.keys(picks).length}경기 (${via})`);
+        // 최신 영상 우선: 이미 정해진 경기는 덮어쓰지 않음
+        for(const[id,k]of Object.entries(picks)){if(!agg[id])agg[id]=k}
+      }
+      for(const[id,k]of Object.entries(agg)){(data.picks[id]=data.picks[id]||{})[name]=k}
+      console.log(`   => ${name}: 영상 ${used}/${vs.length}개 분석, ${Object.keys(agg).length}경기 픽`);
     }catch(e){console.log('실패:',e.message.split('\n')[0])}
   }
   fs.writeFileSync(dataPath,JSON.stringify(data,null,1));console.log('data.json 갱신 완료. 앱에서 불러온 뒤 매트릭스에서 확인하세요.');
