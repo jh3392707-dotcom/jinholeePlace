@@ -185,6 +185,9 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .nightw{margin-top:8px;padding:8px 10px;background:#241b08;border:1px solid var(--amber);border-radius:6px;color:#ffd77a;font-size:14px;line-height:1.5}
 .cw-off{color:#ffb5a5}
 .cb-night{}
+.pc-ended,.tk2-ended{opacity:.45;filter:saturate(.55)}
+.li-ended{opacity:.5}
+.pc-ended:hover,.pc-ended[open],.tk2-ended:hover{opacity:.8}
 </style>
 
 <div class="wrap">
@@ -2462,6 +2465,10 @@ function tickCd(){
     const sh=el.dataset.h==='1';
     el.textContent=sh?(el.dataset.s?('🌙 미리 '+fmtHMS(sec)):('🌙 점검 전('+el.dataset.l+')까지 '+fmtLong(sec)+' — 발매 중단 시간대 경기, 미리 구매')):(el.dataset.s?('🛒 마감'+(est?'~':'')+' '+fmtHMS(sec)):('🛒 구매 마감까지 '+fmtLong(sec)+(est?' (추정)':'')));
   });
+  // 구매 마감된 카드·조합·경기 줄은 흐리게 표시
+  document.querySelectorAll('.pc').forEach(c=>c.classList.toggle('pc-ended',!!c.querySelector('.cb-end')));
+  document.querySelectorAll('.tk2').forEach(c=>c.classList.toggle('tk2-ended',!!c.querySelector('.tk2-dl .cb-end')));
+  document.querySelectorAll('.tk2-l li').forEach(c=>c.classList.toggle('li-ended',!!c.querySelector('.cb-end')));
   // 온라인 구매 가능 시간대(직접 입력) 타이머
   document.querySelectorAll('.cw').forEach(el=>{
     const a=(el.dataset.s||'').split(':'),b=(el.dataset.e||'').split(':');if(a.length<2||b.length<2){el.textContent='';return}
