@@ -1298,20 +1298,21 @@ function sample(){
 /* ---------- 계산 ---------- */
 function selLabel(m,k){const hc=m.hcap?' ('+m.hcap+')':'';if(k=='HH')return '핸디 '+m.home+' 승'+hc;if(k=='HD')return '핸디 무'+hc;if(k=='HA')return '핸디 '+m.away+' 승'+hc;return k=='H'?m.home+' 승':k=='A'?m.away+' 승':k=='D'?'무승부':k=='O'?'오버'+(m.line?' '+m.line:''):'언더'+(m.line?' '+m.line:'')}
 function candidates(){
-  const now=Date.now(),totW=CH.reduce((a,c)=>a+S.weights[c],0)||1,out=[];
+  const now=Date.now(),out=[];
   S.matches.filter(m=>new Date(m.time).getTime()>now).forEach(m=>{
+    // 분모: 이 경기를 분석한(어떤 항목이든 픽을 낸) 유튜버 / 분자: 그중 해당 선택을 고른 유튜버
+    const mp=S.picks[m.id]||{},an=CH.filter(c=>mp[c]),anW=an.reduce((a,c)=>a+S.weights[c],0);
     const groups=[['H','D','A'],['HH','HD','HA'],['O','U']];
     groups.forEach(g=>{
       const ks=g.filter(k=>m.odds[k]>1);if(ks.length<2)return;
       const inv=ks.reduce((a,k)=>a+1/m.odds[k],0);
-      const pk=CH.filter(c=>ks.includes((S.picks[m.id]||{})[c]));
-      const pickW=pk.reduce((a,c)=>a+S.weights[c],0);
       ks.forEach(k=>{
         const p=(1/m.odds[k])/inv;
-        const vw=pk.filter(c=>S.picks[m.id][c]==k).reduce((a,c)=>a+S.weights[c],0);
-        const cov=pickW/totW,s=pickW?vw/pickW:0;
-        const pa=pickW?p+0.18*cov*(s-p):p;
-        out.push({m,k,odds:m.odds[k],p,pa,votes:pk.filter(c=>S.picks[m.id][c]==k).length,nPick:pk.length,cov,s,ev:pa*m.odds[k],label:selLabel(m,k)});
+        const vs=an.filter(c=>mp[c]==k),vw=vs.reduce((a,c)=>a+S.weights[c],0);
+        // 표본이 적을수록 일치율을 덜 믿도록 n/(n+2)로 축소 (1명 분석 1명 일치 ≠ 100% 신뢰)
+        const s=anW?vw/anW:0,cov=anW/(anW+2);
+        const pa=anW?p+0.18*cov*(s-p):p;
+        out.push({m,k,odds:m.odds[k],p,pa,votes:vs.length,nPick:an.length,ratio:an.length?vs.length/an.length:0,cov,s,ev:pa*m.odds[k],label:selLabel(m,k)});
       });
     });
   });
@@ -1322,12 +1323,12 @@ function build(){
   const all=candidates();
   const base=all.filter(c=>c.odds>=1.2&&c.pa>=0.5);
   // 유튜버 일치 픽: 2명 이상이 같은 선택을 추천한 것 (일치 인원 → 확률 순)
-  const safeYt=bestPerMatch(all.filter(c=>c.odds>=1.2&&c.pa>=0.4&&c.votes>=3),(a,b)=>(a.votes-b.votes)||(a.pa-b.pa)).sort((a,b)=>b.votes-a.votes||b.pa-a.pa).slice(0,5);
+  const safeYt=bestPerMatch(all.filter(c=>c.odds>=1.2&&c.pa>=0.4&&c.votes>=2&&c.ratio>=0.6),(a,b)=>(a.ratio-b.ratio)||(a.votes-b.votes)||(a.pa-b.pa)).sort((a,b)=>b.ratio-a.ratio||b.votes-a.votes||b.pa-a.pa).slice(0,5);
   const ytIds=new Set(safeYt.map(c=>c.m.id));
   // 클로드 추천 픽: 배당에서 역산한 확률이 높고, 유튜버 일치 목록과 겹치지 않는 경기
   const safeCl=bestPerMatch(base.filter(c=>!ytIds.has(c.m.id)),(a,b)=>a.pa-b.pa).sort((a,b)=>b.pa-a.pa).slice(0,5);
   // 작전 배분용 통합 목록: 확률 + 유튜버 일치 가산
-  const sc=c=>c.pa+0.03*Math.min(c.votes,3);
+  const sc=c=>c.pa+0.05*c.ratio*c.cov;
   const safe=bestPerMatch(base,(a,b)=>sc(a)-sc(b)).sort((a,b)=>sc(b)-sc(a)).slice(0,5);
   const used=new Set(safe.map(c=>c.m.id));
   const chal=bestPerMatch(all.filter(c=>c.odds>=2.0&&c.pa>=0.28&&c.ev>=0.95&&!used.has(c.m.id)),(a,b)=>a.ev-b.ev).sort((a,b)=>b.ev*(1+b.cov*.3)-a.ev*(1+a.cov*.3)).slice(0,5);
@@ -1366,7 +1367,7 @@ function pickCard(c,i,amt,kind){
    <div class="t">${esc(c.label)}</div>
    <div class="m">${esc(c.m.sport)} · ${esc(c.m.league)} · ${esc(c.m.home)} vs ${esc(c.m.away)} · ${fmtT(c.m.time)}</div>
    <div style="margin-top:4px"><span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'EV '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span>
-   <span class="tag">보정확률 ${(c.pa*100).toFixed(0)}%</span><span class="tag">유튜버 ${c.votes}/${c.nPick||0}명 일치</span></div></div>
+   <span class="tag">보정확률 ${(c.pa*100).toFixed(0)}%</span><span class="tag">유튜버 ${c.votes}/${c.nPick||0}명 (${Math.round((c.ratio||0)*100)}%)</span></div></div>
    <div><div class="odds">x${c.odds.toFixed(2)}</div><div class="stake">${won(amt)}</div></div></div>`;
 }
 function run(){
@@ -1379,8 +1380,8 @@ function run(){
   const rd=n=>Math.floor(n/1000)*1000;
   let h='';
   if(!safe.length&&!chal.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
-  h+=`<div class="panel"><h2>▌ 📺 안정 픽 ① 유튜버 일치 — 3명 이상이 같은 선택</h2>`+(safeYt.length?safeYt.map((c,i)=>pickCard(c,i,aY[i],'s')).join(''):'<div class="note">조건(유튜버 3명 이상 일치, 보정확률 40%↑, 배당 1.20↑)에 맞는 경기가 없습니다. 유튜버 픽을 더 채우거나 아래 ②를 참고하세요.</div>')+
-   `<div class="note">여러 채널이 같은 쪽을 골랐습니다. 다만 일치도와 배당 확률은 별개라, 등급이 낮으면(C) 유튜버는 몰렸어도 배당상 안정권은 아니라는 뜻입니다.</div></div>`;
+  h+=`<div class="panel"><h2>▌ 📺 안정 픽 ① 유튜버 일치 — 분석한 유튜버 60%↑가 같은 선택</h2>`+(safeYt.length?safeYt.map((c,i)=>pickCard(c,i,aY[i],'s')).join(''):'<div class="note">조건(2명 이상 일치 + 분석 유튜버의 60%↑ 일치, 보정확률 40%↑, 배당 1.20↑)에 맞는 경기가 없습니다. 유튜버 픽을 더 채우거나 아래 ②를 참고하세요.</div>')+
+   `<div class="note">'유튜버 3/4명'은 그 경기를 분석한 4명 중 3명이 이 선택을 골랐다는 뜻입니다(분석한 채널만 분모). 다만 일치도와 배당 확률은 별개라, 등급이 낮으면(C) 유튜버는 몰렸어도 배당상 안정권은 아니라는 뜻입니다.</div></div>`;
   h+=`<div class="panel"><h2>▌ 🤖 안정 픽 ② 클로드 추천 — 배당 확률 기준</h2>`+(safeCl.length?safeCl.map((c,i)=>pickCard(c,i,aC[i],'s')).join(''):'<div class="note">조건에 맞는 경기가 없습니다.</div>')+
    `<div class="note">유튜버 일치와 상관없이 배당에서 역산한 승리 확률이 높은 경기입니다. 클로드가 가진 정보는 배당과 유튜버 픽뿐이라, 선수·부상 같은 실제 분석은 반영되지 않았습니다. 추천 금액 = 안정 예산(60%)을 ①과 ②에 절반씩 나눈 뒤 확률 비례 분배.</div></div>`;
   h+=`<div class="panel"><h2>▌ 💥 도전 픽 BEST 5 — 중·고배당</h2>`+(chal.length?chal.map((c,i)=>pickCard(c,i,rd(cb*wC[i]/tC),'r')).join(''):'<div class="note">배당 2.0↑이면서 기대값(EV)이 괜찮은 도전 픽이 없습니다.</div>')+
