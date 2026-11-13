@@ -150,6 +150,7 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .oppt{background:#d8321f!important;color:#fff!important;border-color:#ff4d3a!important;font-weight:900}
 .legend{font-size:13px;color:var(--mute);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:0 0 8px;line-height:1.5}
 .lg-r{display:inline-block;background:#d8321f;color:#fff;font-weight:900;padding:1px 8px;border-radius:4px;margin-right:2px}
+.mx{font-size:13px;color:var(--mute);font-weight:700;margin-left:4px}
 </style>
 </head>
 <body>
@@ -454,13 +455,13 @@ function run(){
   const legend=`<div class="legend"><span class="lg-r">🚨 빨간 카드</span> = 유튜버 의견이 <b>배당과 반대</b>(배당상 약한 쪽을 유튜버가 고름) · 근거 보기로 확인하세요</div>`;
   const none=t=>`<div class="none">${t}</div>`;
   h+=legend+`<div class="jump">${[['s1','① 완전추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
-  h+=sec('s1','⭐','완전 추천픽','유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고, 배당 확률도 50% 이상인 경기 (최대 8개)',
+  h+=sec('s1','⭐','완전 추천픽 <small class="mx">(최대 8개)</small>','유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고, 배당 확률도 50% 이상인 경기 · 조건에 맞는 것만 보여줍니다',
     perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
-  h+=sec('s2','📺','유튜버 추천픽 TOP 8','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
+  h+=sec('s2','📺','유튜버 추천픽 <small class="mx">(최대 8개)</small>','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
     yt.length?yt.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('유튜버 픽이 없습니다. 유튜버 분석을 먼저 수집하세요.'));
-  h+=sec('s3','🤖','클로드 추천픽 TOP 8','배당에서 역산한 승리 확률이 높은 순 (50%↑, 배당 1.20↑). 선수·부상 같은 정보는 반영되지 않았습니다.',
+  h+=sec('s3','🤖','클로드 추천픽 <small class="mx">(최대 8개)</small>','배당에서 역산한 승리 확률이 높은 순 (50%↑, 배당 1.20↑). 선수·부상 같은 정보는 반영되지 않았습니다.',
     cl.length?cl.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('조건에 맞는 경기가 없습니다.'));
-  h+=sec('s4','💥','오늘의 고배당 TOP 8','배당 <b>1.8배 이상</b>이면서 유튜버가 다수 일치했거나, 확률 대비 배당이 유리(기대값 0.95↑)한 픽',
+  h+=sec('s4','💥','오늘의 고배당 <small class="mx">(최대 8개)</small>','배당 <b>1.8배 이상</b>이면서 유튜버가 다수 일치했거나, 확률 대비 배당이 유리(기대값 0.95↑)한 픽',
     high.length?high.map((c,i)=>pickCard(c,i,amtH(c),'r')).join(''):none('조건에 맞는 고배당 픽이 없습니다.'));
   const groups=tickets(safe,chal),CAP=100000000;
   h+=`<div class="panel" id="s5"><h2>🧾 이 조합에 ${won(budget)}을 전부 넣으면?</h2><div class="note" style="margin-bottom:10px">조합마다 <b>${won(budget)} 전액을 그 조합 하나에 투입</b>한다고 가정한 결과입니다. 여러 장을 사면 투입금도 그만큼 늘어납니다.</div>`;
