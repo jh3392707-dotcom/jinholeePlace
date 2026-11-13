@@ -118,6 +118,24 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .pc[open] .pc-more{display:none}
 .pc-d{padding:0 12px 12px;border-top:1px dashed var(--line)}
 .pc-d .pk-m{margin-top:10px}
+
+/* 조합 카드: 적중확률 / 적중 시 수령액 */
+.tk-g{margin:14px 0 6px;font-weight:900;color:var(--khaki);font-size:18px}
+.tk2{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+.tk2-h{display:flex;justify-content:space-between;align-items:center;font-weight:900;color:var(--khaki);font-size:15px;margin-bottom:6px}
+.tk2-h b{font-family:'Black Ops One',sans-serif;color:var(--amber);font-size:20px}
+.tk2-l{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.7}
+.tk2-big{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bx{background:#161c10;border:1px solid var(--line);border-radius:8px;padding:10px 8px;text-align:center;min-width:0}
+.bx small{display:block;font-size:12px;color:var(--mute);margin-bottom:4px;font-weight:700}
+.bx b{display:block;font-family:'Black Ops One','Noto Sans KR',sans-serif;font-size:30px;line-height:1.15;color:var(--green);overflow-wrap:anywhere}
+.bx b i{font-style:normal;font-size:18px;margin-left:2px}
+.bx .bar{margin-top:8px;height:8px}
+.bx.gold{border-color:var(--amber);background:#241b08}
+.bx.gold b{color:var(--amber);font-size:26px}
+.bx.gold span{display:block;margin-top:6px;font-size:13px;font-weight:900;color:#ffd77a}
+.tk2-f{margin-top:8px;text-align:center}
+@media(max-width:380px){.bx b{font-size:24px}.bx.gold b{font-size:21px}}
 </style>
 
 <div class="wrap">
@@ -143,8 +161,6 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 
 <details class="adv">
 <summary>⚙ 고급 설정 (평소엔 필요 없음)</summary>
-<div class="panel"><label>작전 성향 (예산 분배 방식)</label>
-  <select id="mode"><option value="stable">🛡 안정형 (방어 위주)</option><option value="balanced" selected>⚖ 균형형</option><option value="aggressive">🔥 공격형 (고배당 비중↑)</option></select></div>
 <nav>
   <button data-tab="intel">📋 경기·픽 직접 입력</button>
   <button data-tab="ch">📺 채널 신뢰도</button>
@@ -2330,23 +2346,18 @@ const offOdds=x=>{const t=Math.floor(Math.round(x*1e6)/1e3+1e-9)/1e3;return Math
 // 적중금 = 적중배당률 × 구입금액, 원 단위 절상
 const payoutOf=(stake,odds)=>Math.ceil(Math.round(stake*odds*100)/100-1e-9);
 const tk=legs=>({legs,odds:offOdds(legs.reduce((a,l)=>a*l.odds,1)),p:legs.reduce((a,l)=>a*l.pa,1)});
-function plan(safe,chal,budget,mode){
-  const R={stable:[.6,.3,.1],balanced:[.45,.25,.30],aggressive:[.25,.25,.5]}[mode];
-  const g=[];
-  const s2=combos(safe,2).map(tk).filter(t=>t.odds>=1.4).sort((a,b)=>b.p*b.odds-a.p*a.odds).slice(0,2);
-  const s3=combos(safe,3).map(tk).filter(t=>t.odds>=1.8).sort((a,b)=>b.p*b.odds-a.p*a.odds).slice(0,1);
+// 추천 조합 만들기. 각 조합은 "전액을 그 조합 하나에 투입한다"고 가정하고 계산한다.
+// 승부식 규정: 2~10경기 조합, 같은 경기의 일반·핸디·언오버는 섞을 수 없음(여기서는 경기당 하나만 고르므로 해당 없음)
+function tickets(safe,chal){
+  const rk=(a,b)=>b.p*b.odds-a.p*a.odds;
+  const s2=combos(safe,2).map(tk).filter(t=>t.odds>=1.4).sort(rk).slice(0,3);
+  const s3=combos(safe,3).map(tk).filter(t=>t.odds>=1.8).sort(rk).slice(0,2);
   const c=[];
   if(safe[0]&&chal[0])c.push(tk([safe[0],chal[0]]));
   if(chal.length>=2)c.push(tk([chal[0],chal[1]]));
   if(safe.length>=2&&chal[0])c.push(tk([safe[0],safe[1],chal[0]]));
-  g.push({name:'🛡 안정 2폴더',r:R[0],t:s2},{name:'🛡 안정 3폴더',r:R[1],t:s3},{name:'💥 도전 조합',r:R[2],t:c.slice(0,2)});
-  const act=g.filter(x=>x.t.length),sum=act.reduce((a,x)=>a+x.r,0)||1;
-  act.forEach(x=>{
-    const gb=budget*x.r/sum,ps=x.t.reduce((a,t)=>a+t.p,0);
-    x.t.forEach(t=>{t.stake=Math.floor(gb*(t.p/ps)/1000)*1000});
-    x.t=x.t.filter(t=>t.stake>=1000);
-  });
-  return act.filter(x=>x.t.length);
+  if(chal.length>=3)c.push(tk([chal[0],chal[1],chal[2]]));
+  return [{name:'🛡 안정 2폴더',t:s2},{name:'🛡 안정 3폴더',t:s3},{name:'💥 도전 조합',t:c.slice(0,3)}].filter(g=>g.t.length);
 }
 
 /* ---------- 렌더 ---------- */
@@ -2402,7 +2413,7 @@ function pickCard(c,i,amt,kind){
   </div></details>`;
 }
 function run(){
-  const budget=fixBudget(),mode=$('mode').value;
+  const budget=fixBudget();
   const oldData=window.TOTO_DATA&&!(window.TOTO_DATA.parserVersion>=2);
   const {perfect,yt,cl,high,safe,chal}=build();
   const rd=n=>Math.floor(n/1000)*1000;
@@ -2419,7 +2430,7 @@ function run(){
   if(!perfect.length&&!yt.length&&!cl.length&&!high.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
   const sec=(id,ico,title,desc,body)=>`<section class="rs" id="${id}"><h2 class="rs-t"><span>${ico}</span>${title}</h2><div class="rs-d">${desc}</div>${body.startsWith('<details')?`<div class="pgrid">${body}</div>`:body}</section>`;
   const none=t=>`<div class="none">${t}</div>`;
-  h+=`<div class="jump">${[['s1','① 완전추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 배분']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
+  h+=`<div class="jump">${[['s1','① 완전추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
   h+=sec('s1','⭐','완전 추천픽','유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고, 배당 확률도 50% 이상인 경기',
     perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
   h+=sec('s2','📺','유튜버 추천픽 TOP 5','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
@@ -2428,19 +2439,22 @@ function run(){
     cl.length?cl.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('조건에 맞는 경기가 없습니다.'));
   h+=sec('s4','💥','오늘의 고배당 TOP 5','배당 <b>1.8배 이상</b>이면서 유튜버가 다수 일치했거나, 확률 대비 배당이 유리(기대값 0.95↑)한 픽',
     high.length?high.map((c,i)=>pickCard(c,i,amtH(c),'r')).join(''):none('조건에 맞는 고배당 픽이 없습니다.'));
-  const pl=plan(safe,chal,budget,mode);
-  h+=`<div class="panel" id="s5"><h2>🗺 작전 배분 — ${won(budget)} 어떻게 엮을까</h2>`;
-  let spent=0,ev=0;
-  pl.forEach(g=>{
-    h+=`<div style="color:var(--khaki);font-weight:700;margin:8px 0 4px">${g.name} (${g.t.length}장)</div>`;
-    g.t.forEach(t=>{spent+=t.stake;ev+=payoutOf(t.stake,t.odds)*t.p;
-      h+=`<div class="ticket"><div class="h"><span>${t.legs.length}폴더 · 합산 x${t.odds.toFixed(2)}</span><span>투입 ${won(t.stake)}</span></div>
-      <ul>${t.legs.map(l=>`<li>${esc(l.label)} <span class="note">(${esc(l.m.home)} vs ${esc(l.m.away)}, x${l.odds.toFixed(2)})</span> <span class="cd" data-t="${esc(l.m.time)}"></span></li>`).join('')}</ul>
-      <div class="f">적중확률 약 ${(t.p*100).toFixed(1)}% · 적중 시 ${won(payoutOf(t.stake,t.odds))} 수령</div></div>`});
+  const groups=tickets(safe,chal),CAP=100000000;
+  h+=`<div class="panel" id="s5"><h2>🧾 이 조합에 ${won(budget)}을 전부 넣으면?</h2><div class="note" style="margin-bottom:10px">조합마다 <b>${won(budget)} 전액을 그 조합 하나에 투입</b>한다고 가정한 결과입니다. 여러 장을 사면 투입금도 그만큼 늘어납니다.</div>`;
+  groups.forEach(g=>{
+    h+=`<div class="tk-g">${g.name} <span class="note">(${g.t.length}장)</span></div>`;
+    g.t.forEach(t=>{
+      const pay=payoutOf(budget,t.odds),over=pay>CAP,prof=pay-budget,ev=pay*t.p;
+      h+=`<div class="tk2"><div class="tk2-h"><span>${t.legs.length}폴더</span><span>합산배당 <b>x${t.odds.toFixed(2)}</b></span></div>
+      <ul class="tk2-l">${t.legs.map(l=>`<li><b>${esc(l.label)}</b><span class="note"> ${esc(l.m.home)} vs ${esc(l.m.away)} · x${l.odds.toFixed(2)}</span> <span class="cd" data-t="${esc(l.m.time)}"></span></li>`).join('')}</ul>
+      <div class="tk2-big">
+        <div class="bx"><small>🎯 적중확률</small><b>${(t.p*100).toFixed(1)}<i>%</i></b><div class="bar"><i style="width:${Math.max(3,Math.min(100,t.p*100))}%"></i></div></div>
+        <div class="bx gold"><small>💰 적중 시 수령액</small><b>${over?'1억 초과':won(pay)}</b><span>${over?'1장 최대 적중금 1억원 규정으로 발매 제한':'+'+won(prof)+' 수익'}</span></div>
+      </div>
+      <div class="note tk2-f">투입 ${won(budget)} × ${t.odds.toFixed(2)}배 · 모델상 기대 회수 약 ${won(ev)} (${(ev/budget*100).toFixed(0)}%)</div></div>`});
   });
-  if(!pl.length)h+='<div class="note">예산이 너무 적거나 조합을 만들 픽이 부족합니다.</div>';
-  else h+=`<div class="f">총 투입 <b>${won(spent)}</b> (적중금은 공식 규정대로 계산: 합산배당 소수 둘째 자리, 원 단위 절상 · 세금은 미반영) · 모델상 기대 회수 약 <b>${won(ev)}</b> (${(ev/spent*100).toFixed(0)}%)</div>
-  <div class="warn">💡 100%에 못 미치면 '길게 하면 잃는 구조'라는 뜻입니다. 확률은 배당 역산 + 유튜버 일치도로 추정한 값이라 실제와 다를 수 있습니다. 한 장이라도 전부 맞아야 하므로 폴더 수가 늘수록 적중률이 급감합니다. 보통 2폴(안정)을 중심으로, 도전 조합은 소액만 권장합니다.</div>`;
+  if(!groups.length)h+='<div class="none">조합을 만들 픽이 부족합니다.</div>';
+  h+=`<div class="warn">📐 <b>적중금 계산 (스포츠토토 공식 규정)</b><br>① 합산배당 = 각 경기 배당의 곱 → 소수점 셋째 자리 절사 후 둘째 자리에서 절상<br>② 적중금 = 합산배당 × 투입금 (원 단위 올림)<br>③ 승부식은 2~10경기 조합 · 한 장 최대 적중금 1억원<br>④ <b>세금은 반영되지 않았습니다.</b> 1장 구매 한도는 출처마다 달라(온라인 5만원 / 판매점 10만원 보도) 베트맨 공지로 확인하세요.<br>💡 확률은 배당 역산 + 유튜버 일치도로 추정한 값이고, 기대 회수가 100% 미만이면 오래 할수록 잃는 구조라는 뜻입니다. 폴더 수가 늘수록 적중률이 급감합니다.</div>`;
   h+='</div>';
   // 배당 검증 표
   const vmap=new Map();[...perfect,...yt,...cl,...high,...safe].forEach(c=>vmap.set(c.m.id+c.k,c));
