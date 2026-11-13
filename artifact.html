@@ -82,6 +82,13 @@ body{font-size:16px}
 .vd{margin-top:14px}.vd>summary{color:var(--khaki)}
 .fire{letter-spacing:.05em;font-size:24px;padding:20px}
 header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
+
+.stale.big{display:flex;align-items:center;gap:14px;padding:14px 16px;border-width:2px}
+.sb-n{flex:0 0 auto;font-family:'Black Ops One','Noto Sans KR',sans-serif;font-size:52px;line-height:1;color:var(--green);text-align:center}
+.sb-n small{display:block;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:900;margin-top:4px;color:var(--text)}
+.sb-t{font-size:14px;line-height:1.55}
+.stale.big.bad .sb-n{color:#ff6b57}.stale.big.bad{background:#3a1611}.stale.big.bad .sb-t{color:#ffd2c9}
+.fire{font-size:20px;letter-spacing:.02em;padding:18px 12px}
 </style>
 
 <div class="wrap">
@@ -93,7 +100,7 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 
 <div id="sampleBar" class="sample hide">⚠ 현재 <b>샘플 데이터</b>입니다(가상의 경기·배당). [🔄 분석 최신화]로 오늘 데이터를 받으세요.</div>
 <section id="tab-ops">
-  <button class="fire" id="refresh" type="button">🔄 분석 최신화</button>
+  <button class="fire" id="refresh" type="button">🫡 최신화는 대위 이진호에게 요청</button>
   <div id="refreshMsg" class="note" style="margin:-4px 0 12px"></div>
   <div class="panel">
     <label>오늘 투자할 금액 (1,000원 단위)</label>
@@ -1444,10 +1451,10 @@ function run(){
   const wS=[...um.values()].reduce((a,c)=>a+Math.pow(c.pa,3),0)||1,wH=high.reduce((a,c)=>a+c.ev,0)||1;
   const amtS=c=>rd(Math.min(sb*Math.pow(c.pa,3)/wS,budget*0.12)),amtH=c=>rd(Math.min(cb*c.ev/wH,budget*0.12));
   let h='';
-  if(oldData)h+=`<div class="stale bad" style="font-size:15px;line-height:1.6"><b>⛔ 예전 방식으로 수집된 배당입니다 (미리보기용)</b><br>전반전 배당 등이 섞여 <b>틀린 값</b>이 있습니다. 예: 사우디 vs 한국 한국 승 2.35 → 실제 1.66.<br>이 결과로는 구매하지 마세요. 노트북에서 [🔄 분석 최신화]를 먼저 하세요.</div>`;
+  if(oldData)h+=`<div class="stale bad" style="font-size:15px;line-height:1.6"><b>⛔ 예전 방식으로 수집된 배당입니다 (미리보기용)</b><br>전반전 배당 등이 섞여 <b>틀린 값</b>이 있습니다. 예: 사우디 vs 한국 한국 승 2.35 → 실제 1.66.<br>이 결과로는 구매하지 마세요. 대위 이진호에게 최신화를 먼저 요청하세요.</div>`;
   const colAt=window.TOTO_DATA&&window.TOTO_DATA.collectedAt;
   if(colAt){const mins=Math.round((Date.now()-new Date(colAt))/60000);
-    h+=`<div class="stale ${mins>15?'bad':''}">${mins>15?'⚠ ':''}배당 수집 후 <b>${mins}분</b> 경과 — 배당은 실시간으로 바뀝니다. 구매 직전 [🔄 분석 최신화]</div>`}
+    h+=`<div class="stale big ${mins>15?'bad':''}"><div class="sb-n">${mins}<small>분 경과</small></div><div class="sb-t">${mins>15?'🚨 ':''}배당 수집 후 시간이 지났습니다.<br>배당은 실시간으로 바뀝니다 — 구매 직전엔 <b>대위 이진호</b>에게 최신화를 요청하십시오! 🫡</div></div>`}
   if(!perfect.length&&!yt.length&&!cl.length&&!high.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
   const sec=(id,ico,title,desc,body)=>`<section class="rs" id="${id}"><h2 class="rs-t"><span>${ico}</span>${title}</h2><div class="rs-d">${desc}</div>${body}</section>`;
   const none=t=>`<div class="none">${t}</div>`;
@@ -1570,7 +1577,7 @@ $('refresh').onclick=async()=>{
   const msg=$('refreshMsg'),btn=$('refresh');btn.disabled=true;
   const ico={wait:'⏳',run:'🔄',ok:'✅',warn:'⚠️',fail:'❌',skip:'➖'};
   const draw=st=>{const sec=Math.round((Date.now()-st.startedAt)/1000);
-    msg.innerHTML='<div style="line-height:1.7">'+st.steps.map(x=>`${ico[x.status]||'⏳'} ${esc(x.name)}${x.detail&&x.status!=='ok'?`<div class="note" style="margin-left:22px">${esc(x.detail)}</div>`:''}`).join('<br>')+`<br>🧮 결과 다시 계산 ${st.running?'(대기)':'✅'}<div class="note">경과 ${sec}초 · 1~5분 걸립니다. 창을 닫지 마세요.</div></div>`};
+    msg.innerHTML='<div style="line-height:1.7"><b style="color:var(--khaki)">📡 대위 이진호, 작전 수행 중입니다!</b><br>'+st.steps.map(x=>`${ico[x.status]||'⏳'} ${esc(x.name)}${x.detail&&x.status!=='ok'?`<div class="note" style="margin-left:22px">${esc(x.detail)}</div>`:''}`).join('<br>')+`<br>🧮 결과 다시 계산 ${st.running?'(대기)':'✅'}<div class="note">경과 ${sec}초 · 1~5분 걸립니다. 창을 닫지 마세요.</div></div>`};
   try{
     const r=await fetch('/api/analyze',{method:'POST'});
     if(!r.ok)throw new Error('server '+r.status);
@@ -1585,7 +1592,7 @@ $('refresh').onclick=async()=>{
       window.TOTO_DATA=st.data;importData(st.data,true);
       LASTDIFF=[];S.matches.forEach(m=>{const o=prev[m.id];if(!o)return;KEYS.forEach(k=>{if(o[k]>1&&m.odds[k]>1&&Math.abs(o[k]-m.odds[k])>0.001)LASTDIFF.push({m,k,old:o[k],nw:m.odds[k]})})});
       run();draw(st);stamp();
-      const done=document.createElement('div');done.className='note';done.style.color='var(--green)';done.textContent=`✅ 분석 최신화 완료: ${S.matches.length}경기${st.warn?' (일부 단계는 대체 방식)':''}`;msg.appendChild(done);
+      const done=document.createElement('div');done.className='note';done.style.color='var(--green)';done.textContent=`🎖 대위 이진호: 임무 완료! 충성! (${S.matches.length}경기${st.warn?' · 일부 단계는 대체 방식':''})`;msg.appendChild(done);
     };
     tick();
   }catch(e){
@@ -1609,7 +1616,7 @@ if(window.TOTO_DATA&&importData(window.TOTO_DATA)){$('dataRes').textContent='수
 stamp();
 if(!LOCAL){$('refresh').style.display='none';$('refreshMsg').style.margin='0 0 12px';
   const box=document.createElement('div');box.className='stale';box.style.cssText='font-size:15px;line-height:1.6;margin-bottom:12px';
-  box.innerHTML='📱 <b>보기 전용 화면</b>입니다. <b>[🔄 분석 최신화]</b> 버튼은 노트북에서 <b>앱열기.bat</b>을 더블클릭해 연 화면에 있습니다. 거기서 분석하면 최신 배당과 추천이 새로 계산됩니다.';
+  box.innerHTML='📱 <b>보기 전용 화면</b>입니다. 최신화는 <b>대위 이진호</b>(노트북)에게 요청해야 합니다. 노트북에서 <b>앱열기.bat</b>을 더블클릭해 연 화면의 [🫡 최신화는 대위 이진호에게 요청] 버튼을 누르면 최신 배당과 추천이 새로 계산됩니다.';
   $('refreshMsg').before(box)}
 run();
 if(/[?&]auto=1/.test(location.search)&&location.protocol.startsWith('http'))setTimeout(()=>$('refresh').click(),400);
