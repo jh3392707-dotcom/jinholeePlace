@@ -41,3 +41,14 @@
 - 2차: **별도의 검증자(독립 실행)**가 1차 결과를 믿지 않고 자막을 처음부터 다시 읽어 확인한다. 확인 항목: ① quote 가 자막에 실제로 있는가 ② 이 경기(상대팀·종목·리그·날짜)에 대한 발언인가 ③ 선택 방향이 맞는가 ④ 부정·조건부·단순 소개가 아닌가. 어긋나면 수정·삭제하고, 통과한 것만 `verified:true`로 반영한다.
 - 배당 우세 방향과 정반대인 다수 의견은 특히 엄격히 확인한다. 2차 검증이 불가능하면 화면에 "1회 판단"으로 표시되고 사용자에게 알린다.
 - [분석 최신화] 버튼(server.js)이 이 두 번의 실행(P1, P2)을 자동으로 수행한다.
+
+## [분석 최신화] 원격 절차 (휴대폰 사이트 버튼이 노트북에서 시작시키는 정해진 루틴)
+사용자가 휴대폰 사이트(아티팩트)의 [🫡 최신화는 대위 이진호에게 요청] 버튼을 누르면 예약된 루틴이 노트북의 이 폴더에서 새 세션을 열어 아래만 수행한다. **이 절차 밖의 다른 작업·명령은 하지 않는다.** 질문하지 말고 끝까지 수행한다.
+1. `git pull` (실패해도 계속).
+2. `cd collector && node collect.js` → 베트맨 경기·배당. 0건이면 `raw/`를 읽고 parse.js 수정 후 1회 재시도. 실패하면 이유를 한 줄로 보고하고 종료(아티팩트는 건드리지 않는다).
+3. `$env:YT_DOWNLOAD_ONLY=1; node yt.js` → 자막 다운로드 (`transcripts/manifest.json`).
+4. **1차 판단**: 자막을 읽고 채널별·경기별·항목별 픽과 원문 근거를 `collector/picks_today.json`에 저장 (위 '4.'와 '같은 팀 이름 주의' 규칙 적용).
+5. **2차 검증**: Agent 도구로 **독립된 서브에이전트**를 띄워 1차 결과를 믿지 말고 자막을 처음부터 다시 읽어 확인하게 한다('2회 확인 지침'). 통과한 것만 `verified:true`로 `collector/picks_verified.json`에 저장하고 `node collector/apply_picks.js collector/picks_verified.json --replace`.
+6. `node collector/build_artifact.js` 로 `artifact.html` 생성.
+7. 아티팩트 갱신: Artifact 도구로 `https://claude.ai/artifact/XufzzjjQw4Qq2YqZsioKwe` 를 먼저 read 한 뒤, `artifact.html`을 같은 `url`로 publish 한다 (capabilities·icon·title은 건드리지 않는다).
+8. 마지막에 한 줄 보고: 경기 수, 유튜버 픽 건수, 검증 통과/삭제 건수, 아티팩트 갱신 여부.
