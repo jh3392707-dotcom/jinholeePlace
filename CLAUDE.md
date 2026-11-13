@@ -48,7 +48,7 @@
 - 쉘 명령은 아래 형태만 쓴다: `git pull`, `node collector/<스크립트>.js [인자]`. 폴더 이동(`cd`)·`$env:`·`&&`·`;`·`|`로 이어 붙인 **복합 명령은 쓰지 않는다.** (모든 스크립트는 저장소 루트에서 실행해도 동작한다.)
 - 확인이 필요하면 쉘 명령(`grep`, `wc`, `ls`, `cat`, `git diff`, `tail` 등) 대신 **Read·Grep·Glob 도구**를 쓴다. 불필요한 점검 명령은 하지 않는다.
 - 아티팩트 게시 후 별도의 재검증 명령을 돌리지 않는다. 게시 결과 메시지로 충분하다.
-1. `git pull` (실패해도 계속).
+1. `git pull --rebase --autostash` (노트북에 남은 변경을 자동으로 잠시 치우고 최신본을 받는다). **실패하거나 충돌 표시가 나오면 오래된 템플릿으로 게시하지 말고**, 수집·분석까지만 하고 이유를 보고한다.
 2. `node collector/collect.js` → 베트맨 경기·배당. 0건이면 `raw/`를 읽고 parse.js 수정 후 1회 재시도. 실패하면 이유를 한 줄로 보고하고 종료(아티팩트는 건드리지 않는다).
 3. `node collector/yt.js --download-only` → 자막 다운로드 (`collector/transcripts/manifest.json`).
 4. **1차 판단**: 자막을 읽고 채널별·경기별·항목별 픽과 원문 근거를 `collector/picks_today.json`에 저장 (위 '4.'와 '같은 팀 이름 주의' 규칙 적용).
@@ -56,7 +56,7 @@
 6. **추천픽 저장(성적표용)**: `node collector/snapshot.js` — 지금 앱이 보여주는 추천픽(네 구역+조합)을 `records.json`에 스냅샷으로 저장한다. (Playwright 필요)
 7. **지난 추천픽 결과 최신화 (최신화 때마다 항상)**: `node collector/apply_results.js --list-pending` 로 결과가 필요한 경기를 확인하고, 각 경기의 **정규시간 기준 최종 점수**를 신뢰할 수 있는 출처(베트맨 경기결과 → 네이버스포츠·리그 공식 순)에서 찾아 `collector/results_today.json`에 `{"경기id":{"home":2,"away":1,"total":null,"source":"출처"}}`로 저장한 뒤 `node collector/apply_results.js collector/results_today.json`. 규칙: 축구는 정규 90분(연장·승부차기 제외), 농구·야구는 연장 포함 최종, 배구는 home/away=세트 스코어이고 `total`에 총 득점 합. **확실하지 않으면 넣지 말고 대기로 둔다. 출처를 반드시 적는다.**
 8. `node collector/build_artifact.js` 로 `artifact.html` 생성 (records.js가 함께 들어간다).
-9. 아티팩트 갱신: Artifact 도구로 `https://claude.ai/artifact/XufzzjjQw4Qq2YqZsioKwe` 를 먼저 read 한 뒤, `artifact.html`을 같은 `url`로 publish 한다 (capabilities·icon·title은 건드리지 않는다).
+9. 아티팩트 갱신 **전 검사**: Grep 도구로 `artifact.html` 안에 `rc-pg`(성적표 그룹 카드)와 `tickCd`가 있는지 확인한다. 없으면 템플릿이 오래된 것이니 **게시하지 말고** 보고한다. 있으면 Artifact 도구로 `https://claude.ai/artifact/XufzzjjQw4Qq2YqZsioKwe` 를 먼저 read 한 뒤, `artifact.html`을 같은 `url`로 publish 한다 (capabilities·icon·title은 건드리지 않는다).
 10. 마지막에 한 줄 보고: 경기 수, 유튜버 픽 건수, 검증 통과/삭제 건수, **성적표(적중·비적중·대기, "제 말만 따랐다면 ±○○원")**, 아티팩트 갱신 여부.
 
 ## 배당과 반대인 다수 의견은 사용자에게 떠넘기지 말고 직접 해결한다 (지침)
