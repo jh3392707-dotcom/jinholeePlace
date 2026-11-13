@@ -6,7 +6,11 @@
 1. 환경 준비(없을 때만): Node.js 확인, `cd collector && npm i playwright && npx playwright install chromium`, `pip install yt-dlp`.
 2. `cd collector && node collect.js` → 베트맨 승부식 경기·배당(승패/핸디캡/언더오버)을 `../data.json`에 저장. 0건이면 `collector/raw/`를 읽고 `parse.js`를 실제 응답 형식에 맞게 고친 뒤 재실행.
 3. `channels.json`에 채널 URL이 비어 있으면 8개 채널(오늘의 매치업, 토토엉클, 쿠노, 프리뷰N, 앞산할배, 두포리, 토토홈즈, 스포츠분석:정프로)의 공식 채널 URL을 찾아 채워 넣는다.
-4. `node yt.js` → 채널별 최신 영상 3개 자막으로 픽 추출(`../data.json`의 picks). 영상 제목이 오늘 경기 분석이 맞는지 확인.
+4. 유튜버 픽 추출 (API 키 없이, 이 세션이 직접 읽고 판단 — 키워드 규칙보다 정확):
+   a. `cd collector` 후 PowerShell에서 `$env:YT_DOWNLOAD_ONLY=1; node yt.js` 로 자막만 내려받는다 (`transcripts/manifest.json` 생성).
+   b. manifest의 각 영상 자막(`transcripts/<영상id>.txt`)에서 `../data.json` 경기의 팀 이름을 검색(Grep)하고 앞뒤 문맥을 읽어, 채널별로 **항목별(승무패/핸디캡/언더오버) 픽**을 판단한다. 부정("~는 어렵다")·조건부 발언은 픽으로 세지 않는다. 확실하지 않으면 제외한다. 최신 영상 우선.
+   c. 결과를 `collector/picks_today.json`에 쓰고(형식은 `apply_picks.js` 상단 주석, 근거 문장 `quote`는 자막 원문 그대로) `node apply_picks.js picks_today.json` 으로 반영한다.
+   d. `ANTHROPIC_API_KEY` 환경변수가 이미 설정돼 있으면 대신 `node yt.js`(키워드/LLM 자동 추출)를 써도 된다. 영상 제목이 오늘 경기 분석이 맞는지 확인한다.
 5. `index.html`의 계산 로직(`build`, `plan`)과 같은 기준으로 **현재 시간 이후 경기만** 대상으로: 안정 Best5, 도전 Best5, 추천 금액, 사용자가 말한 예산의 2폴/3폴 분배를 채팅에 요약해서 알려준다.
 6. 변경된 코드는 커밋/푸시. `data.json`은 개인 데이터가 아니면 커밋해도 된다.
 

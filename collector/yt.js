@@ -8,6 +8,9 @@ const data=JSON.parse(fs.readFileSync(dataPath,'utf8'));
 const chans=JSON.parse(fs.readFileSync(path.join(__dirname,'channels.json'),'utf8'));
 const ytdlp=(args)=>execFileSync('yt-dlp',args,{encoding:'utf8',maxBuffer:1<<28,timeout:180000});
 const NV=+process.env.YT_VIDEOS||3;
+// 자막만 내려받고(추출은 Claude 세션이 직접 읽고 판단) manifest.json을 만든다: YT_DOWNLOAD_ONLY=1 node yt.js
+const DL=process.env.YT_DOWNLOAD_ONLY==='1'||process.argv.includes('--download-only');
+const manifest=[];
 function latestVideos(name,url){
   if(url){const j=JSON.parse(ytdlp(['--flat-playlist','-J','--playlist-end',String(NV),url.replace(/\/$/,'')+'/videos']));return (j.entries||[]).slice(0,NV).map(e=>({id:e.id,title:e.title}))}
   const core=name.replace(/[:\s]/g,'');
@@ -31,6 +34,7 @@ function transcript(id){
       const agg={},evd={};let used=0;
       for(const v of vs){
         const text=transcript(v.id);if(!text){console.log(`\n   - 자막 없음: ${v.title}`);continue}
+        if(DL){manifest.push({channel:name,videoId:v.id,title:v.title,url:'https://www.youtube.com/watch?v='+v.id,file:'transcripts/'+v.id+'.txt',chars:text.length});used++;console.log(`\n   - 자막 저장: ${v.title}`);continue}
         const {picks,via}=await extract(text,data.matches,name);used++;
         console.log(`\n   - "${v.title}" → ${Object.keys(picks).length}경기 (${via})`);
         // 최신 영상 우선: 이미 정해진 경기는 덮어쓰지 않음. 근거(원문 문장·영상 링크)를 함께 저장
@@ -43,6 +47,7 @@ function transcript(id){
       console.log(`   => ${name}: 영상 ${used}/${vs.length}개 분석, ${Object.keys(agg).length}경기 픽`);
     }catch(e){console.log('실패:',e.message.split('\n')[0])}
   }
+  if(DL){fs.writeFileSync(path.join(__dirname,'transcripts','manifest.json'),JSON.stringify(manifest,null,1));console.log(`\n자막 ${manifest.length}개 저장 완료 → collector/transcripts/manifest.json. 이제 자막을 읽고 apply_picks.js로 반영하세요.`);return}
   fs.writeFileSync(dataPath,JSON.stringify(data,null,1));fs.writeFileSync(path.join(__dirname,'..','data.js'),'window.TOTO_DATA='+fs.readFileSync(path.join(__dirname,'..','data.json'),'utf8')+';');
   console.log('data.json 갱신 완료. 앱에서 불러온 뒤 매트릭스에서 확인하세요.');
 })();
