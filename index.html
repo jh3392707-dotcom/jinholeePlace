@@ -96,6 +96,10 @@ td.l{text-align:left;min-width:150px}td select{padding:3px;font-size:12px}
       <div><label>승 배당</label><input id="f_h" type="number" step="0.01"></div>
       <div><label>무 배당(없으면 빈칸)</label><input id="f_d" type="number" step="0.01"></div>
       <div><label>패 배당</label><input id="f_a" type="number" step="0.01"></div>
+      <div><label>핸디 기준(예 -1.5)</label><input id="f_hc" placeholder="-1.5"></div>
+      <div><label>핸디 승 배당</label><input id="f_hh" type="number" step="0.01"></div>
+      <div><label>핸디 무 배당</label><input id="f_hd" type="number" step="0.01"></div>
+      <div><label>핸디 패 배당</label><input id="f_ha" type="number" step="0.01"></div>
       <div><label>언오버 기준</label><input id="f_line" placeholder="2.5"></div>
       <div><label>오버 배당</label><input id="f_o" type="number" step="0.01"></div>
       <div><label>언더 배당</label><input id="f_u" type="number" step="0.01"></div>
@@ -105,7 +109,7 @@ td.l{text-align:left;min-width:150px}td select{padding:3px;font-size:12px}
 
   <div class="panel">
     <h2>▌ 경기 여러 건 붙여넣기</h2>
-    <label>한 줄에 한 경기, 쉼표(,)로 구분: 시간,종목,리그,홈,원정,승,무,패[,기준,오버,언더] — 시간은 21:30 또는 11/14 21:30 형식, 무 없으면 -</label>
+    <label>한 줄에 한 경기, 쉼표(,)로 구분: 시간,종목,리그,홈,원정,승,무,패[,언오버기준,오버,언더,핸디기준,핸승,핸무,핸패] — 시간은 21:30 또는 11/14 21:30 형식, 무 없으면 -</label>
     <textarea id="bulk" placeholder="21:30,축구,EPL,맨시티,풀럼,1.30,5.50,9.00,2.5,1.85,1.90&#10;18:30,야구,KBO,LG,두산,1.75,-,2.05"></textarea>
     <div style="margin-top:8px"><button class="btn" id="addBulk">일괄 등록</button></div>
   </div>
@@ -153,7 +157,8 @@ td.l{text-align:left;min-width:150px}td select{padding:3px;font-size:12px}
 
 <script>
 const CH=['오늘의 매치업','토토엉클','쿠노','프리뷰N','앞산할배','두포리','토토홈즈','스포츠분석:정프로'];
-const KEYS=['H','D','A','O','U'];
+const KEYS=['H','D','A','HH','HD','HA','O','U'];
+const KL={H:'승',D:'무',A:'패',HH:'핸승',HD:'핸무',HA:'핸패',O:'오',U:'언'};
 let S;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -191,15 +196,17 @@ function sample(){
     s6:['H','H','','','H','H','H',''],s7:['A','H','','A','','H','',''],s8:['A','','D','A','','A','A',''],
     s9:['H','H','H','','H','H','','H'],s10:['H','','','H','','','',''],s11:['A','','H','','','A','','']};
   S.picks={};Object.keys(P).forEach(id=>{S.picks[id]={};CH.forEach((c,i)=>{if(P[id][i])S.picks[id][c]=P[id][i]})});
+  const hs={s0:['-1.5',2.05,3.9,2.7],s1:['-1.5',2.10,3.8,2.6],s4:['-2.5',1.95,4.0,3.1],s8:['0',2.7,3.4,2.4]};
+  S.matches.forEach(m=>{const h=hs[m.id];if(h){m.hcap=h[0];m.odds.HH=h[1];m.odds.HD=h[2];m.odds.HA=h[3]}});
   S.sample=true;
 }
 
 /* ---------- 계산 ---------- */
-function selLabel(m,k){return k=='H'?m.home+' 승':k=='A'?m.away+' 승':k=='D'?'무승부':k=='O'?'오버'+(m.line?' '+m.line:''):'언더'+(m.line?' '+m.line:'')}
+function selLabel(m,k){const hc=m.hcap?' ('+m.hcap+')':'';if(k=='HH')return '핸디 '+m.home+' 승'+hc;if(k=='HD')return '핸디 무'+hc;if(k=='HA')return '핸디 '+m.away+' 승'+hc;return k=='H'?m.home+' 승':k=='A'?m.away+' 승':k=='D'?'무승부':k=='O'?'오버'+(m.line?' '+m.line:''):'언더'+(m.line?' '+m.line:'')}
 function candidates(){
   const now=Date.now(),totW=CH.reduce((a,c)=>a+S.weights[c],0)||1,out=[];
   S.matches.filter(m=>new Date(m.time).getTime()>now).forEach(m=>{
-    const groups=[['H','D','A'],['O','U']];
+    const groups=[['H','D','A'],['HH','HD','HA'],['O','U']];
     groups.forEach(g=>{
       const ks=g.filter(k=>m.odds[k]>1);if(ks.length<2)return;
       const inv=ks.reduce((a,k)=>a+1/m.odds[k],0);
@@ -289,7 +296,7 @@ function run(){
 /* ---------- 입력 UI ---------- */
 function renderIntel(){
   const ms=S.matches.slice().sort((a,b)=>a.time.localeCompare(b.time));
-  const opts=m=>{const o=['<option value="">-</option>'];KEYS.forEach(k=>{if(m.odds[k]>1)o.push(`<option value="${k}">${k=='H'?'승':k=='D'?'무':k=='A'?'패':k=='O'?'오':'언'}</option>`)});return o.join('')};
+  const opts=m=>{const o=['<option value="">-</option>'];KEYS.forEach(k=>{if(m.odds[k]>1)o.push(`<option value="${k}">${KL[k]}</option>`)});return o.join('')};
   $('matrix').innerHTML=ms.length?`<table><tr><th>경기</th>${CH.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>`+
    ms.map(m=>`<tr><td class="l"><b>${esc(m.home)}</b> vs <b>${esc(m.away)}</b><br><span class="note">${fmtT(m.time)} ${esc(m.league)}</span></td>`+
     CH.map((c,i)=>`<td><select data-m="${m.id}" data-c="${i}">${opts(m)}</select></td>`).join('')+'</tr>').join('')+'</table>':'<div class="note">경기를 먼저 등록하세요.</div>';
@@ -312,8 +319,8 @@ function newMatch(o){
 $('addMatch').onclick=()=>{
   const g=id=>$(id).value.trim(),n=id=>+g(id)||0;
   if(!g('f_time')||!g('f_home')||!g('f_away')||!n('f_h')||!n('f_a')){alert('시간, 팀명, 승/패 배당은 필수입니다.');return}
-  newMatch({time:g('f_time'),sport:g('f_sport'),league:g('f_league'),home:g('f_home'),away:g('f_away'),line:g('f_line'),odds:{H:n('f_h'),D:n('f_d'),A:n('f_a'),O:n('f_o'),U:n('f_u')}});
-  ['f_home','f_away','f_h','f_d','f_a','f_line','f_o','f_u'].forEach(id=>$(id).value='');renderIntel();
+  newMatch({time:g('f_time'),sport:g('f_sport'),league:g('f_league'),home:g('f_home'),away:g('f_away'),line:g('f_line'),hcap:g('f_hc'),odds:{H:n('f_h'),D:n('f_d'),A:n('f_a'),HH:n('f_hh'),HD:n('f_hd'),HA:n('f_ha'),O:n('f_o'),U:n('f_u')}});
+  ['f_home','f_away','f_h','f_d','f_a','f_line','f_o','f_u','f_hc','f_hh','f_hd','f_ha'].forEach(id=>$(id).value='');renderIntel();
 };
 $('addBulk').onclick=()=>{
   let ok=0;
@@ -323,7 +330,7 @@ $('addBulk').onclick=()=>{
     let m=t.match(/^(?:(\d{1,2})\/(\d{1,2})\s+)?(\d{1,2}):(\d{2})$/);if(!m)return;
     if(m[1]){d.setMonth(+m[1]-1,+m[2])}d.setHours(+m[3],+m[4],0,0);
     const f=x=>(+x>1?+x:0);
-    newMatch({time:localStr(d),sport:p[1],league:p[2],home:p[3],away:p[4],line:p[8]&&p[8]!='-'?p[8]:'',odds:{H:f(p[5]),D:f(p[6]),A:f(p[7]),O:f(p[9]),U:f(p[10])}});ok++;
+    newMatch({time:localStr(d),sport:p[1],league:p[2],home:p[3],away:p[4],line:p[8]&&p[8]!='-'?p[8]:'',hcap:p[11]&&p[11]!='-'?p[11]:'',odds:{H:f(p[5]),D:f(p[6]),A:f(p[7]),HH:f(p[12]),HD:f(p[13]),HA:f(p[14]),O:f(p[9]),U:f(p[10])}});ok++;
   });
   alert(ok+'경기 등록');$('bulk').value='';renderIntel();
 };
