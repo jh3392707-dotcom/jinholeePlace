@@ -1942,10 +1942,15 @@ load();$('f_time').value=localStr(new Date(Date.now()+3600e3));renderIntel();bar
 if(window.TOTO_DATA&&importData(window.TOTO_DATA)){$('dataRes').textContent='수집 데이터 '+S.matches.length+'경기를 자동으로 불러왔습니다 ('+(window.TOTO_DATA.collectedAt||'')+')';run()}
 stamp();
 if(!LOCAL){
-  // 보기 전용 화면: 버튼은 노트북의 예약 루틴(대위 이진호)을 실행시킨다
+  // 보기 전용 화면. 버튼은 주인에게만 보인다(친구가 누르면 주인의 노트북·사용량이 쓰이므로)
   const box=document.createElement('div');box.className='stale';box.style.cssText='font-size:14px;line-height:1.6;margin-bottom:12px';
-  box.innerHTML='📱 버튼을 누르면 노트북의 <b>대위 이진호</b>가 배당 수집·유튜버 분석을 하고 이 화면을 자동으로 갱신합니다. (노트북에서 <b>본부열기.bat</b>이 켜져 있어야 합니다)';
-  $('refreshMsg').before(box);$('refreshMsg').style.margin='0 0 12px';
+  box.innerHTML='📱 <b>보기 전용 화면</b>입니다. 위의 <b>경과 시간</b>이 오래됐다면 배당이 바뀌었을 수 있으니 참고만 하세요.';
+  $('refresh').style.display='none';$('refreshMsg').before(box);$('refreshMsg').style.margin='0 0 12px';
+  (async()=>{
+  let owner=false;try{const u=window.claude&&await window.claude.use('user');owner=!!(u&&u.isOwner&&u.isOwner())}catch(e){}
+  if(!owner)return;
+  $('refresh').style.display='';
+  box.innerHTML='📱 버튼을 누르면 노트북의 <b>대위 이진호</b>가 배당 수집·유튜버 분석(2회 확인)을 하고 이 화면을 자동으로 갱신합니다. (노트북에서 <b>본부열기.bat</b>이 켜져 있어야 합니다) <span class="note">※ 이 버튼은 주인에게만 보입니다.</span>';
   const TRIGGER='trig_01KggNm7nAsiJqm6jpPQqW2k',SRV='Claude Code Remote';
   $('refresh').onclick=async()=>{
     const btn=$('refresh'),msg=$('refreshMsg');btn.disabled=true;
@@ -1968,6 +1973,7 @@ if(!LOCAL){
       msg.innerHTML='🫡 <b>대위 이진호에게 명령을 전달했습니다!</b><br>📡 작전 수행 중… '+m+'분 '+sec+'초<div class="note">보통 3~6분 걸리고, 끝나면 이 화면이 <b>자동으로 바뀝니다</b>. 노트북이 꺼져 있거나 본부(본부열기.bat)가 닫혀 있으면 진행되지 않습니다.</div>'};
     tick();const iv=setInterval(()=>{if(Date.now()-t0>15*60000){clearInterval(iv);msg.innerHTML+='<div class="note" style="color:#ffb5a5">⏱ 15분이 지나도 갱신되지 않았습니다. 노트북의 본부(본부열기.bat)가 켜져 있는지 확인하세요.</div>';btn.disabled=false;return}tick()},1000);
   };
+  })();
 }
 run();
 if(/[?&]auto=1/.test(location.search)&&location.protocol.startsWith('http'))setTimeout(()=>$('refresh').click(),400);
