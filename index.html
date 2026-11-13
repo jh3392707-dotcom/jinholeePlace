@@ -365,6 +365,7 @@ function plan(safe,chal,budget,mode){
 const fmtT=s=>{const d=new Date(s);return `${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`};
 const grade=p=>p>=.75?'S':p>=.65?'A':p>=.55?'B':'C';
 const GROUPS=[['H','D','A'],['HH','HD','HA'],['O','U']];
+function allVer(c){const ev=(S.evidence||{})[c.m.id]||{},mp=S.picks[c.m.id]||{},w=CH.filter(ch=>mp[ch]===c.k);return w.length>0&&w.every(ch=>ev[ch]&&ev[ch].verified)}
 function viaRule(c){const ev=(S.evidence||{})[c.m.id]||{},mp=S.picks[c.m.id]||{};return CH.some(ch=>mp[ch]===c.k&&ev[ch]&&ev[ch].via==='rule')}
 function evidenceHtml(c){
   const m=c.m,g=GROUPS.find(x=>x.includes(c.k)),mp=S.picks[m.id]||{},ev=(S.evidence||{})[m.id]||{};
@@ -400,14 +401,14 @@ function pickCard(c,i,amt,kind){
    <div class="pc-m">${esc(c.m.home)} vs ${esc(c.m.away)}</div>
    <div class="pc-cd"><span class="cd" data-s="1" data-t="${esc(c.m.time)}"></span></div>
    <div class="bar"><i style="width:${pct}%"></i></div>
-   <div class="pc-gl">유튜버 <b>${c.votes}/${c.nPick||0}</b>명 ${pct}%${one?' <span class="b1 sm">⚠1명</span>':''}${(c.warn||opp)?' <span class="warnic">⚠</span>':''}</div>
+   <div class="pc-gl">유튜버 <b>${c.votes}/${c.nPick||0}</b>명 ${pct}%${one?' <span class="b1 sm">⚠1명</span>':''}${c.warn?' <span class="warnic">⚠</span>':''}${opp?(allVer(c)?' <span title="역배 픽">🎯</span>':' <span class="warnic">⚠</span>'):''}</div>
    <div class="pc-a">${amtTxt}</div>
    <div class="pc-more">눌러서 자세히</div>
   </summary>
   <div class="pc-d">
    <div class="pk-m">${esc(c.m.sport)} · ${esc(c.m.league)}<br>${esc(c.m.home)} vs ${esc(c.m.away)} · <b>${fmtT(c.m.time)}</b> <span class="cd" data-t="${esc(c.m.time)}"></span></div>
    <div class="pk-g"><div class="pk-gl">유튜버 의견일치 <b>${c.votes}/${c.nPick||0}명 (${pct}%)</b></div></div>
-   <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}${opp?'<span class="tag r">⚠ 유튜버 의견이 배당과 반대 — 근거 꼭 확인</span>':''}${viaRule(c)?'<span class="tag r">키워드 추정(정확도 낮음)</span>':''}</div>
+   <div class="pk-b">${one?'<span class="b1">⚠ 1명만 분석</span>':''}<span class="tag ${kind=='r'?'r':'s'}">${kind=='r'?'기대값 '+c.ev.toFixed(2):'등급 '+grade(c.pa)}</span><span class="tag">확률 ${(c.pa*100).toFixed(0)}%</span>${c.ver?'<span class="tag s">✓ 직접 확인</span>':''}${c.warn?'<span class="tag r">⚠ 배당 의심: '+esc(c.warn)+'</span>':''}${opp?(allVer(c)?'<span class="tag" style="color:var(--amber);border-color:var(--amber)">🎯 역배 픽 · 유튜버 근거 2회 확인됨</span>':'<span class="tag r">⚠ 유튜버 의견이 배당과 반대 — 근거 미확인</span>'):''}${viaRule(c)?'<span class="tag r">키워드 추정(정확도 낮음)</span>':''}</div>
    ${evidenceHtml(c)}
    <div class="pk-s">${amt>=1000?`추천금액 <b>${won(amt)}</b>`:`<span style="color:var(--mute)">추천금액 없음 (1,000원 미만이라 제외)</span>`}</div>
   </div></details>`;

@@ -15,3 +15,15 @@ for(const [ch,ms] of Object.entries(input))for(const [id,v] of Object.entries(ms
 fs.writeFileSync(dp,JSON.stringify(data,null,1));
 fs.writeFileSync(path.join(__dirname,'..','data.js'),'window.TOTO_DATA='+fs.readFileSync(dp,'utf8')+';');
 console.log(`픽 ${n}건 반영, 무시 ${bad}건(없는 경기/잘못된 선택). data.json·data.js 갱신`);
+// ---- 자동 점검: 유튜버 다수 의견이 배당 약세/반대 쪽이면 목록으로 알린다 (재확인 대상)
+{
+  const GR=[['H','D','A'],['HH','HD','HA'],['O','U']],M=Object.fromEntries(data.matches.map(m=>[m.id,m])),alerts=[];
+  for(const [id,pk] of Object.entries(data.picks)){const m=M[id];if(!m)continue;
+    GR.forEach((g,gi)=>{const ks=g.filter(k=>m.odds[k]>1);if(ks.length<2)return;
+      const inv=ks.reduce((a,k)=>a+1/m.odds[k],0),pr=Object.fromEntries(ks.map(k=>[k,(1/m.odds[k])/inv]));
+      const fav=ks.reduce((a,b)=>pr[a]>=pr[b]?a:b),voters=Object.entries(pk).filter(([c,k])=>ks.includes(k)),n=voters.length;
+      ks.forEach(k=>{const v=voters.filter(([c,x])=>x===k).length;
+        const oppose=gi===0&&k!==fav&&v>=2&&v/n>=0.5, strong=v>=3&&v/n>=0.6&&pr[k]<0.35;
+        if(oppose||strong)alerts.push(`${m.home} vs ${m.away} [${k}] 유튜버 ${v}/${n}명 · 확률 ${(pr[k]*100).toFixed(0)}%${strong?' (정반대 다수)':' (역배)'}`)})})}
+  console.log(alerts.length?`⚠ 재확인 대상 ${alerts.length}건 (근거 문장·경기 일치 여부를 다시 확인하세요):\n - `+alerts.join('\n - '):'재확인 대상 없음 (배당과 반대인 다수 의견 0건)');
+}
