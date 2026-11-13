@@ -110,8 +110,8 @@ body{font-size:16px}
         <input id="budget" type="number" inputmode="numeric" min="1000" step="1000" value="50000" style="text-align:center;font-weight:700">
         <button class="btn sec" id="bPlus" type="button" aria-label="1,000원 증가">＋</button></div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px" id="bChips"></div></div>
-      <div><label>배당 데이터</label>
-        <button class="btn" id="refresh" type="button">🔄 배당 최신화</button>
+      <div><label>분석 데이터</label>
+        <button class="btn" id="refresh" type="button">🔄 분석 최신화</button>
         <div id="refreshMsg" class="note" style="margin-top:4px"></div></div>
       <div><label>작전 성향</label>
         <select id="mode"><option value="stable">🛡 안정형 (방어 위주)</option><option value="balanced" selected>⚖ 균형형</option><option value="aggressive">🔥 공격형 (고배당 비중↑)</option></select></div>
@@ -360,10 +360,10 @@ function run(){
   const wS=[...um.values()].reduce((a,c)=>a+Math.pow(c.pa,3),0)||1,wH=high.reduce((a,c)=>a+c.ev,0)||1;
   const amtS=c=>rd(Math.min(sb*Math.pow(c.pa,3)/wS,budget*0.12)),amtH=c=>rd(Math.min(cb*c.ev/wH,budget*0.12));
   let h='';
-  if(oldData)h+=`<div class="stale bad" style="font-size:15px;line-height:1.6"><b>⛔ 예전 방식으로 수집된 배당입니다 (미리보기용)</b><br>전반전 배당 등이 섞여 <b>틀린 값</b>이 있습니다. 예: 사우디 vs 한국 한국 승 2.35 → 실제 1.66.<br>이 결과로는 구매하지 마세요. 노트북에서 [🔄 배당 최신화]를 먼저 하세요.</div>`;
+  if(oldData)h+=`<div class="stale bad" style="font-size:15px;line-height:1.6"><b>⛔ 예전 방식으로 수집된 배당입니다 (미리보기용)</b><br>전반전 배당 등이 섞여 <b>틀린 값</b>이 있습니다. 예: 사우디 vs 한국 한국 승 2.35 → 실제 1.66.<br>이 결과로는 구매하지 마세요. 노트북에서 [🔄 분석 최신화]를 먼저 하세요.</div>`;
   const colAt=window.TOTO_DATA&&window.TOTO_DATA.collectedAt;
   if(colAt){const mins=Math.round((Date.now()-new Date(colAt))/60000);
-    h+=`<div class="stale ${mins>15?'bad':''}">${mins>15?'⚠ ':''}배당 수집 후 <b>${mins}분</b> 경과 — 배당은 실시간으로 바뀝니다. 구매 직전 [🔄 배당 최신화]</div>`}
+    h+=`<div class="stale ${mins>15?'bad':''}">${mins>15?'⚠ ':''}배당 수집 후 <b>${mins}분</b> 경과 — 배당은 실시간으로 바뀝니다. 구매 직전 [🔄 분석 최신화]</div>`}
   if(!perfect.length&&!yt.length&&!cl.length&&!high.length){$('out').innerHTML='<div class="panel">현재 시간 이후의 유효한 경기가 없습니다. [정보수집]에서 경기를 추가하세요.</div>';return}
   const sec=(id,ico,title,desc,body)=>`<section class="rs" id="${id}"><h2 class="rs-t"><span>${ico}</span>${title}</h2><div class="rs-d">${desc}</div>${body}</section>`;
   const none=t=>`<div class="none">${t}</div>`;
@@ -480,29 +480,43 @@ $('bMinus').onclick=()=>{$('budget').value=fixBudget()-1000;fixBudget()};
 $('bPlus').onclick=()=>{$('budget').value=fixBudget()+1000};
 [10000,20000,30000,50000,100000].forEach(v=>{const b=document.createElement('button');b.type='button';b.className='btn sec';b.style.padding='3px 10px';b.textContent=(v/10000)+'만원';b.onclick=()=>{$('budget').value=v;fixBudget()};$('bChips').appendChild(b)});
 function stamp(){const t=(window.TOTO_DATA&&window.TOTO_DATA.collectedAt)||'';if(t){$('refreshMsg').textContent='마지막 수집: '+new Date(t).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',hour12:false,month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})+' (한국시간)'}}
+let POLL=null;
 $('refresh').onclick=async()=>{
-  const msg=$('refreshMsg'),btn=$('refresh');btn.disabled=true;msg.textContent='베트맨에서 최신 배당을 가져오는 중… (1~2분)';
+  const msg=$('refreshMsg'),btn=$('refresh');btn.disabled=true;
+  const ico={wait:'⏳',run:'🔄',ok:'✅',warn:'⚠️',fail:'❌',skip:'➖'};
+  const draw=st=>{const sec=Math.round((Date.now()-st.startedAt)/1000);
+    msg.innerHTML='<div style="line-height:1.7">'+st.steps.map(x=>`${ico[x.status]||'⏳'} ${esc(x.name)}${x.detail&&x.status!=='ok'?`<div class="note" style="margin-left:22px">${esc(x.detail)}</div>`:''}`).join('<br>')+`<br>🧮 결과 다시 계산 ${st.running?'(대기)':'✅'}<div class="note">경과 ${sec}초 · 1~5분 걸립니다. 창을 닫지 마세요.</div></div>`};
   try{
-    const r=await fetch('/api/refresh',{method:'POST'});
+    const r=await fetch('/api/analyze',{method:'POST'});
     if(!r.ok)throw new Error('server '+r.status);
-    const j=await r.json();
-    if(!j.ok)throw new Error(j.error||'수집 실패');
-    const prev={};S.matches.forEach(m=>prev[m.id]=Object.assign({},m.odds));
-    window.TOTO_DATA=j.data;importData(j.data);
-    LASTDIFF=[];S.matches.forEach(m=>{const o=prev[m.id];if(!o)return;KEYS.forEach(k=>{if(o[k]>1&&m.odds[k]>1&&Math.abs(o[k]-m.odds[k])>0.001)LASTDIFF.push({m,k,old:o[k],nw:m.odds[k]})})});
-    run();stamp();msg.textContent='✅ '+j.data.matches.length+'경기 최신화 완료. '+msg.textContent;
+    const tick=async()=>{
+      const st=await (await fetch('/api/status')).json();
+      if(st.none){setTimeout(tick,1500);return}
+      draw(st);
+      if(st.running){POLL=setTimeout(tick,2000);return}
+      btn.disabled=false;
+      if(st.error||!st.data){msg.innerHTML+=`<div class="note" style="color:#ffb5a5">⛔ ${esc(st.error||'결과가 없습니다')}</div>`;return}
+      const prev={};S.matches.forEach(m=>prev[m.id]=Object.assign({},m.odds));
+      window.TOTO_DATA=st.data;importData(st.data,true);
+      LASTDIFF=[];S.matches.forEach(m=>{const o=prev[m.id];if(!o)return;KEYS.forEach(k=>{if(o[k]>1&&m.odds[k]>1&&Math.abs(o[k]-m.odds[k])>0.001)LASTDIFF.push({m,k,old:o[k],nw:m.odds[k]})})});
+      run();draw(st);stamp();
+      const done=document.createElement('div');done.className='note';done.style.color='var(--green)';done.textContent=`✅ 분석 최신화 완료: ${S.matches.length}경기${st.warn?' (일부 단계는 대체 방식)':''}`;msg.appendChild(done);
+    };
+    tick();
   }catch(e){
-    msg.innerHTML='⚠ 이 화면에서는 직접 수집할 수 없습니다. 노트북에서 <b>앱열기.bat</b>로 연 화면에서 눌러주세요. (사이트 버전은 수집 후 Claude가 다시 게시해야 갱신됩니다)';
-  }finally{btn.disabled=false}
+    btn.disabled=false;
+    msg.innerHTML='⚠ 이 화면에서는 직접 분석할 수 없습니다. 노트북에서 <b>앱열기.bat</b>로 연 화면에서 눌러주세요. (사이트 버전은 노트북에서 분석 후 Claude가 다시 게시해야 갱신됩니다)';
+  }
 };
 $('fire').onclick=()=>{run();$('out').scrollIntoView({behavior:'smooth'})};
-function importData(d){
+function importData(d,replace){
   const ms=(d&&d.matches)||[];if(!ms.length)return 0;
   const key=m=>m.home+'|'+m.away,old={};S.matches.forEach(m=>old[key(m)]=m.id);
   const np={};
   ms.forEach(m=>{const o=old[key(m)];if(o&&S.picks[o]){np[m.id]=S.picks[o]}});
   S.matches=ms;S.picks=np;S.sample=false;S.verified={};S.evidence=d.evidence||{};
-  Object.entries(d.picks||{}).forEach(([id,o])=>{S.picks[id]=Object.assign(S.picks[id]||{},o)});save();renderIntel();bar();return ms.length;
+  if(replace){S.picks=JSON.parse(JSON.stringify(d.picks||{}))} // 분석 최신화: 이전 픽은 버리고 이번 결과로 완전 교체
+  else Object.entries(d.picks||{}).forEach(([id,o])=>{S.picks[id]=Object.assign(S.picks[id]||{},o)});save();renderIntel();bar();return ms.length;
 }
 $('dataFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{try{const n=importData(JSON.parse(r.result));$('dataRes').textContent=n?n+'경기를 불러왔습니다.':'경기가 없는 파일입니다.'}catch(x){$('dataRes').textContent='읽기 실패: '+x.message}};r.readAsText(f)};

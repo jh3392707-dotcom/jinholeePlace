@@ -1,11 +1,12 @@
-// 사용: node apply_picks.js picks.json
+// 사용: node apply_picks.js picks.json [--replace]   (--replace: 기존 유튜버 픽을 모두 지우고 이번 결과로 교체)
 // Claude 세션이 자막을 직접 읽고 판단한 결과를 data.json 에 반영한다. (API 키 불필요)
 // picks.json 형식: { "<채널명>": { "<경기id>": { "pick":"H|D|A|HH|HD|HA|O|U", "quote":"자막 원문 문장", "url":"영상주소", "videoTitle":"영상제목" } } }
 const fs=require('fs'),path=require('path');
-const file=process.argv[2];if(!file){console.log('사용: node apply_picks.js picks.json');process.exit(1)}
+const file=process.argv.slice(2).find(a=>!a.startsWith('--'));if(!file){console.log('사용: node apply_picks.js picks.json');process.exit(1)}
 const dp=path.join(__dirname,'..','data.json'),data=JSON.parse(fs.readFileSync(dp,'utf8')),input=JSON.parse(fs.readFileSync(file,'utf8'));
 const OK=['H','D','A','HH','HD','HA','O','U'],ids=new Set(data.matches.map(m=>m.id));
 data.picks=data.picks||{};data.evidence=data.evidence||{};let n=0,bad=0;
+if(process.argv.includes('--replace')){data.picks={};data.evidence={}}
 for(const [ch,ms] of Object.entries(input))for(const [id,v] of Object.entries(ms)){
   if(!ids.has(id)||!OK.includes(v.pick)){bad++;continue}
   (data.picks[id]=data.picks[id]||{})[ch]=v.pick;
