@@ -171,6 +171,8 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .pa-l{display:block;font-size:12px;color:var(--mute)}
 .pa-v{display:block;font-size:13px;color:var(--amber)}
 .pa-v b{font-family:'Black Ops One','Noto Sans KR',sans-serif;font-size:19px;color:#ffd77a;font-weight:400}
+.bar.cl i{background:#5fb3c8}
+.pc-s .bar.cl{margin:6px 0 3px}
 </style>
 
 <div class="wrap">
@@ -2427,7 +2429,7 @@ function tickCd(){
 setInterval(tickCd,1000);
 // 유튜버 의견이 배당과 반대인가: 승무패에서 배당 우세가 아닌 쪽을 다수(2명↑·50%↑)가 골랐거나, 어느 항목이든 확률 35% 미만을 3명↑·60%↑가 골랐을 때
 const isOpp=c=>(c.grp===0&&!c.isFav&&c.votes>=2&&c.ratio>=0.5)||(c.votes>=3&&c.ratio>=0.6&&c.p<0.35);
-function pickCard(c,i,amt,kind,openAll){
+function pickCard(c,i,amt,kind,openAll,showCl){
   const pct=Math.round((c.ratio||0)*100),one=c.nPick===1,opp=isOpp(c);
   const chip=kind=='r'?`<span class="gr gr-r">EV ${c.ev.toFixed(2)}</span>`:`<span class="gr gr-${grade(c.pa)}">${grade(c.pa)}</span>`;
   const bud=Math.max(1000,+$('budget').value||0),pay=payoutOf(bud,c.odds);
@@ -2439,6 +2441,7 @@ function pickCard(c,i,amt,kind,openAll){
    <div class="pc-cd"><span class="cd" data-s="1" data-t="${esc(c.m.time)}"></span></div>
    <div class="bar"><i style="width:${pct}%"></i></div>
    <div class="pc-gl">유튜버 <b>${c.votes}/${c.nPick||0}</b>명 ${pct}%${one?' <span class="b1 sm">⚠1명</span>':''}${c.warn?' <span class="warnic">⚠</span>':''}</div>
+   ${showCl?`<div class="bar cl"><i style="width:${Math.round(c.pa*100)}%"></i></div><div class="pc-gl">🤖 클로드 확률 <b>${(c.pa*100).toFixed(0)}%</b> <span class="mute">(등급 ${grade(c.pa)})</span></div>`:''}
    <div class="pc-a">${amtTxt}</div>
    <div class="pc-more">눌러서 자세히</div>
   </summary>
@@ -2471,7 +2474,7 @@ function run(){
   const none=t=>`<div class="none">${t}</div>`;
   h+=legend+`<div class="jump">${[['s1','◆◆◆ 대위 추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
   h+=sec('s1','<span class="dia">◆◆◆</span>','대위 이진호의 추천픽 <small class="mx">(최대 8개)</small>','<div class="crit">유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고 배당 확률도 <b>50% 이상</b>인 경기</div>',
-    perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
+    perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
   h+=sec('s2','📺','유튜버 추천픽 <small class="mx">(최대 8개)</small>','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
     yt.length?yt.map((c,i)=>pickCard(c,i,amtS(c),'s')).join(''):none('유튜버 픽이 없습니다. 유튜버 분석을 먼저 수집하세요.'));
   h+=sec('s3','🤖','클로드 추천픽 <small class="mx">(최대 8개)</small>','배당에서 역산한 승리 확률이 높은 순 (50%↑, 배당 1.20↑). 선수·부상 같은 정보는 반영되지 않았습니다.',
