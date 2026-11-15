@@ -383,7 +383,7 @@ function vHome(){
  ${fireMini()}
  <h2>내 자산 <button class="btn sm" data-a="assetForm">＋ 추가</button></h2>
  ${assetRows()||'<div class="card sub">주식·환테크·코인·현금·통장·애드포스트·레뷰포인트를 ＋ 추가로 입력하세요. 직접 입력한 값이 폰과 PC에 동기화돼요.</div>'}
- <h2>목표 진행</h2>${totalGoal(T.net,true)}${S.goals.map(g=>goalMini(g,T.net)).join('')}`;
+`;
 }
 /* 자산 기록(하루 한 번 순자산을 남겨서 자산의 움직임을 분석) */
 function snapNow(){
