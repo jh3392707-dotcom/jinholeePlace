@@ -259,8 +259,17 @@ function vHome(){
  ${fireMini()}
  <h2>내 자산 <button class="btn sm" data-a="assetForm">＋ 추가</button></h2>
  ${groups.map(g=>g.l.length===1?`<div class="card" data-a="assetForm" data-id="${g.l[0].id}"><div class="row sp"><div class="grow ell"><span style="font-size:22px">${g.ic}</span> ${esc(g.l[0].name)}${g.l[0].name.replace(/\s/g,'').includes(g.n.replace(/\s/g,''))?'':` <span class="sub">${g.n}</span>`}${g.l[0].amt!=null&&g.l[0].rate!=null?`<div class="sub">${esc(g.l[0].cur||'')} ${g.l[0].amt.toLocaleString()} × ${g.l[0].rate.toLocaleString()}원</div>`:''}</div><div class="num mid">${W(val(g.l[0]))}</div></div></div>`:`<div class="card"><div class="row sp sub"><span>${g.ic} ${g.n}</span><span class="num">${W(g.l.reduce((s,a)=>s+val(a),0))}</span></div>${g.l.map(a=>`<div class="item" data-a="assetForm" data-id="${a.id}"><div class="grow ell">${esc(a.name)}${a.amt!=null&&a.rate!=null?`<div class="sub">${esc(a.cur||'')} ${a.amt.toLocaleString()} × ${a.rate.toLocaleString()}원</div>`:''}</div><div class="num">${W(val(a))}</div></div>`).join('')}</div>`).join('')||'<div class="card sub">주식·환테크·코인·현금·통장·애드포스트·레뷰포인트를 ＋ 추가로 입력하세요. 직접 입력한 값이 폰과 PC에 동기화돼요.</div>'}
- <h2>목표 진행</h2>${S.goals.map(g=>goalMini(g,T.net)).join('')}`;
+ <h2>목표 진행</h2>${totalGoal(T.net,true)}${S.goals.map(g=>goalMini(g,T.net)).join('')}`;
 }
+function totalGoal(net,mini){
+ const tot=S.goals.reduce((a,g)=>a+g.target,0);if(!S.goals.length||!tot)return '';
+ const p=Math.max(0,Math.min(100,net/tot*100)),left=Math.max(0,tot-net),cols=['#4c8dff','#9b6bff','#ff8a4c','#2fb67c','#f2c230','#e0645a'];
+ if(mini)return `<div class="card" data-tab="goal"><div class="row sp"><span>🏆 전체 목표 합계 <span class="sub">${big(tot)}원</span></span><b>${p.toFixed(1)}%</b></div><div class="pbar" style="margin-top:6px"><i style="width:${p}%"></i></div></div>`;
+ return `<div class="card" style="border:1px solid var(--blue)"><div class="sub">🏆 전체 목표 합계</div><div class="row sp"><div class="big">${p.toFixed(1)}<small style="font-size:20px">%</small></div><div style="text-align:right"><div class="mid">${W(tot)}</div><div class="sub">목표 ${S.goals.length}개 합계</div></div></div>
+ <div class="pbar" style="margin:6px 0"><i style="width:${p}%"></i></div>
+ <div class="row sp"><span class="sub">현재 자산 ${W(net)}</span><span>남은 금액 <b>${W(left)}</b></span></div>
+ <div class="sub" style="margin:8px 0 3px">목표 구성 비율</div>${stack(S.goals.map((g,i)=>[g.target,cols[i%cols.length]]))}
+ <div class="chips">${S.goals.map((g,i)=>`<span><b class="dot" style="display:inline-block;background:${cols[i%cols.length]};margin-right:4px"></b>${g.emoji} ${esc(g.name)} ${Math.round(g.target/tot*100)}%</span>`).join('')}</div>${avgSave(left)}</div>`}
 const goalMini=(g,net)=>{const p=Math.max(0,Math.min(100,net/g.target*100));return `<div class="card" data-tab="goal"><div class="row sp"><span>${g.emoji} ${esc(g.name)}</span><b>${p.toFixed(1)}%</b></div><div class="pbar" style="margin-top:6px"><i style="width:${p}%"></i></div></div>`};
 
 function spark(m){
@@ -423,7 +432,7 @@ function art(kind){
 const goalImg=g=>g.img?`style="background-image:url('/_blob/${esc(g.img)}')"`:'';
 function vGoal(){
  const T=totals();
- return `<div class="sub" style="margin-bottom:8px">달성률 = 내 자산 합계 ÷ 목표 금액 (목표별로 각각 계산)</div>`+S.goals.map(g=>{
+ return `<div class="sub" style="margin-bottom:6px">달성률 = 내 자산 합계 ÷ 목표 금액 (목표별 + 전체 합계)</div>`+totalGoal(T.net,false)+S.goals.map(g=>{
  const p=Math.max(0,Math.min(100,T.net/g.target*100)),left=Math.max(0,g.target-T.net);
  return `<div class="goal"><div class="img" ${goalImg(g)}>${g.img?'':art(g.kind||(/차|카마로/.test(g.name)?'car':'apt'))}<div><div style="font-size:15px;opacity:.95">${g.emoji} ${esc(g.name)}</div><div class="pct">${p.toFixed(1)}<small style="font-size:20px">%</small></div></div></div>
  <div style="padding:10px 12px"><div class="pbar"><i style="width:${p}%"></i></div><div class="row sp" style="margin-top:6px"><span class="sub">현재 ${W(T.net)}</span><span class="sub">목표 ${W(g.target)}</span></div><div class="row sp" style="margin-top:4px"><span>남은 금액 <b>${W(left)}</b></span><button class="btn g sm" data-a="goalForm" data-id="${g.id}">편집</button></div>${avgSave(left)}</div></div>`}).join('')+`<button class="btn g" data-a="goalForm">＋ 목표 추가</button><div class="sub" style="margin-top:10px;line-height:1.5">기본 목표 금액은 추정치예요. 아파트: 서울 84㎡(34평형) 평균 매매가 약 12~14억대, 서울 전체 평균 16억 돌파 보도를 감안해 15억. 카마로 컨버터블: 미국 2SS 컨버터블 MSRP $53,300을 환율 1,400원으로 환산해 약 7,500만 원. 편집에서 바꿀 수 있어요.</div>`;
