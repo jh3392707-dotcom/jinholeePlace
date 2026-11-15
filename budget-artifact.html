@@ -261,6 +261,10 @@ function usable(){
  <div class="row sp" style="align-items:flex-end"><div class="big green">${W(u)}</div><div class="sub" style="text-align:right">생활비 ${big(cost)} 기준<br><b style="font-size:15px;color:var(--tx)">${mo.toFixed(1)}개월</b></div></div>
  <div class="row sub" style="gap:14px;margin-top:2px"><span>🏦 통장 ${W(bank)}</span><span>💵 현금 ${W(cash)}</span></div></div>`}
 function usableOpen(){tab='home';scrollTo(0,document.body.scrollHeight*0.3)}
+function assetRows(){
+ const T=totals(),list=S.assets.slice().sort((x,y)=>val(y)-val(x));if(!list.length)return '';
+ return list.map(a=>{const t=ATYPE.find(x=>x[0]===a.type)||['', '💰','#999'],v=val(a),pc=T.net?Math.round(v/T.net*100):0,dup=a.name.replace(/\s/g,'').includes(a.type.replace(/\s/g,''));
+  return `<div class="card" data-a="assetForm" data-id="${a.id}"><div class="row sp"><div class="grow ell"><span style="width:34px;height:34px;border-radius:50%;background:${t[2]}33;border:2px solid ${t[2]};display:inline-flex;align-items:center;justify-content:center;font-size:19px;vertical-align:middle;margin-right:6px">${t[1]}</span>${esc(a.name)}${dup?'':` <span class="sub">${a.type}</span>`}</div><div style="text-align:right"><div class="num mid">${W(v)}</div><div class="sub">${pc}%</div></div></div></div>`}).join('')}
 function vHome(){
  const T=totals(),m=ym(today()),L=monthTx(m);
  const groups=ATYPE.map(([n,ic,c])=>({n,ic,c,l:S.assets.filter(a=>a.type===n)})).filter(g=>g.l.length);
@@ -272,7 +276,7 @@ function vHome(){
  <div class="grid2"><div class="card"><div class="sub">${+m.slice(5)}월 지출</div><div class="mid red">${W(sum(L,'out'))}</div></div><div class="card"><div class="sub">${+m.slice(5)}월 수입</div><div class="mid blue">${W(sum(L,'in'))}</div></div></div>
  ${fireMini()}
  <h2>내 자산 <button class="btn sm" data-a="assetForm">＋ 추가</button></h2>
- ${groups.map(g=>g.l.length===1?`<div class="card" data-a="assetForm" data-id="${g.l[0].id}"><div class="row sp"><div class="grow ell"><span style="font-size:22px">${g.ic}</span> ${esc(g.l[0].name)}${g.l[0].name.replace(/\s/g,'').includes(g.n.replace(/\s/g,''))?'':` <span class="sub">${g.n}</span>`}${g.l[0].amt!=null&&g.l[0].rate!=null?`<div class="sub">${esc(g.l[0].cur||'')} ${g.l[0].amt.toLocaleString()} × ${g.l[0].rate.toLocaleString()}원</div>`:''}</div><div class="num mid">${W(val(g.l[0]))}</div></div></div>`:`<div class="card"><div class="row sp sub"><span>${g.ic} ${g.n}</span><span class="num">${W(g.l.reduce((s,a)=>s+val(a),0))}</span></div>${g.l.map(a=>`<div class="item" data-a="assetForm" data-id="${a.id}"><div class="grow ell">${esc(a.name)}${a.amt!=null&&a.rate!=null?`<div class="sub">${esc(a.cur||'')} ${a.amt.toLocaleString()} × ${a.rate.toLocaleString()}원</div>`:''}</div><div class="num">${W(val(a))}</div></div>`).join('')}</div>`).join('')||'<div class="card sub">주식·환테크·코인·현금·통장·애드포스트·레뷰포인트를 ＋ 추가로 입력하세요. 직접 입력한 값이 폰과 PC에 동기화돼요.</div>'}
+ ${assetRows()||'<div class="card sub">주식·환테크·코인·현금·통장·애드포스트·레뷰포인트를 ＋ 추가로 입력하세요. 직접 입력한 값이 폰과 PC에 동기화돼요.</div>'}
  <h2>목표 진행</h2>${totalGoal(T.net,true)}${S.goals.map(g=>goalMini(g,T.net)).join('')}`;
 }
 function totalGoal(net,mini){
