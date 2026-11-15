@@ -6,46 +6,46 @@
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f3f6;--card:#fff;--card2:#ececf1;--tx:#17171c;--sub:#6b6b78;--line:#e3e3ea;--blue:#2f6fe0;--red:#d93a4c;--redbg:#fde6e9;--green:#1a9a66;--amber:#b8741c;--nav:#fafafc;color-scheme:light}}
 :root[data-theme="light"]{--bg:#f3f3f6;--card:#fff;--card2:#ececf1;--tx:#17171c;--sub:#6b6b78;--line:#e3e3ea;--blue:#2f6fe0;--red:#d93a4c;--redbg:#fde6e9;--green:#1a9a66;--amber:#b8741c;--nav:#fafafc;color-scheme:light}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--tx);font:13px/1.4 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:10px 130px}
+body{background:var(--bg);color:var(--tx);font:16px/1.35 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-block:6px 150px}
 #app{max-width:560px;margin:0 auto}
-h2{font-size:12px;color:var(--sub);font-weight:600;margin:14px 0 6px;display:flex;justify-content:space-between;align-items:center}
-.card{background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+h2{font-size:14px;color:var(--sub);font-weight:700;margin:12px 0 5px;display:flex;justify-content:space-between;align-items:center}
+.card{background:var(--card);border-radius:14px;padding:9px 12px;margin-bottom:6px}
 .row{display:flex;align-items:center;gap:8px}.sp{justify-content:space-between}
-.sub{color:var(--sub);font-size:11px}.big{font-size:20px;font-weight:700}.mid{font-size:15px;font-weight:700}
+.sub{color:var(--sub);font-size:13px}.big{font-size:28px;font-weight:800;line-height:1.15}.mid{font-size:19px;font-weight:700}
 .red{color:var(--red)}.green{color:var(--green)}.blue{color:var(--blue)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;background:var(--card2)}.bar i{display:block;height:100%}
-.pbar{height:10px;border-radius:5px;background:var(--card2);overflow:hidden}.pbar i{display:block;height:100%;background:linear-gradient(90deg,#4c8dff,#9b6bff)}
-.item{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}
-.dot{width:10px;height:10px;border-radius:3px;flex:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.bar{display:flex;height:10px;border-radius:4px;overflow:hidden;gap:2px;background:var(--card2)}.bar i{display:block;height:100%}
+.pbar{height:12px;border-radius:6px;background:var(--card2);overflow:hidden}.pbar i{display:block;height:100%;background:linear-gradient(90deg,#4c8dff,#9b6bff)}
+.item{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}
+.dot{width:13px;height:13px;border-radius:3px;flex:none}
 .grow{flex:1;min-width:0}.ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .num{font-weight:600;font-variant-numeric:tabular-nums}
 button,input,select,textarea{font:inherit;color:inherit}
-.btn{background:var(--blue);border:0;border-radius:8px;padding:6px 12px;font-weight:600;color:#fff;cursor:pointer}
-.btn.g{background:var(--card2);color:var(--tx)}.btn.r{background:var(--redbg);color:var(--red)}.btn.sm{padding:3px 8px;font-size:11px}.btn:disabled{opacity:.5}
+.btn{background:var(--blue);border:0;border-radius:10px;padding:9px 14px;font-size:15px;font-weight:700;color:#fff;cursor:pointer}
+.btn.g{background:var(--card2);color:var(--tx)}.btn.r{background:var(--redbg);color:var(--red)}.btn.sm{padding:6px 11px;font-size:14px}.btn:disabled{opacity:.5}
 .nav{position:fixed;bottom:0;left:0;right:0;background:var(--nav);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);z-index:5}
-.nav div{flex:1;text-align:center;padding:7px 0 6px;color:var(--sub);font-size:10px;cursor:pointer}.nav div b{display:block;font-size:17px;font-weight:400}.nav .on{color:var(--tx);font-weight:700}
-.fab{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(70px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;background:var(--blue);border:0;font-size:24px;color:#fff;box-shadow:0 4px 14px #0006;z-index:6;cursor:pointer}
-.mnav{display:flex;justify-content:center;align-items:center;gap:16px;font-weight:700;font-size:14px;margin-bottom:8px}.mnav span{padding:2px 10px;color:var(--sub);font-size:16px;cursor:pointer}
+.nav div{flex:1;text-align:center;padding:6px 0 5px;color:var(--sub);font-size:12px;cursor:pointer}.nav div b{display:block;font-size:27px;line-height:1.15;font-weight:400}.nav .on{color:var(--tx);font-weight:700}
+.fab{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--blue);border:0;font-size:32px;color:#fff;box-shadow:0 4px 14px #0006;z-index:6;cursor:pointer}
+.mnav{display:flex;justify-content:center;align-items:center;gap:14px;font-weight:800;font-size:20px;margin-bottom:6px}.mnav span{padding:2px 12px;color:var(--sub);font-size:22px;cursor:pointer}
 .sheet-bg{position:fixed;inset:0;background:#000a;z-index:10;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--card);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow:auto}
-.sheet label{display:block;font-size:11px;color:var(--sub);margin:8px 0 3px}
-.sheet input,.sheet select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;outline:0}
-.seg{display:flex;background:var(--card2);border-radius:8px;padding:2px}.seg div{flex:1;text-align:center;padding:6px;border-radius:6px;color:var(--sub);font-weight:600;cursor:pointer}.seg .on{background:var(--blue);color:#fff}
+.sheet label{display:block;font-size:14px;color:var(--sub);margin:8px 0 3px}
+.sheet input,.sheet select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:17px;outline:0}
+.seg{display:flex;background:var(--card2);border-radius:8px;padding:2px}.seg div{flex:1;text-align:center;padding:9px 6px;font-size:16px;border-radius:6px;color:var(--sub);font-weight:600;cursor:pointer}.seg .on{background:var(--blue);color:#fff}
 .goal{border-radius:14px;overflow:hidden;margin-bottom:10px;background:var(--card)}
-.goal .img{height:170px;background-size:cover;background-position:center;position:relative;display:flex;align-items:flex-end;background-color:#10131f}
+.goal .img{height:190px;background-size:cover;background-position:center;position:relative;display:flex;align-items:flex-end;background-color:#10131f}
 .goal .img svg{position:absolute;inset:0;width:100%;height:100%}
 .goal .img:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,#000d)}
 .goal .img>div{position:relative;z-index:1;padding:10px 12px;width:100%;color:#fff}
-.pct{font-size:32px;font-weight:800;line-height:1.1}
-.chips{display:flex;gap:6px;overflow:auto;margin-top:8px}.chips span{background:var(--card2);padding:3px 9px;border-radius:12px;white-space:nowrap;color:var(--sub);font-size:11px}
-.tl{display:grid;grid-template-columns:repeat(31,1fr);gap:1px;margin:4px 0}.tl i{height:14px;border-radius:2px;background:var(--card2);font-style:normal;font-size:8px;text-align:center;color:var(--sub)}.tl i.m{background:var(--amber);color:#fff}.tl i.t{outline:1px solid var(--blue)}
-textarea{width:100%;height:130px;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px;font:11px/1.5 monospace;resize:vertical}
-.paid{opacity:.5}.tag{font-size:10px;border-radius:4px;padding:1px 5px;background:var(--card2);color:var(--sub);font-weight:600}.tag.hot{background:var(--red);color:#fff}.tag.warn{background:var(--amber);color:#fff}
-.alert{background:var(--redbg);border:1px solid var(--red);border-radius:12px;padding:8px 12px;margin-bottom:8px}
-.advice{white-space:pre-wrap;font-size:12.5px;line-height:1.6}
-.sync{font-size:10px;color:var(--sub);text-align:right;margin-bottom:4px;cursor:pointer}.sync.bad{color:var(--red)}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(120px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:8px 14px;border-radius:20px;z-index:20;font-weight:600}
+.pct{font-size:40px;font-weight:800;line-height:1.1}
+.chips{display:flex;gap:6px;overflow:auto;margin-top:8px}.chips span{background:var(--card2);padding:4px 10px;border-radius:14px;white-space:nowrap;color:var(--sub);font-size:13px}
+.tl{display:grid;grid-template-columns:repeat(31,1fr);gap:1px;margin:4px 0}.tl i{height:20px;line-height:20px;border-radius:3px;background:var(--card2);font-style:normal;font-size:10px;text-align:center;color:var(--sub)}.tl i.m{background:var(--amber);color:#fff}.tl i.t{outline:1px solid var(--blue)}
+textarea{width:100%;height:150px;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px;font:13px/1.5 monospace;resize:vertical}
+.paid{opacity:.5}.tag{font-size:12px;border-radius:5px;padding:1px 6px;background:var(--card2);color:var(--sub);font-weight:600}.tag.hot{background:var(--red);color:#fff}.tag.warn{background:var(--amber);color:#fff}
+.alert{background:var(--redbg);border:1px solid var(--red);border-radius:14px;padding:8px 12px;margin-bottom:6px}
+.advice{white-space:pre-wrap;font-size:15px;line-height:1.55}
+.sync{font-size:12px;color:var(--sub);text-align:right;margin-bottom:4px;cursor:pointer}.sync.bad{color:var(--red)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));font-size:15px;max-width:92vw;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:20px;z-index:20;font-weight:600}
 .t{fill:var(--sub)}.gl{stroke:var(--line)}
 </style>
 <div id="app"></div>
@@ -238,7 +238,7 @@ function vHome(){
  <div class="grid2"><div class="card"><div class="sub">${+m.slice(5)}월 지출</div><div class="mid red">${W(sum(L,'out'))}</div></div><div class="card"><div class="sub">${+m.slice(5)}월 수입</div><div class="mid blue">${W(sum(L,'in'))}</div></div></div>
  ${fireMini()}
  <h2>내 자산 <button class="btn sm" data-a="assetForm">＋ 추가</button></h2>
- ${groups.map(g=>`<div class="card"><div class="row sp sub"><span>${g.ic} ${g.n}</span><span class="num">${W(g.l.reduce((s,a)=>s+val(a),0))}</span></div>${g.l.map(a=>`<div class="item" data-a="assetForm" data-id="${a.id}"><div class="grow ell">${esc(a.name)}${a.amt!=null&&a.rate!=null?`<div class="sub">${esc(a.cur||'')} ${a.amt.toLocaleString()} × ${a.rate.toLocaleString()}원</div>`:''}</div><div class="num">${W(val(a))}</div></div>`).join('')}</div>`).join('')||'<div class="card sub">주식·환테크·코인·현금·통장·애드포스트·레뷰포인트를 ＋ 추가로 입력하세요. 직접 입력한 값이 폰과 PC에 동기화돼요.</div>'}
+ ${groups.map(g=>g.l.length===1?`<div class="card" data-a="assetForm" data-id="${g.l[0].id}"><div class="row sp"><div class="grow ell"><span style="font-size:22px">${g.ic}</span> ${esc(g.l[0].name)}${g.l[0].amt!=null&&g.l[0].rate!=null?`<div class="sub">${esc(g.l[0].cur||'')} ${g.l[0].amt.toLocaleString()} × ${g.l[0].rate.toLocaleString()}원</div>`:''}<div class="sub">${g.n}</div></div><div class="num mid">${W(val(g.l[0]))}</div></div></div>`:`<div class="card"><div class="row sp sub"><span>${g.ic} ${g.n}</span><span class="num">${W(g.l.reduce((s,a)=>s+val(a),0))}</span></div>${g.l.map(a=>`<div class="item" data-a="assetForm" data-id="${a.id}"><div class="grow ell">${esc(a.name)}${a.amt!=null&&a.rate!=null?`<div class="sub">${esc(a.cur||'')} ${a.amt.toLocaleString()} × ${a.rate.toLocaleString()}원</div>`:''}</div><div class="num">${W(val(a))}</div></div>`).join('')}</div>`).join('')||'<div class="card sub">주식·환테크·코인·현금·통장·애드포스트·레뷰포인트를 ＋ 추가로 입력하세요. 직접 입력한 값이 폰과 PC에 동기화돼요.</div>'}
  <h2>목표 진행</h2>${S.goals.map(g=>goalMini(g,T.net)).join('')}`;
 }
 const goalMini=(g,net)=>{const p=Math.max(0,Math.min(100,net/g.target*100));return `<div class="card" data-tab="goal"><div class="row sp"><span>${g.emoji} ${esc(g.name)}</span><b>${p.toFixed(1)}%</b></div><div class="pbar" style="margin-top:6px"><i style="width:${p}%"></i></div></div>`};
@@ -248,18 +248,18 @@ function spark(m){
  const cum=mo=>{const a=Array(n+1).fill(0);monthTx(mo).filter(t=>t.type==='out').forEach(t=>a[Math.min(+t.date.slice(8),n)]+=t.amt);for(let i=1;i<=n;i++)a[i]+=a[i-1];return a};
  const a=cum(m),b=cum(pm),mx=Math.max(a[n],b[n],1),last=m===ym(today())?today().getDate():n;
  const pts=(arr,to)=>arr.slice(1,to+1).map((v,i)=>`${(i/(n-1)*100).toFixed(1)},${(36-v/mx*34).toFixed(1)}`).join(' ');
- return `<svg viewBox="0 0 100 38" preserveAspectRatio="none" style="width:110px;height:44px"><polyline points="${pts(b,n)}" fill="none" stroke="#777" stroke-width="1.5" vector-effect="non-scaling-stroke"/><polyline points="${pts(a,last)}" fill="none" stroke="#ff5a6a" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`}
+ return `<svg viewBox="0 0 100 38" preserveAspectRatio="none" style="width:120px;height:50px"><polyline points="${pts(b,n)}" fill="none" stroke="#777" stroke-width="1.5" vector-effect="non-scaling-stroke"/><polyline points="${pts(a,last)}" fill="none" stroke="#ff5a6a" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`}
 function vTx(){
  const L=monthTx(cur),o=sum(L,'out'),i=sum(L,'in'),po=sum(monthTx(shiftM(cur,-1)),'out'),diff=o-po;
  const cs=catSum(L),fx=S.fixed.reduce((s,f)=>s+f.amt,0);
  const days=[...new Set(L.map(t=>t.date))].sort().reverse();
  return `<div class="mnav"><span data-a="mshift" data-d="-1">◀</span>${+cur.slice(5)}월 <small class="sub">${cur.slice(0,4)}</small><span data-a="mshift" data-d="1">▶</span></div>
  <div class="grid2"><div><div class="sub">지출</div><div class="big">${W(o)}</div></div><div><div class="sub">수입</div><div class="big">${W(i)}</div></div></div>
- <div class="card row sp" style="margin-top:10px"><div><div style="font-size:14px;font-weight:700">지난달보다 <span class="${diff>0?'red':'blue'}">${W(Math.abs(diff))}</span> ${diff>0?'더':'덜'} 썼어요</div><div class="sub">━ ${+shiftM(cur,-1).slice(5)}월 &nbsp;<span class="red">━ ${+cur.slice(5)}월</span></div></div>${spark(cur)}</div>
+ <div class="card row sp" style="margin-top:10px"><div><div style="font-size:17px;font-weight:700">지난달보다 <span class="${diff>0?'red':'blue'}">${W(Math.abs(diff))}</span> ${diff>0?'더':'덜'} 썼어요</div><div class="sub">━ ${+shiftM(cur,-1).slice(5)}월 &nbsp;<span class="red">━ ${+cur.slice(5)}월</span></div></div>${spark(cur)}</div>
  <h2>카테고리별 소비</h2><div class="card">${stack(cs.map(([n,v])=>[v,ocat(n)[2]]))}
  ${cs.map(([n,v])=>`<div class="item" data-a="openCat" data-id="${esc(n)}"><span class="dot" style="background:${ocat(n)[2]}"></span><div class="grow">${ocat(n)[1]} ${n}</div><div class="num">${W(v)}</div><span class="sub">${openCat===n?'⌄':'›'}</span></div>${openCat===n?L.filter(t=>t.type==='out'&&t.cat===n).sort((a,b)=>b.date.localeCompare(a.date)).map(t=>`<div class="row sub" style="padding:3px 0 3px 18px" data-a="txForm" data-id="${t.id}"><span>${t.date.slice(5)}</span><span class="grow ell">${esc(t.memo)}</span><span class="num">${W(t.amt)}</span></div>`).join(''):''}`).join('')||'<div class="sub" style="padding:8px 0">이번 달 지출 내역이 없어요.</div>'}</div>
  <div class="card row sp" data-tab="fixed"><div><div class="sub">고정지출 (월)</div><div class="mid">${W(fx)}</div></div><span class="sub">${S.fixed.length}건 ›</span></div>
- <h2>전체 내역</h2>${days.map(d=>{const dt=parse(d),l=L.filter(t=>t.date===d);return `<div class="card"><div class="row sp sub"><span>${+d.slice(8)}일 (${DOW[dt.getDay()]})</span><span>${sum(l,'in')?'<span class="blue">+'+W(sum(l,'in'))+'</span> ':''}${sum(l,'out')?'-'+W(sum(l,'out')):''}</span></div>${l.map(t=>`<div class="item" data-a="txForm" data-id="${t.id}"><div style="font-size:16px">${t.type==='out'?ocat(t.cat)[1]:(IN.find(x=>x[0]===t.cat)||[0,'💰'])[1]}</div><div class="grow"><div class="ell">${esc(t.memo||t.cat)}</div><div class="sub">${t.cat}${t.acct?' · '+esc(t.acct):''}</div></div><div class="num ${t.type==='in'?'blue':''}">${t.type==='in'?'+':'-'}${W(t.amt)}</div></div>`).join('')}</div>`}).join('')||'<div class="card sub">내역이 없어요. ＋ 버튼으로 추가하세요.</div>'}`;
+ <h2>전체 내역</h2>${days.map(d=>{const dt=parse(d),l=L.filter(t=>t.date===d);return `<div class="card"><div class="row sp sub"><span>${+d.slice(8)}일 (${DOW[dt.getDay()]})</span><span>${sum(l,'in')?'<span class="blue">+'+W(sum(l,'in'))+'</span> ':''}${sum(l,'out')?'-'+W(sum(l,'out')):''}</span></div>${l.map(t=>`<div class="item" data-a="txForm" data-id="${t.id}"><div style="font-size:24px">${t.type==='out'?ocat(t.cat)[1]:(IN.find(x=>x[0]===t.cat)||[0,'💰'])[1]}</div><div class="grow"><div class="ell">${esc(t.memo||t.cat)}</div><div class="sub">${t.cat}${t.acct?' · '+esc(t.acct):''}</div></div><div class="num ${t.type==='in'?'blue':''}">${t.type==='in'?'+':'-'}${W(t.amt)}</div></div>`).join('')}</div>`}).join('')||'<div class="card sub">내역이 없어요. ＋ 버튼으로 추가하세요.</div>'}`;
 }
 function vFixed(){
  const m=ym(today()),list=S.fixed.map(f=>({f,d:nextDue(f.day)})).sort((a,b)=>a.d-b.d);
@@ -267,10 +267,33 @@ function vFixed(){
  return `${dueBanner()}<div class="card"><div class="sub">월 고정지출 합계</div><div class="big">${W(tot)}</div><div class="sub">이번 달 이체 완료 ${W(paid)} · 남은 ${W(tot-paid)}</div>
  <div class="tl" style="margin-top:8px">${Array.from({length:31},(_,i)=>`<i class="${S.fixed.some(f=>f.day===i+1)?'m':''} ${i+1===td?'t':''}">${i+1}</i>`).join('')}</div><div class="sub">주황 = 이체일 · 파란 테두리 = 오늘</div></div>
  <h2>이체 일정 <button class="btn sm" data-a="fixedForm">＋ 추가</button></h2>
- ${list.map(({f,d})=>{const dd=dday(d),p=fixedPaid(f,m);return `<div class="card ${p?'paid':''}"><div class="row"><div style="font-size:18px">${ocat(f.cat)[1]}</div><div class="grow" data-a="fixedForm" data-id="${f.id}"><div class="ell"><b>${esc(f.name)}</b> <span class="tag ${p?'':dd<=1?'hot':dd<=3?'warn':''}">${p?'이체완료':dd===0?'오늘':'D-'+dd}</span></div><div class="sub">매월 ${f.day}일 · 다음 ${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})${f.acct?' · '+esc(f.acct):''}</div></div><div style="text-align:right"><div class="num">${W(f.amt)}</div>${p?`<button class="btn g sm" data-a="unpay" data-id="${f.id}">취소</button>`:`<button class="btn sm" data-a="pay" data-id="${f.id}">이체했어요</button>`}</div></div></div>`}).join('')||'<div class="card sub">＋ 추가로 월세·통신비·보험·구독료 등을 넣으면 이체일이 임박할 때 빨간 알림이 떠요.</div>'}`;
+ ${list.map(({f,d})=>{const dd=dday(d),p=fixedPaid(f,m);return `<div class="card ${p?'paid':''}"><div class="row"><div style="font-size:26px">${ocat(f.cat)[1]}</div><div class="grow" data-a="fixedForm" data-id="${f.id}"><div class="ell"><b>${esc(f.name)}</b> <span class="tag ${p?'':dd<=1?'hot':dd<=3?'warn':''}">${p?'이체완료':dd===0?'오늘':'D-'+dd}</span></div><div class="sub">매월 ${f.day}일 · 다음 ${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})${f.acct?' · '+esc(f.acct):''}</div></div><div style="text-align:right"><div class="num">${W(f.amt)}</div>${p?`<button class="btn g sm" data-a="unpay" data-id="${f.id}">취소</button>`:`<button class="btn sm" data-a="pay" data-id="${f.id}">이체했어요</button>`}</div></div></div>`}).join('')||'<div class="card sub">＋ 추가로 월세·통신비·보험·구독료 등을 넣으면 이체일이 임박할 때 빨간 알림이 떠요.</div>'}`;
 }
 function pay(id){const f=S.fixed.find(x=>x.id===id),t=today(),m=ym(t);const tx={id:uid(),date:ymd(t),type:'out',cat:f.cat,amt:f.amt,memo:f.name+' (고정)',acct:f.acct||''};put('tx',tx);put('fixed',{...f,paid:{...(f.paid||{}),[m]:tx.id}})}
 function unpay(id){const f=S.fixed.find(x=>x.id===id),m=ym(today()),p={...(f.paid||{})},t=p[m];delete p[m];if(t)del('tx',t);put('fixed',{...f,paid:p})}
+
+/* SCHD + JEPQ 5:5 목표 계산기 (사용자가 공유한 표의 가정: 세전 6.77%, 세율 15%, 주가는 직접 수정) */
+const planSet=()=>{const f=S.settings.find(x=>x.id==='divplan')||{};return{goal:f.goal||fireSet().cost,yld:f.yld||6.77,tax:f.tax==null?15:f.tax,w:f.w||50,pS:f.pS||44800,pJ:f.pJ||84000}};
+function planCalc(goal,P){const y=P.yld*(1-P.tax/100)/100,prin=goal*12/y,s=prin*P.w/100,j=prin-s;return{y,prin,s,j,sh:Math.round(s/P.pS),jh:Math.round(j/P.pJ)}}
+function divPlan(){
+ const P=planSet(),c=planCalc(P.goal,P),mAvg=divMonthly(),p=Math.min(100,mAvg/P.goal*100);
+ const ms=[50000,300000,500000,1000000,2000000,5000000];
+ const find=n=>S.divs.filter(d=>d.name.toUpperCase().includes(n)).reduce((s,d)=>s+(d.shares||0),0);
+ return `<h2>🎯 SCHD + JEPQ ${P.w}:${100-P.w} 목표 <button class="btn g sm" data-a="planForm">가정 수정</button></h2>
+ <div class="card"><div class="row sp"><span>월 ${W(P.goal)} (세후) 만들기</span><b>${p.toFixed(1)}%</b></div><div class="pbar" style="margin:6px 0"><i style="width:${p}%;background:linear-gradient(90deg,#ff8a4c,#ff5a6a)"></i></div>
+ <div class="item"><div class="grow sub">필요 원금 (세후 연 ${(c.y*100).toFixed(2)}%)</div><div class="num mid">${big(c.prin)}원</div></div>
+ <div class="item"><div class="grow"><b style="color:#ff8a4c">SCHD</b> <span class="sub">${W(c.s)}</span></div><div class="num">${c.sh.toLocaleString()}주</div><div class="sub">보유 ${find('SCHD').toLocaleString()}</div></div>
+ <div class="item"><div class="grow"><b class="blue">JEPQ</b> <span class="sub">${W(c.j)}</span></div><div class="num">${c.jh.toLocaleString()}주</div><div class="sub">보유 ${find('JEPQ').toLocaleString()}</div></div>
+ <div class="sub" style="margin-top:6px">단계별 목표 (월 세후 배당)</div>
+ ${ms.map(g=>{const x=planCalc(g,P),done=mAvg>=g;return `<div class="item" style="${done?'opacity:.5':''}"><div style="width:62px" class="num">${done?'✅ ':''}${big(g)}</div><div class="grow sub">원금 ${big(x.prin)}</div><div class="sub">SCHD ${x.sh.toLocaleString()} · JEPQ ${x.jh.toLocaleString()}주</div></div>`}).join('')}
+ <div class="sub" style="margin-top:6px">세전 ${P.yld}% 가정·주가 SCHD ${P.pS.toLocaleString()}원/JEPQ ${P.pJ.toLocaleString()}원. 실제 배당과 주가는 달라질 수 있어요.</div></div>`}
+function planForm(){const P=planSet();
+ sheet(`<div class="mid">🎯 계산 가정</div><label>목표 월 배당 (세후, 원)</label><input id="pl_goal" type="number" inputmode="numeric" value="${P.goal}">
+ <div class="grid2"><div><label>세전 배당수익률 (%)</label><input id="pl_y" type="number" step="0.01" value="${P.yld}"></div><div><label>세율 (%)</label><input id="pl_t" type="number" step="0.1" value="${P.tax}"></div></div>
+ <label>SCHD 비중 (%) — JEPQ는 나머지</label><input id="pl_w" type="number" value="${P.w}">
+ <div class="grid2"><div><label>SCHD 주가 (원)</label><input id="pl_ps" type="number" value="${P.pS}"></div><div><label>JEPQ 주가 (원)</label><input id="pl_pj" type="number" value="${P.pJ}"></div></div>
+ <div class="row" style="margin-top:12px"><button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="savePlan">저장</button></div>`)}
+function savePlan(){const o={id:'divplan',goal:+v('pl_goal'),yld:+v('pl_y'),tax:+v('pl_t'),w:Math.min(100,Math.max(0,+v('pl_w'))),pS:+v('pl_ps'),pJ:+v('pl_pj')};if(!(o.goal>0&&o.yld>0&&o.pS>0&&o.pJ>0))return toast('값을 확인하세요');put('settings',o);close();toast('저장됨')}
 
 /* ---------- 배당수익 (종목별) ---------- */
 const MALL=[1,2,3,4,5,6,7,8,9,10,11,12];
@@ -293,7 +316,8 @@ function vDiv(){
  return `<div class="card"><div class="sub">${mo}월 배당 (세후)</div><div class="grid2" style="margin-top:4px"><div><div class="sub">예상</div><div class="mid">${W(expM[mo-1])}</div></div><div><div class="sub">받은 금액</div><div class="mid green">${W(actM[mo-1])}</div></div></div>
  <div class="item" style="margin-top:6px"><div class="grow sub">연 예상 배당 / 월평균</div><div class="num">${W(annual)} / ${W(mAvg)}</div></div>
  <div class="row sp"><span class="sub">월 생활비 ${W(cost)} 중 배당이 덮는 비율</span><b>${cover.toFixed(1)}%</b></div><div class="pbar" style="margin-top:4px"><i style="width:${cover}%;background:linear-gradient(90deg,#ff8a4c,#ff5a6a)"></i></div></div>
- <h2>${y}년 월별 배당 (예상 vs 실제)</h2><div class="card"><svg viewBox="0 0 300 120" style="width:100%">${expM.map((e,i)=>{const x=i*25+3,he=e/mx*80,ha=actM[i]/mx*80;return `<rect x="${x}" y="${92-he}" width="10" height="${he}" rx="2" fill="#8b8b96" opacity=".5"/><rect x="${x+11}" y="${92-ha}" width="10" height="${ha}" rx="2" fill="#ff8a4c"/><text class="t" x="${x+11}" y="106" font-size="8" text-anchor="middle">${i+1}</text>`}).join('')}</svg><div class="row sub" style="justify-content:center;gap:14px"><span>■ 예상</span><span style="color:#ff8a4c">■ 실제</span></div></div>
+ ${divPlan()}
+ <h2>${y}년 월별 배당 (예상 vs 실제)</h2><div class="card"><svg viewBox="0 0 300 120" style="width:100%">${expM.map((e,i)=>{const x=i*25+3,he=e/mx*80,ha=actM[i]/mx*80;return `<rect x="${x}" y="${92-he}" width="10" height="${he}" rx="2" fill="#8b8b96" opacity=".5"/><rect x="${x+11}" y="${92-ha}" width="10" height="${ha}" rx="2" fill="#ff8a4c"/><text class="t" x="${x+11}" y="106" font-size="11" text-anchor="middle">${i+1}</text>`}).join('')}</svg><div class="row sub" style="justify-content:center;gap:14px"><span>■ 예상</span><span style="color:#ff8a4c">■ 실제</span></div></div>
  ${S.divs.length?`<h2>종목별 비중 (연 배당 기준)</h2><div class="card">${stack(part.map(p=>[p[0],p[1]]))}<div class="chips">${part.map(p=>`<span><b class="dot" style="display:inline-block;background:${p[1]};margin-right:4px"></b>${esc(p[2].name)} ${annual?Math.round(p[0]/annual*100):0}%</span>`).join('')}</div></div>`:''}
  <h2>종목별 배당 <button class="btn sm" data-a="divForm">＋ 종목 추가</button></h2>
  ${list.map(({d,dt})=>{const dd=dt?dday(dt):null,paidNow=d.paid&&d.paid[m],got=S.tx.filter(x=>x.src===d.id&&x.date.startsWith(String(y))).reduce((s,x)=>s+x.amt,0);
@@ -328,7 +352,7 @@ const inkOf=k=>INK.find(x=>x[0]===k)||INK[INK.length-1];
 const passiveSum=()=>S.income.filter(i=>i.passive).reduce((s,i)=>s+i.amt,0)+divMonthly();
 const incomeSum=()=>S.income.reduce((s,i)=>s+i.amt,0)+divMonthly();
 function fireMini(){const {cost}=fireSet(),ps=passiveSum(),p=Math.min(100,ps/cost*100);
- return `<div class="card" data-tab="income"><div class="row sp"><span>🔥 파이어 진행 <span class="sub">월 패시브 ${W(ps)} / 생활비 ${W(cost)}</span></span><b>${p.toFixed(1)}%</b></div><div class="pbar" style="margin-top:6px"><i style="width:${p}%;background:linear-gradient(90deg,#ff8a4c,#ff5a6a)"></i></div></div>`}
+ return `<div class="card" data-tab="income"><div class="row sp"><span>🔥 파이어 진행</span><b>${p.toFixed(1)}%</b></div><div class="sub">월 패시브 ${W(ps)} / 생활비 ${W(cost)}</div><div class="pbar" style="margin-top:6px"><i style="width:${p}%;background:linear-gradient(90deg,#ff8a4c,#ff5a6a)"></i></div></div>`}
 function recvDone(i,m){return i.paid&&i.paid[m]}
 function vIncome(){const seg=`<div class="seg" style="margin-bottom:8px"><div class="${incSub==='main'?'on':''}" data-a="incSub" data-id="main">수입 · FIRE</div><div class="${incSub==='div'?'on':''}" data-a="incSub" data-id="div">📈 배당수익</div></div>`;return seg+(incSub==='div'?vDiv():vIncomeMain())}
 function vIncomeMain(){
@@ -347,9 +371,9 @@ function vIncomeMain(){
  <div class="item"><div class="grow sub">파이어 필요 자산 (생활비×12÷4%)</div><div class="num">${W(need)}</div></div>
  <div class="row sp" style="margin-top:2px"><span class="sub">현재 자산 ${W(T.net)}</span><b>${assetP.toFixed(1)}%</b></div><div class="pbar" style="margin-top:4px"><i style="width:${assetP}%"></i></div>
  ${avg3?`<div class="sub" style="margin-top:6px">최근 3개월 실제 배당 평균 ${W(avg3)}</div>`:''}</div>
- <h2>월별 실제 배당 입금</h2><div class="card"><svg viewBox="0 0 300 110" style="width:100%">${ms.map(([mo,v],k)=>{const x=k*50+10,h=v/dmx*70;return `<rect x="${x}" y="${85-h}" width="30" height="${h}" rx="3" fill="#ff8a4c"/><text class="t" x="${x+15}" y="100" font-size="9" text-anchor="middle">${+mo.slice(5)}월</text>${v?`<text class="t" x="${x+15}" y="${81-h}" font-size="8" text-anchor="middle">${big(v)}</text>`:''}`}).join('')}</svg><div class="sub">수입 분류 "이자·배당"으로 입력/입금 처리한 금액이 집계돼요.</div></div>
+ <h2>월별 실제 배당 입금</h2><div class="card"><svg viewBox="0 0 300 110" style="width:100%">${ms.map(([mo,v],k)=>{const x=k*50+10,h=v/dmx*70;return `<rect x="${x}" y="${85-h}" width="30" height="${h}" rx="3" fill="#ff8a4c"/><text class="t" x="${x+15}" y="100" font-size="11" text-anchor="middle">${+mo.slice(5)}월</text>${v?`<text class="t" x="${x+15}" y="${81-h}" font-size="10" text-anchor="middle">${big(v)}</text>`:''}`}).join('')}</svg><div class="sub">수입 분류 "이자·배당"으로 입력/입금 처리한 금액이 집계돼요.</div></div>
  <h2>수입 일정 (배당 제외) <button class="btn sm" data-a="incomeForm">＋ 추가</button></h2>
- ${list.map(({i,d})=>{const dd=dday(d),p=recvDone(i,m),k=inkOf(i.kind);return `<div class="card ${p?'paid':''}"><div class="row"><div style="font-size:18px">${k[1]}</div><div class="grow" data-a="incomeForm" data-id="${i.id}"><div class="ell"><b>${esc(i.name)}</b> <span class="tag ${p?'':'warn'}">${p?'입금완료':dd===0?'오늘':'D-'+dd}</span> ${i.passive?'<span class="tag">패시브</span>':''}</div><div class="sub">매월 ${i.day}일 · ${i.kind} · 다음 ${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})</div></div><div style="text-align:right"><div class="num blue">+${W(i.amt)}</div>${p?`<button class="btn g sm" data-a="unrecv" data-id="${i.id}">취소</button>`:`<button class="btn sm" data-a="recv" data-id="${i.id}">입금됐어요</button>`}</div></div></div>`}).join('')||'<div class="card sub">급여, 애드포스트, 레뷰 등 매월 들어오는 수입을 ＋ 추가로 넣어 보세요. 배당은 📈 배당수익 탭에서 종목별로 등록하면 파이어 계산에 자동 반영돼요.</div>'}`;
+ ${list.map(({i,d})=>{const dd=dday(d),p=recvDone(i,m),k=inkOf(i.kind);return `<div class="card ${p?'paid':''}"><div class="row"><div style="font-size:26px">${k[1]}</div><div class="grow" data-a="incomeForm" data-id="${i.id}"><div class="ell"><b>${esc(i.name)}</b> <span class="tag ${p?'':'warn'}">${p?'입금완료':dd===0?'오늘':'D-'+dd}</span> ${i.passive?'<span class="tag">패시브</span>':''}</div><div class="sub">매월 ${i.day}일 · ${i.kind} · 다음 ${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})</div></div><div style="text-align:right"><div class="num blue">+${W(i.amt)}</div>${p?`<button class="btn g sm" data-a="unrecv" data-id="${i.id}">취소</button>`:`<button class="btn sm" data-a="recv" data-id="${i.id}">입금됐어요</button>`}</div></div></div>`}).join('')||'<div class="card sub">급여, 애드포스트, 레뷰 등 매월 들어오는 수입을 ＋ 추가로 넣어 보세요. 배당은 📈 배당수익 탭에서 종목별로 등록하면 파이어 계산에 자동 반영돼요.</div>'}`;
 }
 function recv(id){const i=S.income.find(x=>x.id===id),t=today(),m=ym(t),k=inkOf(i.kind);const tx={id:uid(),date:ymd(t),type:'in',cat:k[3],amt:i.amt,memo:i.name+' (고정수입)',acct:i.acct||''};put('tx',tx);put('income',{...i,paid:{...(i.paid||{}),[m]:tx.id}})}
 function unrecv(id){const i=S.income.find(x=>x.id===id),m=ym(today()),p={...(i.paid||{})},t=p[m];delete p[m];if(t)del('tx',t);put('income',{...i,paid:p})}
@@ -381,7 +405,7 @@ function vGoal(){
  const T=totals();
  return `<div class="sub" style="margin-bottom:8px">달성률 = 내 자산 합계 ÷ 목표 금액 (목표별로 각각 계산)</div>`+S.goals.map(g=>{
  const p=Math.max(0,Math.min(100,T.net/g.target*100)),left=Math.max(0,g.target-T.net);
- return `<div class="goal"><div class="img" ${goalImg(g)}>${g.img?'':art(g.kind||(/차|카마로/.test(g.name)?'car':'apt'))}<div><div style="font-size:12px;opacity:.9">${g.emoji} ${esc(g.name)}</div><div class="pct">${p.toFixed(1)}<small style="font-size:16px">%</small></div></div></div>
+ return `<div class="goal"><div class="img" ${goalImg(g)}>${g.img?'':art(g.kind||(/차|카마로/.test(g.name)?'car':'apt'))}<div><div style="font-size:15px;opacity:.95">${g.emoji} ${esc(g.name)}</div><div class="pct">${p.toFixed(1)}<small style="font-size:20px">%</small></div></div></div>
  <div style="padding:10px 12px"><div class="pbar"><i style="width:${p}%"></i></div><div class="row sp" style="margin-top:6px"><span class="sub">현재 ${W(T.net)}</span><span class="sub">목표 ${W(g.target)}</span></div><div class="row sp" style="margin-top:4px"><span>남은 금액 <b>${W(left)}</b></span><button class="btn g sm" data-a="goalForm" data-id="${g.id}">편집</button></div>${avgSave(left)}</div></div>`}).join('')+`<button class="btn g" data-a="goalForm">＋ 목표 추가</button><div class="sub" style="margin-top:10px;line-height:1.5">기본 목표 금액은 추정치예요. 아파트: 서울 84㎡(34평형) 평균 매매가 약 12~14억대, 서울 전체 평균 16억 돌파 보도를 감안해 15억. 카마로 컨버터블: 미국 2SS 컨버터블 MSRP $53,300을 환율 1,400원으로 환산해 약 7,500만 원. 편집에서 바꿀 수 있어요.</div>`;
 }
 function avgSave(left){const ms=[1,2,3].map(i=>shiftM(ym(today()),-i)),a=ms.reduce((s,m)=>{const l=monthTx(m);return s+sum(l,'in')-sum(l,'out')},0)/3;
@@ -392,7 +416,7 @@ function avgSave(left){const ms=[1,2,3].map(i=>shiftM(ym(today()),-i)),a=ms.redu
 function monthChart(n=6){
  const ms=Array.from({length:n},(_,i)=>shiftM(ym(today()),i-n+1)),d=ms.map(m=>{const l=monthTx(m);return[m,sum(l,'in'),sum(l,'out')]});
  const mx=Math.max(...d.flatMap(x=>[x[1],x[2]]),1);
- return `<svg viewBox="0 0 300 130" style="width:100%">${[0,.5,1].map(k=>`<line class="gl" x1="0" x2="300" y1="${100-k*85}" y2="${100-k*85}"/>`).join('')}${d.map(([m,i,o],k)=>{const x=k*50+8;return `<rect x="${x}" y="${100-i/mx*85}" width="16" height="${i/mx*85}" rx="2" fill="#4c8dff"/><rect x="${x+18}" y="${100-o/mx*85}" width="16" height="${o/mx*85}" rx="2" fill="#ff5a6a"/><text class="t" x="${x+17}" y="114" font-size="9" text-anchor="middle">${+m.slice(5)}월</text>${i?`<text class="t" x="${x+8}" y="${96-i/mx*85}" font-size="7" text-anchor="middle">${big(i)}</text>`:''}${o?`<text class="t" x="${x+26}" y="${96-o/mx*85}" font-size="7" text-anchor="middle">${big(o)}</text>`:''}`}).join('')}</svg><div class="row sub" style="justify-content:center;gap:14px"><span class="blue">■ 수입</span><span class="red">■ 지출</span></div>`}
+ return `<svg viewBox="0 0 300 130" style="width:100%">${[0,.5,1].map(k=>`<line class="gl" x1="0" x2="300" y1="${100-k*85}" y2="${100-k*85}"/>`).join('')}${d.map(([m,i,o],k)=>{const x=k*50+8;return `<rect x="${x}" y="${100-i/mx*85}" width="16" height="${i/mx*85}" rx="2" fill="#4c8dff"/><rect x="${x+18}" y="${100-o/mx*85}" width="16" height="${o/mx*85}" rx="2" fill="#ff5a6a"/><text class="t" x="${x+17}" y="114" font-size="11" text-anchor="middle">${+m.slice(5)}월</text>${i?`<text class="t" x="${x+8}" y="${96-i/mx*85}" font-size="9" text-anchor="middle">${big(i)}</text>`:''}${o?`<text class="t" x="${x+26}" y="${96-o/mx*85}" font-size="9" text-anchor="middle">${big(o)}</text>`:''}`}).join('')}</svg><div class="row sub" style="justify-content:center;gap:14px"><span class="blue">■ 수입</span><span class="red">■ 지출</span></div>`}
 function weekRange(off=0){const t=today(),dow=(t.getDay()+6)%7,s=new Date(t);s.setDate(t.getDate()-dow+off*7);const e=new Date(s);e.setDate(s.getDate()+6);return[s,e]}
 const inR=(l,r)=>l.filter(t=>t.date>=ymd(r[0])&&t.date<=ymd(r[1]));
 function weekPrompt(){
@@ -549,7 +573,7 @@ function restoreGo(i){takeLocalSnapForce();const n=missingFrom(RST[+i].o,true).l
 
 /* ---------- 이벤트 ---------- */
 const A={assetForm:id=>assetForm(id),fixedForm:id=>fixedForm(id),goalForm:id=>goalForm(id),txForm:id=>txForm(id),mshift:(_,e)=>{cur=shiftM(cur,+e.dataset.d);render()},openCat:id=>{openCat=openCat===id?null:id;render()},pay,unpay,saveTx,delTx,saveAsset,saveFixed,saveGoal,close,txType:id=>txFormSwitch(id),
- delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divUnrecv,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
+ delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},planForm,savePlan,divForm,divMo,saveDiv,divRecvForm,divRecvGo,divUnrecv,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a){const f=A[a.dataset.a];if(f)f(a.dataset.id||undefined,a);return}
  const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render();scrollTo(0,0)}});
 document.addEventListener('change',e=>{
