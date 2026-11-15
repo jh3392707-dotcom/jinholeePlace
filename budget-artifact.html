@@ -306,7 +306,7 @@ const dueSoon=()=>{const t=today(),m=ym(t),out=[];S.fixed.forEach(f=>{const d=ne
  if(dd<=3&&!(dd>=0&&fixedPaid(f,m)&&d.getMonth()===t.getMonth()))out.push({f,d})});return out.sort((a,b)=>a.d-b.d)};
 
 /* ---------- 화면 ---------- */
-function draw(){linkMap=null;setTimeout(snapNow,0);
+function draw(){linkMap=null;setTimeout(snapNow,0);setTimeout(ensureRules,0);
  $('#nav').innerHTML=[['home','🏠','자산'],['tx','📒','내역'],['fixed','📅','고정지출'],['income','💰','수입·FIRE'],['goal','🎯','목표'],['report','📊','리포트']].map(([k,i,n])=>`<div class="${tab===k?'on':''}" data-tab="${k}"><b>${i}</b>${n}</div>`).join('');
  $('#app').innerHTML=`<div class="sync" id="sync" data-a="syncMenu"></div>`+{home:vHome,tx:vTx,fixed:vFixed,income:vIncome,goal:vGoal,report:vReport}[tab]();syncUI();
 }
@@ -338,10 +338,15 @@ function autoRules(){
  cs.sort((a,b)=>b[1]-a[1]);cs=cs.slice(0,3);
  ['취미·여가','식비','카페·간식'].forEach(c=>{if(cs.length<3&&!cs.some(x=>x[0]===c))cs.push([c,40000,0])});
  return cs.map(([cat,sp])=>{const f=cat==='복권·토토'?0.5:0.8,limit=Math.max(1000,Math.round(sp*f/1000)*1000);return{cat,limit,t:`${cat} 이번 주 ${W(limit)} 이하 (지난주 ${W(sp)})`}})}
+function ruleResults(off=0){return rulesFor(off).items.map(r=>{const sp=weekSpent(r.cat,off),lim=+r.limit||0,ok=lim>0?sp<=lim:sp===0;return{r,sp,lim,ok,diff:Math.abs(lim-sp),pct:lim>0?Math.round(sp/lim*100):(sp>0?999:0)}})}
+let ensuring=false;
+function ensureRules(){ // 이번 주 철칙을 한 번 저장해 두면, 다음 주 조언에서 달성 여부를 정확히 따질 수 있어요
+ if(ensuring||!loadedAll||S.rules.some(x=>x.id===weekId(0)))return;const items=autoRules();if(!items.length)return;ensuring=true;
+ put('rules',{id:weekId(0),items,src:'auto',at:new Date().toLocaleString('ko-KR')});setTimeout(()=>{ensuring=false},1500)}
 function rulesFor(off=0){const d=S.rules.find(x=>x.id===weekId(off));return d&&d.items&&d.items.length?{items:d.items,src:d.src||'manual'}:off===0?{items:autoRules(),src:'auto'}:{items:[],src:'none'}}
 function rulesCard(){
  const R=rulesFor(0),dow=(today().getDay()+6)%7,pace=Math.min(100,(dow+1)/7*100);
- return `<div class="card"><div class="row sp"><b>🛡️ 이번 주 소비 철칙</b><span class="row" style="gap:6px"><span class="sub">${R.src==='auto'?'지난주 기록 기반':R.src==='advice'?'지난주 조언 기반':'직접 수정'}</span>${sampleCap?'<button class="btn g sm" data-a="ruleAI">🧑‍💼 새로 추천</button>':''}</span></div>
+ return `<div class="card"><div class="row sp"><b>🛡️ 이번 주 소비 철칙</b><span class="row" style="gap:6px"><span class="sub">${R.src==='auto'?'지난주 기록 기반':R.src==='advice'?'지난주 조언 기반':'직접 수정'}</span>${sampleCap&&!S.advice.some(a=>a.id===weekId(0))?'<button class="btn g sm" data-a="goAdvice">🧑‍💼 이번 주 조언 받기</button>':''}</span></div>
  ${R.items.map((r,i)=>{const sp=weekSpent(r.cat),lim=+r.limit||0,p=lim>0?sp/lim*100:(sp>0?100:0),cl=p>=100?'#ff5a6a':p>=70?'#e0a33a':'#2fb67c',ic=r.cat==='합계'?'💰':ocat(r.cat)[1];
   return `<div class="rule" data-a="ruleForm" data-id="${i}"><div class="fill" style="width:${Math.min(100,p)}%;background:${cl}59"></div><div class="pace" style="left:${pace}%"></div><div class="grow" style="font-weight:600;font-size:15px">${ic} ${esc(r.t)}</div><div class="num" style="text-align:right;white-space:nowrap">${W(sp)}<div class="sub" style="font-size:12px">/ ${W(lim)} · ${p>=100?'<b style="color:#ff5a6a">초과</b>':'남은 '+W(lim-sp)}</div></div></div>`}).join('')}
  <div class="sub" style="margin-top:5px">세로선 = 오늘까지의 평균 속도 · 소비를 기록할 때마다 칸이 차올라요 · 눌러서 수정</div></div>`}
@@ -359,7 +364,8 @@ async function ruleAI(){
 분류는 다음 중 하나: 합계, ${OUT.map(x=>x[0]).join(', ')}
 한도는 0원으로 하지 말고, 지난주 실제 소비보다 줄이되 지킬 수 있는 현실적인 금액으로 정하세요. 선물·보험·이체 같은 줄이기 어려운 분류는 철칙으로 만들지 마세요.
 [지난주 카테고리별 지출] ${cs}
-[지난주 철칙 달성] ${rulesFor(-1).items.map(r=>`${r.cat} ${W(weekSpent(r.cat,-1))}/${W(r.limit)}`).join(' / ')||'없음'}
+[지난주 소비 철칙 달성 결과] ${(()=>{const R=ruleResults(-1);return R.length?'총 '+R.length+'개 중 '+R.filter(x=>x.ok).length+'개 달성':'지난주에는 저장된 철칙이 없었음(첫 주)'})()}
+${ruleResults(-1).map(x=>`- ${x.ok?'✅':'❌'} ${x.r.t} | 분류 ${x.r.cat} | 한도 ${W(x.lim)} | 실제 ${W(x.sp)} | ${x.ok?'달성 ('+W(x.diff)+' 남김)':'실패 ('+W(x.diff)+' 초과, 한도의 '+x.pct+'%)'}`).join('\n')}
 [월 저축(추정)] ${W(savingInfo().monthly)} / [목표 예상] ${S.goals.map(g=>g.name+' '+etaText(goalEta(g.target).n)).join(' / ')}
 [지난주 조언] ${adv?adv.text.replace(/^\s*철칙\s*\|.*$/gm,'').slice(0,1500):'없음'}`;
  try{const r=await sampleCap(prompt,{modelTier:'default'});const items=parseRules(r.text);if(!saveRules(items,'advice'))return toast('철칙을 만들지 못했어요. 다시 눌러 주세요');toast('✅ 이번 주 철칙 3개를 만들었어요')}catch(e){toast('추천을 불러오지 못했어요 ('+((e&&e.code)||'error')+')')}
@@ -635,7 +641,9 @@ function weekPrompt(){
  const b3=L.filter(t=>t.type==='out').sort((a,b)=>b.amt-a.amt).slice(0,3).map(t=>`${t.date.slice(5)} ${t.memo||t.cat} ${W(t.amt)}`).join(', ')||'없음';
  return `당신은 냉철하고 직설적인 자산관리 전문가(CFP)입니다. 아래는 제 지난주(월~일) 가계 요약이고, 지지난주와 비교한 내용입니다. 월요일에 한 번 받는 주간 조언이라, 이번 주(월~일) 동안 지킬 방향을 정해 주세요. 1) 잘한 점 2) 문제점 3) 이번 주 행동 3가지 4) 자산 배분(주식/환테크/코인/현금/통장/애드포스트/레뷰포인트) 코멘트 5) 월 배당·패시브 수입을 늘려 파이어에 가까워지는 방법과 목표 달성을 앞당길 방법을 구체적인 숫자로, 한국어로 간결하게 조언해 주세요. 특정 종목·코인 매수 추천은 하지 말고 원칙 위주로 말해 주세요.
 
-그리고 조언마다 반드시 '🔨 뼈 때리는 한마디'를 2~3개 넣어 주세요. 제 실제 지출(복권·토토 같은 소비, 큰 지출)과 목표(아파트·카마로)의 예상 도달 시점을 아래 숫자로 직접 비교해서, 예를 들어 "이 속도면 집을 사겠냐, 차를 사겠냐"처럼 현실을 정확히 짚어 주세요. 인신공격이나 비하는 하지 말고, 숫자와 사실에 근거해 따끔하게, 대신 끝에는 바로 실행할 수 있는 한 가지 행동을 같이 제시해 주세요.
+먼저 [지난주 소비 철칙 달성 결과]를 맨 앞에서 평가해 주세요. 철칙마다 달성·실패를 밝히고, 못 지킨 철칙은 초과 금액을 숫자로 들어 가장 따끔하게, 지킨 철칙은 짧게 인정하되 한 단계 더 높은 기준을 제시해 주세요. 3개 모두 실패했다면 가장 강하게, 모두 달성했다면 칭찬 후 한도를 더 낮추라고 해 주세요. 철칙이 없던 첫 주라면 그 점을 짚어 주세요.
+
+그리고 조언마다 반드시 '🔨 뼈 때리는 한마디'를 2~3개 넣어 주세요. 한마디는 위 철칙 달성 여부와 반드시 연결해서 쓰세요. 제 실제 지출(복권·토토 같은 소비, 큰 지출)과 목표(아파트·카마로)의 예상 도달 시점을 아래 숫자로 직접 비교해서, 예를 들어 "이 속도면 집을 사겠냐, 차를 사겠냐"처럼 현실을 정확히 짚어 주세요. 인신공격이나 비하는 하지 말고, 숫자와 사실에 근거해 따끔하게, 대신 끝에는 바로 실행할 수 있는 한 가지 행동을 같이 제시해 주세요.
 
 또한 '이번 주 행동 3가지'는 곧 이번 주(월~일) 소비 철칙 3개입니다. 철칙은 숫자로 측정 가능해야 하고, 응답 맨 끝에 아래 형식의 3줄을 설명 없이 그대로 출력해 주세요.
 철칙|분류|주 한도(원, 숫자만)|철칙 문구 한 줄
@@ -652,7 +660,8 @@ function weekPrompt(){
 [7일 내 고정지출 이체] ${up}
 [월 고정지출 합계] ${W(S.fixed.reduce((s,f)=>s+f.amt,0))}
 [월 고정수입] 합계 ${W(incomeSum())} (패시브/배당 ${W(passiveSum())}, 배당 종목 ${S.divs.map(d=>d.name+' 월평균 '+W(divNet(d)*divMonths(d).length/12)).join(', ')||'없음'}) / 파이어 목표 월 생활비 ${W(fireSet().cost)} → 패시브가 생활비의 ${(passiveSum()/fireSet().cost*100).toFixed(1)}%
-[지난주 철칙 달성] ${rulesFor(-1).items.map(r=>`${r.cat} ${W(weekSpent(r.cat,-1))}/${W(r.limit)}`).join(' / ')||'없음'}
+[지난주 소비 철칙 달성 결과] ${(()=>{const R=ruleResults(-1);return R.length?'총 '+R.length+'개 중 '+R.filter(x=>x.ok).length+'개 달성':'지난주에는 저장된 철칙이 없었음(첫 주)'})()}
+${ruleResults(-1).map(x=>`- ${x.ok?'✅':'❌'} ${x.r.t} | 분류 ${x.r.cat} | 한도 ${W(x.lim)} | 실제 ${W(x.sp)} | ${x.ok?'달성 ('+W(x.diff)+' 남김)':'실패 ('+W(x.diff)+' 초과, 한도의 '+x.pct+'%)'}`).join('\n')}
 [월 저축(추정)] ${W(savingInfo().monthly)} (${savingInfo().used==='asset'?'자산 추이':'수입−지출'} 기준, 자산 기대수익률 연 ${goalCfg().rate}%)
 [이번 달 복권·토토 지출] ${W(ML.filter(t=>t.type==='out'&&t.cat==='복권·토토').reduce((x,t)=>x+t.amt,0))} / [이번 달 취미·여가] ${W(ML.filter(t=>t.type==='out'&&t.cat==='취미·여가').reduce((x,t)=>x+t.amt,0))}
 [자산] 합계 ${W(T.net)} — ${as}
@@ -674,7 +683,8 @@ function vReport(){
  return `<h2 style="margin-top:0">월별 수입 · 지출</h2><div class="card">${monthChart(6)}</div><div class="card"><div class="item sub"><span style="width:44px">월</span><span class="grow">수입</span><span class="grow">지출</span><span style="width:90px;text-align:right">저축</span></div>${rows}</div>
  <h2>주간 자산전문가 조언</h2><div class="card">${have?'':`<div class="green" style="margin-bottom:6px">📬 ${dw===1?'월요일이에요! ':''}이번 주 조언을 아직 안 받았어요. 지난주를 분석해서 이번 주 철칙을 정해 보세요. (주 1회, 월요일에 한 번이면 충분해요)</div>`}
  <div class="row sp"><span>지난주 ${r[0].getMonth()+1}/${r[0].getDate()} ~ ${r[1].getMonth()+1}/${r[1].getDate()} 지출</span><b>${W(o)}</b></div><div class="sub">지지난주 ${W(po)} 대비 <span class="${o>po?'red':'blue'}">${o>po?'+':'-'}${W(Math.abs(o-po))}</span></div>
- <div class="row" style="margin:8px 0">${sampleCap?`<button class="btn" id="advBtn" data-a="getAdvice">🧑‍💼 이번 주 조언 받기 (지난주 분석)</button>`:''}<button class="btn g" data-a="copyP">📋 요약 복사</button></div>
+${(()=>{const R=ruleResults(-1);if(!R.length)return '';return `<div style="margin:8px 0"><div class="sub" style="margin-bottom:3px">지난주 소비 철칙 결과 · ${R.filter(x=>x.ok).length}/${R.length} 달성</div>${R.map(x=>`<div class="item"><span style="font-size:20px">${x.ok?'✅':'❌'}</span><div class="grow" style="font-size:14px">${esc(x.r.t)}</div><div class="num" style="text-align:right;font-size:14px">${W(x.sp)}<div class="sub" style="font-size:12px">/ ${W(x.lim)} · ${x.ok?W(x.diff)+' 남김':'<b style="color:var(--red)">'+W(x.diff)+' 초과</b>'}</div></div></div>`).join('')}</div>`})()}
+ <div class="row" style="margin:8px 0">${sampleCap?(have?`<div class="sub" style="flex:1">✅ 이번 주 조언은 이미 받았어요 (주 1회 · 다음 조언은 다음 주 월요일부터)</div>`:`<button class="btn" id="advBtn" data-a="getAdvice">🧑‍💼 이번 주 조언 받기 (지난주 분석)</button>`):''}<button class="btn g" data-a="copyP">📋 요약 복사</button></div>
  ${adviceLive?`<div class="advbox"><div class="advice" id="advLive">${fmtAdvice(adviceLive)}</div></div>`:''}
  <details class="sum"><summary>📋 AI에게 보내는 요약 보기 (눌러서 펼치기)</summary><textarea id="wp" readonly>${esc(weekPrompt())}</textarea></details><div class="sub" style="margin-top:4px">${sampleCap?'버튼을 누르면 Claude가 바로 조언하고, 결과는 아래에 저장돼요. 복사해서 Claude 대화에 붙여넣어도 됩니다.':'요약을 복사해 Claude 대화에 붙여넣으면 조언을 받을 수 있어요.'}</div></div>
  ${adv.map(a=>`<div class="card"><div class="sub" style="margin-bottom:2px;font-size:14px">${esc(a.id.slice(5).replace('-','/'))}부터 한 주 조언 (지난주 분석) · ${esc(a.at||'')}</div><div class="advbox"><div class="advice">${fmtAdvice(a.text)}</div></div></div>`).join('')}
@@ -682,9 +692,11 @@ function vReport(){
  <h2>데이터</h2><div class="card row" style="flex-wrap:wrap">${dlCap?'<button class="btn g sm" data-a="exp">백업 내보내기</button>':''}<button class="btn g sm" data-a="impPick">백업 복원</button><button class="btn r sm" data-a="resetAsk">전체 초기화</button><input id="imp" type="file" accept=".json" hidden></div>`;
 }
 async function getAdvice(){
+ if(S.advice.some(a=>a.id===weekId(0)))return toast('이번 주 조언은 이미 받았어요 (주 1회)');
+ if(adviceLive&&adviceLive.startsWith('⏳'))return;
  const b=$('#advBtn');if(b)b.disabled=true;adviceLive='⏳ 분석 중…';render();
  try{const r=await sampleCap(weekPrompt(),{modelTier:'default',onText:({text})=>{adviceLive=text;const e=$('#advLive');if(e)e.innerHTML=fmtAdvice(text)}});
-  adviceLive=r.text;const k=weekId(0);await put('advice',{id:k,text:r.text,at:new Date().toLocaleString('ko-KR')});adviceLive='';const rl=parseRules(r.text);if(rl.length)saveRules(rl,'advice',targetRuleWeek());toast(rl.length?'조언과 이번 주 철칙 3개가 저장됐어요':'조언이 저장됐어요')}
+  adviceLive=r.text;const k=weekId(0);if(S.advice.some(a=>a.id===k)){adviceLive='';render();return toast('이번 주 조언은 이미 받았어요 (다른 기기에서 먼저 받음)')}await put('advice',{id:k,text:r.text,at:new Date().toLocaleString('ko-KR')});adviceLive='';const rl=parseRules(r.text);if(rl.length)saveRules(rl,'advice',targetRuleWeek());toast(rl.length?'조언과 이번 주 철칙 3개가 저장됐어요':'조언이 저장됐어요')}
  catch(e){adviceLive=e&&e.code==='not_granted'?'허용되지 않았어요. 아래 "요약 복사"를 이용하세요.':'조언을 불러오지 못했어요 ('+((e&&e.code)||'error')+'). 잠시 후 다시 시도하거나 요약을 복사해 주세요.'}
  render();
 }
@@ -806,7 +818,7 @@ function restoreGo(i){takeLocalSnapForce();const n=missingFrom(RST[+i].o,true).l
 
 /* ---------- 이벤트 ---------- */
 const A={assetForm:id=>assetForm(id),fixedForm:id=>fixedForm(id),goalForm:id=>goalForm(id),txForm:id=>txForm(id),mshift:(_,e)=>{cur=shiftM(cur,+e.dataset.d);render()},openCat:id=>{openCat=openCat===id?null:id;render()},pay,unpay,saveTx,delTx,saveAsset,saveFixed,saveGoal,close,txType:id=>txFormSwitch(id),
- delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,speedTest,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},usableOpen,catSort:id=>{catSort=id;render()},ruleAI,ruleForm,ruleSave,ruleReset,goalCfgForm,saveGoalCfg,planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divHist,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
+ delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,speedTest,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},usableOpen,catSort:id=>{catSort=id;render()},goAdvice:()=>{tab='report';render();scrollTo(0,0)},ruleAI,ruleForm,ruleSave,ruleReset,goalCfgForm,saveGoalCfg,planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divHist,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a){const f=A[a.dataset.a];if(f)f(a.dataset.id||undefined,a);return}
  const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render();scrollTo(0,0)}});
 document.addEventListener('change',e=>{
