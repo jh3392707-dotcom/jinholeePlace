@@ -114,13 +114,15 @@ const itemTotal=o=>COLS.reduce((s,c)=>s+((o[c]||[]).length),0);
 
 /* 저장: 먼저 이 기기에 반영하고, 대기열에 넣어 서버로 보냄 */
 function enqueue(op){outbox=outbox.filter(o=>!(o.col===op.col&&o.id===op.id));outbox.push(op);saveOb();flush()}
-function put(col,o){
+let linkMap=null;const INKASSET={'애드포스트':'네이버 애드포스트','레뷰':'레뷰포인트'};
+function linkSum(id){if(!linkMap){linkMap={};S.tx.forEach(t=>{if(t.asset)linkMap[t.asset]=(linkMap[t.asset]||0)+(t.type==='in'?t.amt:-t.amt)})}return linkMap[id]||0}
+function put(col,o){linkMap=null;
  if(!o.id)o.id=uid();o._m=Date.now();
  const i=S[col].findIndex(x=>x.id===o.id);i>=0?S[col][i]=o:S[col].push(o);
  delete deletedIds[o.id];cacheSave();render();
  if(mode==='cloud')enqueue({k:'set',col,id:o.id,data:clean(o),m:o._m});
 }
-function del(col,id){
+function del(col,id){linkMap=null;
  S[col]=S[col].filter(x=>x.id!==id);deletedIds[id]=Date.now();cacheSave();render();
  if(mode==='cloud'){enqueue({k:'del',col,id,m:Date.now()});enqueue({k:'set',col:'meta',id:'deleted',data:{ids:deletedIds},m:Date.now()})}
 }
@@ -178,7 +180,7 @@ function takeLocalSnap(){try{let a=JSON.parse(localStorage.getItem(LSNAP)||'[]')
 const loadLocalSnaps=()=>{try{return JSON.parse(localStorage.getItem(LSNAP))||[]}catch(e){return[]}};
 
 /* 서버에서 받은 문서에 아직 못 보낸 변경(대기열)을 덧입혀 보여줌 */
-function applyServer(col,arr){
+function applyServer(col,arr){linkMap=null;
  const out=arr.slice();
  outbox.filter(o=>o.col===col).forEach(o=>{const i=out.findIndex(x=>x.id===o.id);
   if(o.k==='del'){if(i>=0&&(out[i]._m||0)<=o.m)out.splice(i,1)}
@@ -229,7 +231,7 @@ async function seedCloud(){if(seeding||S.seeded||mode!=='cloud')return;if(S.goal
 async function seedLocal(){if(!S.goals.length&&!S.seeded){S.goals=SEED.map(g=>({...g}));S.seeded={seeded:true};cacheSave()}}
 
 /* ---------- 계산 ---------- */
-const val=a=>a.amt!=null&&a.rate!=null?a.amt*a.rate:(a.value||0);
+const val=a=>a.amt!=null&&a.rate!=null?a.amt*a.rate:(a.value||0)+linkSum(a.id);
 const totals=()=>{let as=0;S.assets.forEach(a=>as+=val(a));return{as,net:as}};
 const monthTx=m=>S.tx.filter(t=>t.date.startsWith(m));
 const sum=(l,ty)=>l.filter(t=>t.type===ty).reduce((s,t)=>s+t.amt,0);
@@ -241,7 +243,7 @@ const fixedPaid=(f,m)=>f.paid&&f.paid[m];
 const dueSoon=()=>{const m=ym(today());return S.fixed.map(f=>({f,d:nextDue(f.day)})).filter(x=>dday(x.d)<=3&&!(dday(x.d)>=0&&fixedPaid(x.f,m)&&x.d.getMonth()===today().getMonth())).sort((a,b)=>a.d-b.d)};
 
 /* ---------- 화면 ---------- */
-function draw(){
+function draw(){linkMap=null;
  $('#nav').innerHTML=[['home','🏠','자산'],['tx','📒','내역'],['fixed','📅','고정지출'],['income','💰','수입·FIRE'],['goal','🎯','목표'],['report','📊','리포트']].map(([k,i,n])=>`<div class="${tab===k?'on':''}" data-tab="${k}"><b>${i}</b>${n}</div>`).join('');
  $('#app').innerHTML=`<div class="sync" id="sync" data-a="syncMenu"></div>`+{home:vHome,tx:vTx,fixed:vFixed,income:vIncome,goal:vGoal,report:vReport}[tab]();syncUI();
 }
@@ -404,7 +406,8 @@ function vIncomeMain(){
  <h2>수입 일정 (배당 제외) <button class="btn sm" data-a="incomeForm">＋ 추가</button></h2>
  ${list.map(({i,d})=>{const dd=dday(d),p=recvDone(i,m),k=inkOf(i.kind);return `<div class="card ${p?'paid':''}"><div class="row"><div style="font-size:26px">${k[1]}</div><div class="grow" data-a="incomeForm" data-id="${i.id}"><div class="ell"><b>${esc(i.name)}</b> <span class="tag ${p?'':'warn'}">${p?'입금완료':dd===0?'오늘':'D-'+dd}</span> ${i.passive?'<span class="tag">패시브</span>':''}</div><div class="sub">매월 ${i.day}일 · ${i.kind} · 다음 ${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})</div></div><div style="text-align:right"><div class="num blue">+${W(i.amt)}</div>${p?`<button class="btn g sm" data-a="unrecv" data-id="${i.id}">취소</button>`:`<button class="btn sm" data-a="recv" data-id="${i.id}">입금됐어요</button>`}</div></div></div>`}).join('')||'<div class="card sub">급여, 애드포스트, 레뷰 등 매월 들어오는 수입을 ＋ 추가로 넣어 보세요. 배당은 📈 배당수익 탭에서 종목별로 등록하면 파이어 계산에 자동 반영돼요.</div>'}`;
 }
-function recv(id){const i=S.income.find(x=>x.id===id),t=today(),m=ym(t),k=inkOf(i.kind);const tx={id:uid(),date:ymd(t),type:'in',cat:k[3],amt:i.amt,memo:i.name+' (고정수입)',acct:i.acct||''};put('tx',tx);put('income',{...i,paid:{...(i.paid||{}),[m]:tx.id}})}
+function linkAssetFor(i){if(i.link==='none')return '';if(i.link&&S.assets.some(a=>a.id===i.link))return i.link;const type=INKASSET[i.kind];if(!type)return '';let a=S.assets.find(x=>x.type===type);if(!a){a={id:type==='레뷰포인트'?'a_revu':'a_adpost',type,name:type,value:0};put('assets',a)}return a.id}
+function recv(id){const i=S.income.find(x=>x.id===id),t=today(),m=ym(t),k=inkOf(i.kind);const tx={id:uid(),date:ymd(t),type:'in',cat:k[3],amt:i.amt,memo:i.name+' (고정수입)',acct:i.acct||'',asset:linkAssetFor(i)||undefined};put('tx',tx);put('income',{...i,paid:{...(i.paid||{}),[m]:tx.id}})}
 function unrecv(id){const i=S.income.find(x=>x.id===id),m=ym(today()),p={...(i.paid||{})},t=p[m];delete p[m];if(t)del('tx',t);put('income',{...i,paid:p})}
 function incomeForm(id){
  const i=S.income.find(x=>x.id===id)||{name:'',kind:'애드포스트',amt:'',day:15,passive:true,acct:''};
@@ -413,10 +416,11 @@ function incomeForm(id){
  <label>월 금액 (원, 세후)</label><input id="i_amt" type="number" inputmode="numeric" value="${i.amt}">
  <label>입금일 (매월 몇 일)</label><input id="i_day" type="number" min="1" max="31" value="${i.day}">
  <label>입금 계좌</label><input id="i_acct" value="${esc(i.acct)}">
+ <label>입금 시 자산에 자동 반영</label><select id="i_link"><option value="" ${!i.link?'selected':''}>자동 (애드포스트→네이버 애드포스트, 레뷰→레뷰포인트)</option><option value="none" ${i.link==='none'?'selected':''}>반영 안 함</option>${S.assets.filter(a=>!(a.amt!=null&&a.rate!=null)).map(a=>`<option value="${a.id}" ${i.link===a.id?'selected':''}>${esc(a.name)}</option>`).join('')}</select>
  <label>파이어 계산에 패시브로 포함</label><select id="i_pas"><option value="1" ${i.passive?'selected':''}>예 (패시브)</option><option value="0" ${i.passive?'':'selected'}>아니오 (근로/활동 수입)</option></select>
  <div class="row" style="margin-top:12px">${id?`<button class="btn r" data-a="delIncome" data-id="${id}">삭제</button>`:''}<button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="saveIncome" data-id="${id||''}">저장</button></div>`)}
 function saveIncome(id){const name=v('i_name').trim(),amt=+v('i_amt'),day=Math.min(31,Math.max(1,+v('i_day')||1));if(!name||!(amt>0))return toast('이름과 금액을 입력하세요');
- const old=S.income.find(x=>x.id===id);put('income',{id:id||uid(),name,kind:v('i_kind'),amt,day,acct:v('i_acct'),passive:v('i_pas')==='1',paid:old?.paid||{}});close();toast('저장됨')}
+ const old=S.income.find(x=>x.id===id);put('income',{id:id||uid(),name,kind:v('i_kind'),amt,day,acct:v('i_acct'),passive:v('i_pas')==='1',link:v('i_link'),paid:old?.paid||{}});close();toast('저장됨')}
 function fireForm(){const {cost,yld}=fireSet();
  sheet(`<div class="mid">🔥 파이어 목표</div><label>파이어 후 한 달 생활비 (원)</label><input id="fr_cost" type="number" inputmode="numeric" value="${cost}">
  <label>배당 수익률 가정 (연 %)</label><input id="fr_y" type="number" step="0.1" value="${yld}">
@@ -514,26 +518,27 @@ function txForm(id,keep){
  <label>날짜</label><input id="f_date" type="date" value="${t.date}">
  <label>내용</label><input id="f_memo" value="${esc(t.memo)}" placeholder="예: 점심, 급여">
  <label>결제수단/계좌</label><input id="f_acct" value="${esc(t.acct)}" placeholder="예: 신한카드, 토스뱅크">
+ <label>자산에 반영 (수입은 더하고 지출은 뺌)</label><select id="f_asset"><option value="">반영 안 함</option>${S.assets.filter(a=>!(a.amt!=null&&a.rate!=null)).map(a=>`<option value="${a.id}" ${t.asset===a.id?'selected':''}>${esc(a.name)} (${W(val(a))})</option>`).join('')}</select>
  <div class="row" style="margin-top:12px">${id?`<button class="btn r" data-a="delTx" data-id="${id}">삭제</button>`:''}<button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="saveTx" data-id="${id||''}">저장</button></div>`);
 }
-function txFormSwitch(ty){const id=document.querySelector('[data-a=saveTx]').dataset.id;txType=ty;txForm(id,{id,date:v('f_date'),type:ty,cat:'',amt:v('f_amt'),memo:v('f_memo'),acct:v('f_acct')})}
+function txFormSwitch(ty){const id=document.querySelector('[data-a=saveTx]').dataset.id;txType=ty;txForm(id,{id,date:v('f_date'),type:ty,cat:'',amt:v('f_amt'),memo:v('f_memo'),acct:v('f_acct'),asset:v('f_asset')})}
 function saveTx(id){const amt=+v('f_amt');if(!(amt>0))return toast('금액을 입력하세요');const date=v('f_date');if(!date)return toast('날짜를 입력하세요');
- put('tx',{id:id||uid(),date,type:txType,cat:v('f_cat'),amt,memo:v('f_memo'),acct:v('f_acct')});cur=date.slice(0,7);close();toast('저장됨')}
+ put('tx',{id:id||uid(),date,type:txType,cat:v('f_cat'),amt,memo:v('f_memo'),acct:v('f_acct'),asset:v('f_asset')||undefined});cur=date.slice(0,7);close();toast('저장됨')}
 function delTx(id){S.fixed.forEach(f=>{for(const k in f.paid||{})if(f.paid[k]===id){const p={...f.paid};delete p[k];put('fixed',{...f,paid:p})}});del('tx',id);close()}
 function assetForm(id,keep){
  const a=keep||S.assets.find(x=>x.id===id)||{type:'통장',name:'',value:''};if(!a.name&&(a.type==='네이버 애드포스트'||a.type==='레뷰포인트'))a.name=a.type;const calc=a.type==='환테크'||a.type==='코인';
  sheet(`<label>종류</label><select id="a_type" data-ch="assetType">${opts(ATYPE.map(x=>x[0]),a.type)}</select>
  <label>이름</label><input id="a_name" value="${esc(a.name)}" placeholder="${a.type==='네이버 애드포스트'?'네이버 애드포스트':a.type==='레뷰포인트'?'레뷰 포인트':'예: 삼성전자, 달러 예금, 비트코인, 토스뱅크'}">
  ${a.type==='환테크'?`<label>통화</label><select id="a_cur" data-ch="curRate">${opts(CUR.map(x=>x[0]),a.cur||'USD')}</select><label>외화 금액</label><input id="a_amt" type="number" step="any" value="${a.amt??''}"><label>환율 (원)</label><input id="a_rate" type="number" step="any" value="${a.rate??1400}">`:
-  a.type==='코인'?`<label>코인 종류</label><input id="a_cur" value="${esc(a.cur||'')}" placeholder="BTC"><label>보유 수량 (모르면 비워두고 아래 평가금액만)</label><input id="a_amt" type="number" step="any" value="${a.amt??''}"><label>현재가 (원/개)</label><input id="a_rate" type="number" step="any" value="${a.rate??''}"><label>평가금액 (수량·현재가를 비웠을 때)</label><input id="a_val" type="number" inputmode="numeric" value="${a.value??''}">`:
-  `<label>${a.type==='주식'?'평가금액 (원)':a.type==='네이버 애드포스트'?'애드포스트 잔액/미정산 수익 (원)':a.type==='레뷰포인트'?'레뷰 포인트 (1P=1원 기준, 원)':'금액 (원)'}</label><input id="a_val" type="number" inputmode="numeric" value="${a.value??''}">`}
+  a.type==='코인'?`<label>코인 종류</label><input id="a_cur" value="${esc(a.cur||'')}" placeholder="BTC"><label>보유 수량 (모르면 비워두고 아래 평가금액만)</label><input id="a_amt" type="number" step="any" value="${a.amt??''}"><label>현재가 (원/개)</label><input id="a_rate" type="number" step="any" value="${a.rate??''}"><label>평가금액 (수량·현재가를 비웠을 때)</label><input id="a_val" type="number" inputmode="numeric" value="${id&&!keep&&a.amt==null?Math.round(val(a)):(a.value??'')}">`:
+  `<label>${a.type==='주식'?'평가금액 (원)':a.type==='네이버 애드포스트'?'애드포스트 잔액/미정산 수익 (원)':a.type==='레뷰포인트'?'레뷰 포인트 (1P=1원 기준, 원)':'금액 (원)'}</label><input id="a_val" type="number" inputmode="numeric" value="${id&&!keep&&a.amt==null?Math.round(val(a)):(a.value??'')}">`}
  <div class="row" style="margin-top:12px">${id?`<button class="btn r" data-a="delAsset" data-id="${id}">삭제</button>`:''}<button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="saveAsset" data-id="${id||''}">저장</button></div>`);
 }
 function saveAsset(id){const type=v('a_type'),name=v('a_name').trim();if(!name)return toast('이름을 입력하세요');
  const o={id:id||uid(),type,name};
  if(type==='환테크'){o.cur=v('a_cur');o.amt=+v('a_amt');o.rate=+v('a_rate');if(!(o.amt>=0&&o.rate>0))return toast('금액과 환율을 확인하세요')}
- else if(type==='코인'){o.cur=v('a_cur').trim();const q=v('a_amt'),r=v('a_rate');if(q!==''&&r!==''){o.amt=+q;o.rate=+r}else{o.value=+v('a_val');if(!(o.value>=0))return toast('평가금액을 입력하세요')}}
- else{o.value=+v('a_val');if(!(o.value>=0))return toast('금액을 입력하세요')}
+ else if(type==='코인'){o.cur=v('a_cur').trim();const q=v('a_amt'),r=v('a_rate');if(q!==''&&r!==''){o.amt=+q;o.rate=+r}else{o.value=+v('a_val')-(id?linkSum(id):0);if(!(+v('a_val')>=0))return toast('평가금액을 입력하세요')}}
+ else{o.value=+v('a_val')-(id?linkSum(id):0);if(!(+v('a_val')>=0))return toast('금액을 입력하세요')}
  put('assets',o);close();toast('저장됨')}
 function fixedForm(id){
  const f=S.fixed.find(x=>x.id===id)||{name:'',amt:'',day:25,cat:'주거·통신',acct:''};
