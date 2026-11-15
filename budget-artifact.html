@@ -54,7 +54,8 @@ body.wide{font-size:15px;padding-left:calc(88px + env(safe-area-inset-left,0px))
 body.wide #app{max-width:none;column-count:2;column-gap:10px}
 body.wide.xl #app{column-count:3}
 body.wide #app>*{break-inside:avoid}
-body.wide #app>h2,body.wide #app>.sync,body.wide #app>.mnav,body.wide #app>.seg,body.wide #app>.alert,body.wide #app>.card:has(textarea),body.wide #app>.card:has(.tl){column-span:all}
+body.wide #app>h2{break-after:avoid;margin-top:8px}
+body.wide #app>.sync,body.wide #app>.mnav,body.wide #app>.seg,body.wide #app>.alert,body.wide #app>.card:has(textarea),body.wide #app>.card:has(.tl){column-span:all}
 body.wide #app>.btn{column-span:all}
 body.wide #app>.card,body.wide #app>.goal{margin-bottom:8px}
 body.wide .big{font-size:26px}body.wide .mid{font-size:18px}
