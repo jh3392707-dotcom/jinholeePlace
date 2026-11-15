@@ -44,7 +44,7 @@ textarea{width:100%;height:130px;background:var(--card2);border:1px solid var(--
 .paid{opacity:.5}.tag{font-size:10px;border-radius:4px;padding:1px 5px;background:var(--card2);color:var(--sub);font-weight:600}.tag.hot{background:var(--red);color:#fff}.tag.warn{background:var(--amber);color:#fff}
 .alert{background:var(--redbg);border:1px solid var(--red);border-radius:12px;padding:8px 12px;margin-bottom:8px}
 .advice{white-space:pre-wrap;font-size:12.5px;line-height:1.6}
-.sync{font-size:10px;color:var(--sub);text-align:right;margin-bottom:4px}.sync.bad{color:var(--red)}
+.sync{font-size:10px;color:var(--sub);text-align:right;margin-bottom:4px;cursor:pointer}.sync.bad{color:var(--red)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(120px + env(safe-area-inset-bottom,0px));background:var(--tx);color:var(--bg);padding:8px 14px;border-radius:20px;z-index:20;font-weight:600}
 .t{fill:var(--sub)}.gl{stroke:var(--line)}
 </style>
@@ -72,31 +72,104 @@ const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
 const ym=d=>d.getFullYear()+'-'+pad(d.getMonth()+1);
 const dim=(y,m)=>new Date(y,m+1,0).getDate();
 const DOW='일월화수목금토';
-let tab='home',cur=ym(today()),openCat=null,txType='out',mode='connecting',db=null,assetsCap=null,dlCap=null,sampleCap=null,pending=0,lastErr='';
+let tab='home',cur=ym(today()),openCat=null,txType='out',mode='connecting',db=null,assetsCap=null,dlCap=null,sampleCap=null,lastErr='';
 
-/* ---------- 저장/동기화 ---------- */
-const CK='gagyebu_cache_v2';
-function cacheSave(){try{localStorage.setItem(CK,JSON.stringify({tx:S.tx,assets:S.assets,fixed:S.fixed,goals:S.goals,advice:S.advice,income:S.income,settings:S.settings,seeded:S.seeded}))}catch(e){}}
-function cacheLoad(){try{const c=JSON.parse(localStorage.getItem(CK));if(c)COLS.forEach(k=>S[k]=c[k]||[]),S.seeded=c.seeded}catch(e){}}
+/* ---------- 저장/동기화 ----------
+ * 온수동지구인 다이어리에서 시행착오 끝에 만든 안전장치를 가져왔어요.
+ * 1) 기기 임시 저장(항상)  2) 저장 대기열(outbox): 실패해도 사라지지 않고 자동 재시도
+ * 3) 낡은 화면 차단(APP_VER)  4) 갑자기 텅 빈 서버 보호(guard)  5) 나중에 고친 쪽이 이김(_m)
+ * 6) 저장 후 다시 읽어 확인  7) 3시간 단위·매일 서버 백업 + 기기 스냅샷  8) 직접 지운 항목 기록(백업 복원 때 되살리지 않음)
+ */
+const APP_VER=3,CK='gagyebu_cache_v2',OBK='gagyebu_outbox_v1',LSNAP='gagyebu_snaps_v1',CHUNK=60000;
+const DEV=(()=>{try{let d=localStorage.getItem('gagyebu_dev');if(!d){d=Math.random().toString(36).slice(2,8);localStorage.setItem('gagyebu_dev',d)}return d}catch(e){return Math.random().toString(36).slice(2,8)}})();
+let outbox=[],deletedIds={},serverCopy={},guard={},stale=false,flushing=false,retryT=0,lastOk=0,lastPreSlot='',lastDaily=0,cleaned=false;
+try{outbox=JSON.parse(localStorage.getItem(OBK))||[]}catch(e){}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+const saveOb=()=>{try{localStorage.setItem(OBK,JSON.stringify(outbox))}catch(e){}};
+function cacheSave(){try{localStorage.setItem(CK,JSON.stringify({tx:S.tx,assets:S.assets,fixed:S.fixed,goals:S.goals,advice:S.advice,income:S.income,settings:S.settings,seeded:S.seeded,deleted:deletedIds}))}catch(e){}}
+function cacheLoad(){try{const c=JSON.parse(localStorage.getItem(CK));if(c){COLS.forEach(k=>S[k]=c[k]||[]);S.seeded=c.seeded;deletedIds=c.deleted||{}}}catch(e){}}
 const clean=o=>{const r={};for(const k in o)if(o[k]!==undefined&&k!=='id')r[k]=o[k];return r};
-async function put(col,o){
- if(!o.id)o.id=uid();
- const i=S[col].findIndex(x=>x.id===o.id);i>=0?S[col][i]=o:S[col].push(o);cacheSave();render();
- if(mode!=='cloud')return;
- pending++;syncUI();
- try{await db.collection(col).doc(o.id).set(clean(o));lastErr=''}catch(e){lastErr=(e&&e.code)||'error';toast('저장 실패: '+lastErr)}
- pending--;syncUI();
+const dataSnapshot=()=>({tx:S.tx,assets:S.assets,fixed:S.fixed,goals:S.goals,advice:S.advice,income:S.income,settings:S.settings,deleted:deletedIds});
+const itemTotal=o=>COLS.reduce((s,c)=>s+((o[c]||[]).length),0);
+
+/* 저장: 먼저 이 기기에 반영하고, 대기열에 넣어 서버로 보냄 */
+function enqueue(op){outbox=outbox.filter(o=>!(o.col===op.col&&o.id===op.id));outbox.push(op);saveOb();flush()}
+function put(col,o){
+ if(!o.id)o.id=uid();o._m=Date.now();
+ const i=S[col].findIndex(x=>x.id===o.id);i>=0?S[col][i]=o:S[col].push(o);
+ delete deletedIds[o.id];cacheSave();render();
+ if(mode==='cloud')enqueue({k:'set',col,id:o.id,data:clean(o),m:o._m});
 }
-async function del(col,id){
- S[col]=S[col].filter(x=>x.id!==id);cacheSave();render();
- if(mode!=='cloud')return;
- pending++;syncUI();
- try{await db.collection(col).doc(id).delete();lastErr=''}catch(e){lastErr=(e&&e.code)||'error';toast('삭제 실패: '+lastErr)}
- pending--;syncUI();
+function del(col,id){
+ S[col]=S[col].filter(x=>x.id!==id);deletedIds[id]=Date.now();cacheSave();render();
+ if(mode==='cloud'){enqueue({k:'del',col,id,m:Date.now()});enqueue({k:'set',col:'meta',id:'deleted',data:{ids:deletedIds},m:Date.now()})}
 }
-function syncUI(){const e=$('#sync');if(!e)return;
- e.className='sync'+(mode==='local'||lastErr?' bad':'');
- e.textContent=mode==='cloud'?(lastErr?'⚠️ 동기화 오류: '+lastErr:pending?'⏳ 저장 중…':'☁️ 동기화됨 (폰·PC 공통)'):mode==='local'?'⚠️ 이 기기에만 저장 중 (claude.ai 로그인 후 열면 동기화)':'⏳ 연결 중…'}
+async function exec(op){
+ await preSlotBackup();
+ const ref=op.col==='meta'?db.doc('meta/'+op.id):db.collection(op.col).doc(op.id);
+ if(op.k==='del'){await ref.delete();return}
+ const r=await ref.get(),bulk=outbox.length>20;
+ if(op.col==='meta'&&op.id==='deleted'){const ids={...(r.exists?(r.data().ids||{}):{}),...op.data.ids};deletedIds={...ids,...deletedIds};op.data={ids}}
+ else if(r.exists&&(r.data()._m||0)>op.m)return; // 서버 쪽이 더 나중에 고쳐졌으면 서버가 이김
+ await ref.set(op.data);
+ if(!bulk){const v=await ref.get();if(!v.exists)throw{code:'verify'}} // 저장 후 다시 읽어 확인
+}
+async function flush(){
+ if(flushing||mode!=='cloud'||stale)return;
+ flushing=true;syncUI();
+ try{
+  while(outbox.length){
+   const op=outbox[0];
+   try{await exec(op);outbox.shift();saveOb();lastErr='';lastOk=Date.now()}
+   catch(e){const c=(e&&e.code)||'error';
+    if(c==='invalid_argument'||c==='quota_exceeded'||c==='transform_error'){outbox.shift();saveOb();lastErr=c;toast('저장할 수 없는 항목을 건너뛰었어요 ('+c+')')}
+    else{lastErr=c;clearTimeout(retryT);retryT=setTimeout(flush,5000);break}}
+  }
+ }finally{flushing=false}
+ if(!outbox.length&&!lastErr)afterFlush();
+ syncUI();
+}
+function afterFlush(){
+ if(itemTotal(S)>0&&Date.now()-lastDaily>600000){lastDaily=Date.now();writeBackup(ymd(today()),dataSnapshot()).catch(()=>{});takeLocalSnap()}
+}
+/* 백업 (문서 하나 한도를 넘지 않도록 조각내서 저장) */
+async function writeBackup(id,data){
+ const json=JSON.stringify(data),parts=[];for(let i=0;i<json.length;i+=CHUNK)parts.push(json.slice(i,i+CHUNK));
+ for(let i=0;i<parts.length;i++)await db.doc('backups/'+id+'_c'+i).set({s:parts[i]});
+ await db.doc('backups/'+id).set({t:Date.now(),n:parts.length,dev:DEV});
+}
+async function readBackup(id){
+ const m=await db.doc('backups/'+id).get();if(!m.exists)return null;
+ let s='';for(let i=0;i<m.data().n;i++){const c=await db.doc('backups/'+id+'_c'+i).get();if(!c.exists)return null;s+=c.data().s}
+ return{t:m.data().t,o:JSON.parse(s)};
+}
+async function deleteBackup(id){try{const m=await db.doc('backups/'+id).get();if(!m.exists)return;for(let i=0;i<m.data().n;i++)await db.doc('backups/'+id+'_c'+i).delete();await db.doc('backups/'+id).delete()}catch(e){}}
+async function preSlotBackup(){ // 3시간마다 한 번, 덮어쓰기 직전 서버 내용을 따로 보관
+ const n=new Date(),slot=ymd(n)+'-'+pad(Math.floor(n.getHours()/3)*3);if(slot===lastPreSlot)return;lastPreSlot=slot;
+ if(!itemTotal(serverCopy))return;
+ try{const x=await db.doc('backups/pre-'+slot).get();if(!x.exists)await writeBackup('pre-'+slot,{...serverCopy,deleted:deletedIds})}catch(e){}
+}
+function cleanupOld(){ // 오래된 자동 백업 정리 (매일 60일, 3시간 단위 3일)
+ if(cleaned||!db)return;cleaned=true;const day=n=>{const d=today();d.setDate(d.getDate()-n);return ymd(d)};
+ deleteBackup(day(60));[3,4].forEach(n=>[0,3,6,9,12,15,18,21].forEach(h=>deleteBackup('pre-'+day(n)+'-'+pad(h))));
+ const old=Date.now()-90*864e5;Object.keys(deletedIds).forEach(k=>{if(deletedIds[k]<old)delete deletedIds[k]});
+}
+function takeLocalSnap(){try{let a=JSON.parse(localStorage.getItem(LSNAP)||'[]');const last=a[a.length-1];if(last&&Date.now()-last.t<30*60000)return;const s=JSON.stringify(dataSnapshot());if(s.length>800000||!itemTotal(S))return;a.push({t:Date.now(),s});while(a.length>3)a.shift();localStorage.setItem(LSNAP,JSON.stringify(a))}catch(e){}}
+const loadLocalSnaps=()=>{try{return JSON.parse(localStorage.getItem(LSNAP))||[]}catch(e){return[]}};
+
+/* 서버에서 받은 문서에 아직 못 보낸 변경(대기열)을 덧입혀 보여줌 */
+function applyServer(col,arr){
+ const out=arr.slice();
+ outbox.filter(o=>o.col===col).forEach(o=>{const i=out.findIndex(x=>x.id===o.id);
+  if(o.k==='del'){if(i>=0&&(out[i]._m||0)<=o.m)out.splice(i,1)}
+  else if(i<0)out.push({id:o.id,...o.data});else if((out[i]._m||0)<=o.m)out[i]={id:o.id,...o.data}});
+ S[col]=out;
+}
+function syncState(){
+ return stale?'stale':Object.keys(guard).length?'guard':mode==='local'?'local':mode!=='cloud'?'busy':lastErr?'err':(flushing||outbox.length)?'busy':'ok'}
+function syncUI(){const e=$('#sync');if(!e)return;const st=syncState();
+ e.className='sync'+(['local','guard','stale','err'].includes(st)?' bad':'');
+ e.textContent={stale:'🔄 새로고침이 필요해요 (낡은 화면)',guard:'⚠️ 확인 필요 — 눌러서 확인',local:'📵 이 기기에만 저장 (눌러서 자세히)',err:'⚠️ 동기화 지연 — 자동 재시도 중 ('+outbox.length+'건 대기)',busy:'🔄 동기화 중…'+(outbox.length?' ('+outbox.length+'건)':''),ok:'☁️ 동기화됨 (폰·PC 공통) · 눌러서 관리'}[st]}
 let toastT;function toast(m){document.querySelectorAll('.toast').forEach(e=>e.remove());const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);clearTimeout(toastT);toastT=setTimeout(()=>e.remove(),2600)}
 let rq;function render(){cancelAnimationFrame(rq);rq=requestAnimationFrame(draw)}
 async function init(){
@@ -109,13 +182,30 @@ async function init(){
  db=c;mode='cloud';syncUI();
  const first={};let timer=setTimeout(()=>{if(Object.keys(first).length<COLS.length+1){lastErr='연결 지연(캐시 표시 중)';syncUI()}},10000);
  const got=k=>{first[k]=1;if(Object.keys(first).length===COLS.length+1){clearTimeout(timer);if(lastErr.startsWith('연결')){lastErr='';syncUI()}}};
- COLS.forEach(col=>db.collection(col).onSnapshot(s=>{S[col]=s.docs.map(d=>({id:d.id,...d.data()}));if(!s.metadata.fromCache)got(col);cacheSave();render();if(col==='goals'&&!s.metadata.fromCache)seedCloud()},e=>{lastErr=(e&&e.code)||'error';syncUI()}));
- db.doc('meta/state').onSnapshot(s=>{S.seeded=s.exists?s.data():null;if(!s.metadata.fromCache)got('meta');seedCloud()},e=>{});
+ COLS.forEach(col=>db.collection(col).onSnapshot(s=>{
+  const arr=s.docs.map(d=>({id:d.id,...d.data()}));
+  if(s.metadata.fromCache){if(!arr.length&&S[col].length)return;serverCopy[col]=arr;applyServer(col,arr);cacheSave();render();return} // 캐시가 비어 있다고 내 기기 데이터를 지우지 않음
+  got(col);serverCopy[col]=arr;
+  if(!arr.length&&S[col].length>=3&&!outbox.some(o=>o.col===col)){guard[col]=true;syncUI();render();return} // 있던 데이터가 갑자기 텅 빈 서버 → 자동으로 지우지 않고 확인을 요청
+  delete guard[col];applyServer(col,arr);cacheSave();render();syncUI();
+  if(col==='goals')seedCloud();
+ },e=>{lastErr=(e&&e.code)||'error';syncUI()}));
+ db.doc('meta/state').onSnapshot(s=>{
+  S.seeded=s.exists?s.data():null;
+  const v=s.exists?(s.data().v||0):0;
+  if(v>APP_VER&&!stale){stale=true;syncUI();toast('🔄 새 버전이 나왔어요. 새로고침해 주세요')} // 낡은 화면은 서버에 쓰지 않음
+  else if(!s.metadata.fromCache&&s.exists&&v<APP_VER&&!stale)db.doc('meta/state').set({...s.data(),v:APP_VER}).catch(()=>{});
+  if(!s.metadata.fromCache)got('meta');seedCloud();
+ },e=>{});
+ db.doc('meta/deleted').onSnapshot(s=>{if(s.exists){deletedIds={...(s.data().ids||{}),...deletedIds};cacheSave()}},e=>{});
+ flush();cleanupOld();
 }
+document.addEventListener('visibilitychange',()=>{if(!db)return;if(!document.hidden)flush();else if(outbox.length)flush()});
+addEventListener('online',()=>flush());
 const SEED=[{id:'g_apt',name:'서울 34평 아파트',emoji:'🏢',kind:'apt',target:1500000000,img:''},{id:'g_camaro',name:'쉐보레 카마로 컨버터블',emoji:'🏎️',kind:'car',target:75000000,img:''}];
 let seeding=false;
 async function seedCloud(){if(seeding||S.seeded||mode!=='cloud')return;if(S.goals.length){return}seeding=true;
- try{const m=await db.doc('meta/state').get();if(!m.exists){for(const g of SEED)await db.collection('goals').doc(g.id).set(clean(g));await db.doc('meta/state').set({seeded:true})}}catch(e){}seeding=false}
+ try{const m=await db.doc('meta/state').get();if(!m.exists){for(const g of SEED)await db.collection('goals').doc(g.id).set(clean(g));await db.doc('meta/state').set({seeded:true,v:APP_VER})}}catch(e){}seeding=false}
 async function seedLocal(){if(!S.goals.length&&!S.seeded){S.goals=SEED.map(g=>({...g}));S.seeded={seeded:true};cacheSave()}}
 
 /* ---------- 계산 ---------- */
@@ -133,7 +223,7 @@ const dueSoon=()=>{const m=ym(today());return S.fixed.map(f=>({f,d:nextDue(f.day
 /* ---------- 화면 ---------- */
 function draw(){
  $('#nav').innerHTML=[['home','🏠','자산'],['tx','📒','내역'],['fixed','📅','고정지출'],['income','💰','수입·FIRE'],['goal','🎯','목표'],['report','📊','리포트']].map(([k,i,n])=>`<div class="${tab===k?'on':''}" data-tab="${k}"><b>${i}</b>${n}</div>`).join('');
- $('#app').innerHTML=`<div class="sync" id="sync"></div>`+{home:vHome,tx:vTx,fixed:vFixed,income:vIncome,goal:vGoal,report:vReport}[tab]();syncUI();
+ $('#app').innerHTML=`<div class="sync" id="sync" data-a="syncMenu"></div>`+{home:vHome,tx:vTx,fixed:vFixed,income:vIncome,goal:vGoal,report:vReport}[tab]();syncUI();
 }
 const stack=items=>{const t=items.reduce((s,x)=>s+x[0],0)||1;return `<div class="bar">${items.filter(x=>x[0]>0).map(x=>`<i style="width:${x[0]/t*100}%;background:${x[1]}"></i>`).join('')}</div>`};
 function dueBanner(){const l=dueSoon();if(!l.length)return '';
@@ -354,9 +444,61 @@ function saveGoal(id){const target=+v('g_target');if(!v('g_name')||!(target>0))r
 function resetAsk(){sheet(`<div class="mid">정말 전체 초기화할까요?</div><div class="sub" style="margin:6px 0 12px">내역·자산·고정지출·목표·조언이 모두 삭제되고 되돌릴 수 없어요. 먼저 백업을 권장해요.</div><div class="row"><button class="btn g grow" data-a="close">취소</button><button class="btn r grow" data-a="resetGo">전부 삭제</button></div>`)}
 async function resetGo(){close();for(const c of COLS)for(const o of [...S[c]])await del(c,o.id);toast('초기화됨')}
 
+/* ---------- 동기화 관리 · 백업 복원 ---------- */
+function syncMenu(){
+ const st=syncState(),g=Object.keys(guard);
+ let h=`<div class="mid">☁️ 동기화</div><div class="sub" style="margin:4px 0 10px;line-height:1.6">상태: <b>${{stale:'새로고침 필요',guard:'확인 필요',local:'이 기기에만 저장',err:'재시도 중',busy:'동기화 중',ok:'정상'}[st]}</b><br>대기 중인 저장 ${outbox.length}건 · 마지막 성공 ${lastOk?new Date(lastOk).toLocaleTimeString('ko-KR'):'-'} · 기기 ${DEV}${lastErr?'<br>마지막 오류: '+esc(lastErr):''}</div>`;
+ if(mode!=='cloud')h+=`<div>이 화면은 저장소(claude.ai)에 연결되지 않아 이 기기에만 저장돼요. claude.ai 링크로 로그인해서 열면 폰·PC가 동기화돼요.</div>`;
+ else if(stale)h+=`<div>새 버전이 나왔어요. 이 화면은 낡은 데이터를 올리지 않도록 멈춰 있어요. 새로고침해 주세요.</div>`;
+ else if(g.length)h+=`<div class="alert" style="margin:0 0 10px">⚠️ ${g.map(c=>({tx:'내역',assets:'자산',fixed:'고정지출',goals:'목표',advice:'조언',income:'수입',settings:'설정'}[c])).join(', ')} 데이터가 서버에서 갑자기 비어 있어요. 실수로 지워졌을 수 있어 자동으로 지우지 않고 멈췄어요.</div>
+  <div class="grid2"><button class="btn" data-a="pushServerAsk">⬆️ 이 기기 내용으로 서버 복구 (추천)</button><button class="btn g" data-a="guardAccept">서버가 비어 있는 게 맞아요</button></div>`;
+ else h+=`<div style="display:grid;gap:8px"><button class="btn" data-a="syncNow">🔄 지금 동기화</button><button class="btn g" data-a="restoreOpen">🕘 백업에서 빠진 것 되살리기</button><button class="btn g" data-a="pullServerAsk">⬇️ 서버 내용으로 이 기기 다시 불러오기</button><button class="btn r" data-a="pushServerAsk">⬆️ 이 기기 내용으로 서버 덮어쓰기</button></div>
+ <div class="sub" style="margin-top:8px;line-height:1.5">저장 실패 시 대기열에 남아 자동 재시도해요. 서버에는 3시간 단위·매일 백업이 쌓이고, 이 기기에도 임시 저장본이 남아요.</div>`;
+ h+=`<div class="row" style="margin-top:12px"><button class="btn g grow" data-a="close">닫기</button></div>`;sheet(h);
+}
+async function reloadAll(){for(const c of COLS){const q=await db.collection(c).get();const arr=q.docs.map(d=>({id:d.id,...d.data()}));serverCopy[c]=arr;S[c]=arr}guard={};cacheSave();render();syncUI()}
+async function syncNow(){close();toast('🔄 동기화 중…');try{await flush();await reloadAll();toast(outbox.length?'일부는 아직 대기 중이에요':'✅ 최신 상태예요')}catch(e){toast('동기화하지 못했어요. 잠시 후 다시 시도해 주세요')}}
+function pullServerAsk(){sheet(`<div class="mid">서버 내용으로 다시 불러올까요?</div><div class="sub" style="margin:6px 0 12px">${outbox.length?`아직 서버로 보내지 못한 ${outbox.length}건이 사라져요. `:''}이 기기의 현재 내용은 임시 저장본에 남겨 둘게요.</div><div class="row"><button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="pullServerGo">불러오기</button></div>`)}
+async function pullServerGo(){close();takeLocalSnapForce();outbox=[];saveOb();try{await reloadAll();toast('✅ 서버 내용으로 바꿨어요')}catch(e){toast('불러오지 못했어요')}}
+function takeLocalSnapForce(){try{let a=JSON.parse(localStorage.getItem(LSNAP)||'[]');a.push({t:Date.now(),s:JSON.stringify(dataSnapshot())});while(a.length>3)a.shift();localStorage.setItem(LSNAP,JSON.stringify(a))}catch(e){}}
+function pushServerAsk(){sheet(`<div class="mid">이 기기 내용으로 서버를 덮어쓸까요?</div><div class="sub" style="margin:6px 0 12px">다른 기기에서 바꾼 내용은 사라져요. 덮어쓰기 직전의 서버 내용은 백업으로 남겨 둘게요.</div><div class="row"><button class="btn g grow" data-a="close">취소</button><button class="btn r grow" data-a="pushServerGo">덮어쓰기</button></div>`)}
+async function pushServerGo(){close();toast('⬆️ 올리는 중…');
+ try{await writeBackup('pre-overwrite-'+Date.now(),{...serverCopy,deleted:deletedIds})}catch(e){}
+ guard={};let n=0;
+ for(const c of COLS){const have=new Set(S[c].map(x=>x.id));
+  S[c].forEach(o=>{o._m=Date.now()+1;enqueue({k:'set',col:c,id:o.id,data:clean(o),m:o._m});n++});
+  (serverCopy[c]||[]).forEach(o=>{if(!have.has(o.id))enqueue({k:'del',col:c,id:o.id,m:Date.now()})})}
+ cacheSave();syncUI();toast(n+'건을 서버에 올리는 중이에요')}
+function guardAccept(){close();guard={};COLS.forEach(c=>{if(!(serverCopy[c]||[]).length&&!outbox.some(o=>o.col===c))S[c]=[]});cacheSave();render();syncUI()}
+/* 백업에 있는데 지금은 없는 것만 다시 넣기 (직접 지운 항목은 제외, 지우는 동작 없음) */
+function missingFrom(o,apply){
+ const found=[];
+ COLS.forEach(c=>{const have=new Set(S[c].map(x=>x.id));
+  (o[c]||[]).forEach(x=>{if(!x||!x.id||have.has(x.id)||deletedIds[x.id]!==undefined)return;
+   found.push((x.date?x.date.slice(5)+' ':'')+(x.name||x.memo||x.cat||x.text&&'조언'||x.id)+(x.amt?' '+W(x.amt):x.value?' '+W(x.value):''));
+   if(apply)put(c,{...x})})});
+ return found;
+}
+let RST=[];
+async function restoreOpen(){
+ sheet(`<div class="mid">🕘 백업에서 빠진 것 되살리기</div><div class="sub" id="rst_st" style="margin:6px 0">🔄 백업 목록을 불러오는 중…</div><div id="rst_l"></div><div class="row" style="margin-top:10px"><button class="btn g grow" data-a="close">닫기</button></div>`);
+ const cands=[],td=today();
+ loadLocalSnaps().reverse().forEach(x=>cands.push({label:'이 기기 임시 저장 '+new Date(x.t).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'numeric',minute:'2-digit'}),local:x.s,t:x.t}));
+ for(let i=0;i<14;i++){const d=new Date(td);d.setDate(d.getDate()-i);cands.push({label:`${d.getMonth()+1}/${d.getDate()} 하루 마지막 저장`,id:ymd(d)})}
+ for(let i=0;i<3;i++){const d=new Date(td);d.setDate(d.getDate()-i);[21,18,15,12,9,6,3,0].forEach(hh=>cands.push({label:`${d.getMonth()+1}/${d.getDate()} ${hh}시 이후 첫 저장 직전`,id:'pre-'+ymd(d)+'-'+pad(hh)}))}
+ const rows=[];
+ await Promise.all(cands.map(async c=>{try{let o,t=c.t;if(c.local)o=JSON.parse(c.local);else if(db){const b=await readBackup(c.id);if(!b)return;o=b.o;t=b.t}if(!o)return;const f=missingFrom(o,false);rows.push({c,o,f,t:t||0})}catch(e){}}));
+ rows.sort((a,b)=>b.t-a.t);RST=rows.filter(r=>r.f.length);
+ const st=document.getElementById('rst_st');if(!st)return;
+ st.textContent=`백업 ${rows.length}개를 확인했어요. `+(RST.length?`되살릴 항목이 있는 백업 ${RST.length}개:`:'지금 내용에 없는 항목이 든 백업은 없어요 👍');
+ document.getElementById('rst_l').innerHTML=RST.map((r,i)=>`<div class="item"><div class="grow">${esc(r.c.label)}</div><span class="sub">${r.f.length}개</span><button class="btn sm" data-a="restoreView" data-id="${i}">확인</button></div>`).join('');
+}
+function restoreView(i){const r=RST[+i];sheet(`<div class="mid">${esc(r.c.label)} → ${r.f.length}개 다시 넣기</div><div class="sub" style="margin:4px 0">지금 내용에 추가만 해요. 지우는 건 없어요.</div><div style="max-height:40vh;overflow:auto;font-size:12px">${r.f.slice(0,60).map(x=>`<div class="item">${esc(x)}</div>`).join('')}${r.f.length>60?`<div class="sub">…외 ${r.f.length-60}개</div>`:''}</div><div class="row" style="margin-top:10px"><button class="btn g grow" data-a="restoreOpen">뒤로</button><button class="btn grow" data-a="restoreGo" data-id="${i}">추가</button></div>`)}
+function restoreGo(i){takeLocalSnapForce();const n=missingFrom(RST[+i].o,true).length;close();toast('✅ '+n+'개를 다시 넣었어요')}
+
 /* ---------- 이벤트 ---------- */
 const A={assetForm:id=>assetForm(id),fixedForm:id=>fixedForm(id),goalForm:id=>goalForm(id),txForm:id=>txForm(id),mshift:(_,e)=>{cur=shiftM(cur,+e.dataset.d);render()},openCat:id=>{openCat=openCat===id?null:id;render()},pay,unpay,saveTx,delTx,saveAsset,saveFixed,saveGoal,close,txType:id=>txFormSwitch(id),
- delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},getAdvice,copyP,exp,resetAsk,recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
+ delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a){const f=A[a.dataset.a];if(f)f(a.dataset.id||undefined,a);return}
  const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render();scrollTo(0,0)}});
 document.addEventListener('change',e=>{
