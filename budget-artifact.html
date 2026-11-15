@@ -342,7 +342,7 @@ function rulesCard(){
  <div class="sub" style="margin-top:5px">세로선 = 오늘까지의 평균 속도 · 소비를 기록할 때마다 칸이 차올라요 · 눌러서 수정</div></div>`}
 function parseRules(text){
  const cats=['합계',...OUT.map(x=>x[0])],out=[];
- String(text).split('\n').forEach(l=>{const m=l.match(/철칙\s*\|\s*([^|]+?)\s*\|\s*([\d,]+)\s*\|\s*(.+)$/);if(!m)return;const cat=m[1].trim(),limit=+m[2].replace(/,/g,'');if(!cats.includes(cat)||!isFinite(limit))return;out.push({cat,limit,t:m[3].trim().replace(/\*\*/g,'')})});
+ String(text).split('\n').forEach(l=>{const m=l.match(/철칙\s*\|\s*([^|]+?)\s*\|\s*([\d,]+)\s*\|\s*(.+)$/);if(!m)return;const cat=m[1].trim(),limit=+m[2].replace(/,/g,'');if(!cats.includes(cat)||!isFinite(limit))return;out.push({cat,limit:Math.max(1000,limit),t:m[3].trim().replace(/\*\*/g,'')})});
  return out.slice(0,3)}
 function targetRuleWeek(){return (today().getDay()===0)?weekId(1):weekId(0)}
 function saveRules(items,src,id){if(!items.length)return false;put('rules',{id:id||weekId(0),items,src,at:new Date().toLocaleString('ko-KR')});return true}
@@ -352,6 +352,7 @@ async function ruleAI(){
  const prompt=`당신은 냉철하고 직설적인 자산관리 전문가입니다. 지난주 조언과 지난주 소비 기록을 바탕으로 이번 주(월~일) 소비 철칙 3개를 만들어 주세요. 사용자는 소비를 기록할 때마다 철칙별 게이지가 차오르는 것을 봅니다. 아래 형식의 3줄만 출력하고 다른 말은 쓰지 마세요.
 철칙|분류|주 한도(원, 숫자만)|철칙 문구 한 줄 (현실적이고 구체적으로)
 분류는 다음 중 하나: 합계, ${OUT.map(x=>x[0]).join(', ')}
+한도는 0원으로 하지 말고, 지난주 실제 소비보다 줄이되 지킬 수 있는 현실적인 금액으로 정하세요. 선물·보험·이체 같은 줄이기 어려운 분류는 철칙으로 만들지 마세요.
 [지난주 카테고리별 지출] ${cs}
 [지난주 철칙 달성] ${rulesFor(-1).items.map(r=>`${r.cat} ${W(weekSpent(r.cat,-1))}/${W(r.limit)}`).join(' / ')}
 [월 저축(추정)] ${W(savingInfo().monthly)} / [목표 예상] ${S.goals.map(g=>g.name+' '+etaText(goalEta(g.target).n)).join(' / ')}
@@ -634,6 +635,7 @@ function weekPrompt(){
 또한 '다음 주 행동 3가지'는 곧 다음 주 소비 철칙 3개입니다. 철칙은 숫자로 측정 가능해야 하고, 응답 맨 끝에 아래 형식의 3줄을 설명 없이 그대로 출력해 주세요.
 철칙|분류|주 한도(원, 숫자만)|철칙 문구 한 줄
 분류는 다음 중 하나: 합계, ${OUT.map(x=>x[0]).join(', ')}
+한도는 0원으로 하지 말고 지난주 실제 소비보다 줄이되 지킬 수 있는 현실적인 금액으로 정하고, 선물·보험·이체 같은 줄이기 어려운 분류는 철칙으로 만들지 마세요.
 
 [기간] ${ymd(r[0])} ~ ${ymd(r[1])}
 [이번 주] 지출 ${W(sum(L,'out'))} / 수입 ${W(sum(L,'in'))}
