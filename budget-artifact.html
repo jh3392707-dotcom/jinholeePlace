@@ -250,6 +250,13 @@ function draw(){linkMap=null;
 const stack=items=>{const t=items.reduce((s,x)=>s+x[0],0)||1;return `<div class="bar">${items.filter(x=>x[0]>0).map(x=>`<i style="width:${x[0]/t*100}%;background:${x[1]}"></i>`).join('')}</div>`};
 function dueBanner(){const l=dueSoon();if(!l.length)return '';
  return `<div class="alert"><b class="red">🔔 이체일 임박</b>${l.map(({f,d})=>{const dd=dday(d);return `<div class="row sp" style="margin-top:3px"><span>${esc(f.name)} <span class="tag hot">${dd===0?'오늘':dd<0?'지남':'D-'+dd}</span> <span class="sub">${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})</span></span><b class="num">${W(f.amt)}</b></div>`}).join('')}</div>`}
+function usable(){
+ const T=totals(),sum=t=>S.assets.filter(a=>a.type===t).reduce((x,a)=>x+val(a),0),cash=sum('현금'),bank=sum('통장'),u=cash+bank,{cost}=fireSet();
+ const pct=T.net?Math.round(u/T.net*100):0,mo=cost?u/cost:0;
+ return `<div class="card"><div class="row sp"><span class="sub">💳 지금 쓸 수 있는 돈 (통장 + 현금)</span><span class="sub">전체의 ${pct}%</span></div>
+ <div class="row sp" style="align-items:flex-end"><div class="big green">${W(u)}</div><div class="sub" style="text-align:right">생활비 ${big(cost)} 기준<br><b style="font-size:15px;color:var(--tx)">${mo.toFixed(1)}개월</b></div></div>
+ <div class="row sub" style="gap:14px;margin-top:2px"><span>🏦 통장 ${W(bank)}</span><span>💵 현금 ${W(cash)}</span></div></div>`}
+function usableOpen(){tab='home';scrollTo(0,document.body.scrollHeight*0.3)}
 function vHome(){
  const T=totals(),m=ym(today()),L=monthTx(m);
  const groups=ATYPE.map(([n,ic,c])=>({n,ic,c,l:S.assets.filter(a=>a.type===n)})).filter(g=>g.l.length);
@@ -257,6 +264,7 @@ function vHome(){
  <div class="card"><div class="sub">내 자산 합계</div><div class="big">${W(T.net)}</div>
  <div style="margin:8px 0 0">${stack(ATYPE.map(([n,,c])=>[S.assets.filter(a=>a.type===n).reduce((s,a)=>s+val(a),0),c]))}</div>
  <div class="chips">${ATYPE.map(([n,,c])=>{const v=S.assets.filter(a=>a.type===n).reduce((s,a)=>s+val(a),0);return v?`<span><b class="dot" style="display:inline-block;background:${c};margin-right:4px"></b>${n} ${Math.round(v/T.as*100)}%</span>`:''}).join('')}</div></div>
+ ${usable()}
  <div class="grid2"><div class="card"><div class="sub">${+m.slice(5)}월 지출</div><div class="mid red">${W(sum(L,'out'))}</div></div><div class="card"><div class="sub">${+m.slice(5)}월 수입</div><div class="mid blue">${W(sum(L,'in'))}</div></div></div>
  ${fireMini()}
  <h2>내 자산 <button class="btn sm" data-a="assetForm">＋ 추가</button></h2>
@@ -615,7 +623,7 @@ function restoreGo(i){takeLocalSnapForce();const n=missingFrom(RST[+i].o,true).l
 
 /* ---------- 이벤트 ---------- */
 const A={assetForm:id=>assetForm(id),fixedForm:id=>fixedForm(id),goalForm:id=>goalForm(id),txForm:id=>txForm(id),mshift:(_,e)=>{cur=shiftM(cur,+e.dataset.d);render()},openCat:id=>{openCat=openCat===id?null:id;render()},pay,unpay,saveTx,delTx,saveAsset,saveFixed,saveGoal,close,txType:id=>txFormSwitch(id),
- delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divUnrecv,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
+ delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},usableOpen,planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divUnrecv,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a){const f=A[a.dataset.a];if(f)f(a.dataset.id||undefined,a);return}
  const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render();scrollTo(0,0)}});
 document.addEventListener('change',e=>{
