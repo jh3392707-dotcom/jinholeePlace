@@ -43,7 +43,14 @@ button,input,select,textarea{font:inherit;color:inherit}
 textarea{width:100%;height:150px;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px;font:13px/1.5 monospace;resize:vertical}
 .paid{opacity:.5}.tag{font-size:12px;border-radius:5px;padding:1px 6px;background:var(--card2);color:var(--sub);font-weight:600}.tag.hot{background:var(--red);color:#fff}.tag.warn{background:var(--amber);color:#fff}
 .alert{background:var(--redbg);border:1px solid var(--red);border-radius:14px;padding:8px 12px;margin-bottom:6px}
-.advice{white-space:pre-wrap;font-size:15px;line-height:1.55}
+.advbox{background:var(--card2);border-radius:14px;padding:14px 15px;margin-top:8px}
+.advice{font-size:17px;line-height:1.8;word-break:keep-all;overflow-wrap:anywhere}
+.advice .ah{font-size:19px;font-weight:800;margin:14px 0 4px;color:var(--blue)}
+.advice .ap{margin:2px 0}.advice .ab{margin:4px 0;padding-left:4px}
+.advice b{font-weight:800;color:var(--tx)}
+details.sum summary{cursor:pointer;font-size:15px;color:var(--sub);padding:8px 0}
+details.sum textarea{height:260px;font:14px/1.6 -apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif}
+body.wide #app>.card:has(.advice){column-span:all}
 .sync{font-size:12px;color:var(--sub);text-align:right;margin-bottom:4px;cursor:pointer}.sync.bad{color:var(--red)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));font-size:15px;max-width:92vw;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:20px;z-index:20;font-weight:600}
 .t{fill:var(--sub)}.gl{stroke:var(--line)}
@@ -76,8 +83,9 @@ const ATYPE=[['현금','💵','#2fb67c'],['통장','🏦','#4c8dff'],['주식','
 const INK=[['월배당','📈',true,'이자·배당'],['급여','💼',false,'급여'],['애드포스트','💚',true,'부수입'],['레뷰','🎟️',false,'부수입'],['기타수입','💰',false,'환급·기타']];
 const CUR=[['USD',1400],['JPY',9.3],['EUR',1500],['CNY',195],['GBP',1750]];
 const ocat=n=>OUT.find(x=>x[0]===n)||OUT[OUT.length-1];
-const COLS=['tx','assets','fixed','goals','advice','income','settings','divs'];
-const S={tx:[],assets:[],fixed:[],goals:[],advice:[],income:[],settings:[],divs:[],seeded:null};
+const COLS=['tx','assets','fixed','goals','advice','income','settings','divs','snaps'];
+let loadedAll=false,lastSnapT=0;
+const S={tx:[],assets:[],fixed:[],goals:[],advice:[],income:[],settings:[],divs:[],snaps:[],seeded:null};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
@@ -107,10 +115,10 @@ let outbox=[],deletedIds={},serverCopy={},guard={},stale=false,flushing=false,re
 try{outbox=JSON.parse(localStorage.getItem(OBK))||[]}catch(e){}
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 const saveOb=()=>{try{localStorage.setItem(OBK,JSON.stringify(outbox))}catch(e){}};
-function cacheSave(){try{localStorage.setItem(CK,JSON.stringify({tx:S.tx,assets:S.assets,fixed:S.fixed,goals:S.goals,advice:S.advice,income:S.income,settings:S.settings,divs:S.divs,seeded:S.seeded,deleted:deletedIds}))}catch(e){}}
+function cacheSave(){try{localStorage.setItem(CK,JSON.stringify({tx:S.tx,assets:S.assets,fixed:S.fixed,goals:S.goals,advice:S.advice,income:S.income,settings:S.settings,divs:S.divs,snaps:S.snaps,seeded:S.seeded,deleted:deletedIds}))}catch(e){}}
 function cacheLoad(){try{const c=JSON.parse(localStorage.getItem(CK));if(c){COLS.forEach(k=>S[k]=c[k]||[]);S.seeded=c.seeded;deletedIds=c.deleted||{}}}catch(e){}}
 const clean=o=>{const r={};for(const k in o)if(o[k]!==undefined&&k!=='id')r[k]=o[k];return r};
-const dataSnapshot=()=>({tx:S.tx,assets:S.assets,fixed:S.fixed,goals:S.goals,advice:S.advice,income:S.income,settings:S.settings,divs:S.divs,deleted:deletedIds});
+const dataSnapshot=()=>({tx:S.tx,assets:S.assets,fixed:S.fixed,goals:S.goals,advice:S.advice,income:S.income,settings:S.settings,divs:S.divs,snaps:S.snaps,deleted:deletedIds});
 const itemTotal=o=>COLS.reduce((s,c)=>s+((o[c]||[]).length),0);
 
 /* 저장: 먼저 이 기기에 반영하고, 대기열에 넣어 서버로 보냄 */
@@ -127,30 +135,57 @@ function del(col,id){linkMap=null;
  S[col]=S[col].filter(x=>x.id!==id);deletedIds[id]=Date.now();cacheSave();render();
  if(mode==='cloud'){enqueue({k:'del',col,id,m:Date.now()});enqueue({k:'set',col:'meta',id:'deleted',data:{ids:deletedIds},m:Date.now()})}
 }
+let perf={load:0,write:0,ping:0},initT=Date.now(),lastRevSeen=0;
 async function exec(op){
- await preSlotBackup();
+ preSlotBackup(); // 기다리지 않고 백그라운드에서 (예전에는 매 저장마다 기다렸어요)
  const ref=op.col==='meta'?db.doc('meta/'+op.id):db.collection(op.col).doc(op.id);
  if(op.k==='del'){await ref.delete();return}
- const r=await ref.get(),bulk=outbox.length>20;
- if(op.col==='meta'&&op.id==='deleted'){const ids={...(r.exists?(r.data().ids||{}):{}),...op.data.ids};deletedIds={...ids,...deletedIds};op.data={ids}}
- else if(r.exists&&(r.data()._m||0)>op.m)return; // 서버 쪽이 더 나중에 고쳐졌으면 서버가 이김
+ if(op.col==='meta'&&op.id==='deleted'){op.data={ids:{...deletedIds}}}
+ else{const c=(serverCopy[op.col]||[]).find(x=>x.id===op.id);if(c&&(c._m||0)>op.m)return} // 서버 쪽이 더 나중에 고쳐졌으면 서버가 이김 (서버에 다시 묻지 않고 이미 받아 둔 값으로 판단)
  await ref.set(op.data);
- if(!bulk){const v=await ref.get();if(!v.exists)throw{code:'verify'}} // 저장 후 다시 읽어 확인
 }
 async function flush(){
  if(flushing||mode!=='cloud'||stale)return;
- flushing=true;syncUI();
+ flushing=true;syncUI();const t0=Date.now();let wrote=0,lastOp=null;
  try{
   while(outbox.length){
-   const op=outbox[0];
-   try{await exec(op);outbox.shift();saveOb();lastErr='';lastOk=Date.now()}
-   catch(e){const c=(e&&e.code)||'error';
-    if(c==='invalid_argument'||c==='quota_exceeded'||c==='transform_error'){outbox.shift();saveOb();lastErr=c;toast('저장할 수 없는 항목을 건너뛰었어요 ('+c+')')}
-    else{lastErr=c;clearTimeout(retryT);retryT=setTimeout(flush,5000);break}}
+   const batch=outbox.slice(0,4); // 서로 다른 문서는 4개씩 동시에 저장
+   const res=await Promise.allSettled(batch.map(exec));let retry=false;
+   res.forEach((r,i)=>{const op=batch[i];
+    if(r.status==='fulfilled'){outbox=outbox.filter(o=>o!==op);wrote++;lastOp=op;lastErr='';lastOk=Date.now()}
+    else{const c=(r.reason&&r.reason.code)||'error';
+     if(['invalid_argument','quota_exceeded','transform_error'].includes(c)){outbox=outbox.filter(o=>o!==op);lastErr=c;toast('저장할 수 없는 항목을 건너뛰었어요 ('+c+')')}
+     else{lastErr=c;retry=true}}});
+   saveOb();
+   if(retry){clearTimeout(retryT);retryT=setTimeout(flush,5000);break}
   }
  }finally{flushing=false}
+ if(wrote&&!lastErr){ // 한 번 저장한 뒤 마지막 항목만 다시 읽어 확인, 다른 기기에 알림 표시
+  perf.write=Date.now()-t0;
+  try{if(lastOp&&lastOp.k==='set'&&lastOp.col!=='meta'){const v=await db.collection(lastOp.col).doc(lastOp.id).get();if(!v.exists&&!outbox.some(o=>o.col===lastOp.col&&o.id===lastOp.id)){lastErr='verify';outbox.push(lastOp);saveOb();clearTimeout(retryT);retryT=setTimeout(flush,3000)}}}catch(e){}
+  db.doc('meta/rev').set({t:Date.now(),dev:DEV}).catch(()=>{});
+ }
  if(!outbox.length&&!lastErr)afterFlush();
  syncUI();
+}
+async function softReload(){ // 다른 기기가 저장했을 때 바로 가져오기 (실시간 알림이 늦을 때 대비)
+ try{const rs=await Promise.all(COLS.map(c=>db.collection(c).get()));
+  rs.forEach((q,i)=>{const c=COLS[i],arr=q.docs.map(d=>({id:d.id,...d.data()}));
+   if(!arr.length&&S[c].length>=3&&!outbox.some(o=>o.col===c)){guard[c]=true;return}
+   serverCopy[c]=arr;applyServer(c,arr)});
+  cacheSave();render();syncUI()}catch(e){}
+}
+async function pollRev(){
+ if(!db||document.hidden||flushing||stale)return;
+ try{const t0=Date.now(),r=await db.doc('meta/rev').get();perf.ping=Date.now()-t0;
+  if(r.exists){const d=r.data();if(d.dev!==DEV&&d.t!==lastRevSeen){lastRevSeen=d.t;await softReload()}else lastRevSeen=d.t||lastRevSeen}}catch(e){}
+}
+async function speedTest(){
+ close();toast('⏱ 속도 측정 중…');
+ try{const rs=[];for(let i=0;i<3;i++){const t=Date.now();await db.doc('meta/rev').get();rs.push(Date.now()-t)}
+  const t1=Date.now();await db.doc('meta/ping').set({t:t1,dev:DEV});const w=Date.now()-t1;
+  perf.ping=Math.round(rs.reduce((a,b)=>a+b,0)/3);perf.write=w;
+  toast('읽기 평균 '+perf.ping+'ms · 쓰기 '+w+'ms')}catch(e){toast('측정 실패: '+((e&&e.code)||'error'))}
 }
 function afterFlush(){
  if(itemTotal(S)>0&&Date.now()-lastDaily>600000){lastDaily=Date.now();writeBackup(ymd(today()),dataSnapshot()).catch(()=>{});takeLocalSnap()}
@@ -167,15 +202,19 @@ async function readBackup(id){
  return{t:m.data().t,o:JSON.parse(s)};
 }
 async function deleteBackup(id){try{const m=await db.doc('backups/'+id).get();if(!m.exists)return;for(let i=0;i<m.data().n;i++)await db.doc('backups/'+id+'_c'+i).delete();await db.doc('backups/'+id).delete()}catch(e){}}
-async function preSlotBackup(){ // 3시간마다 한 번, 덮어쓰기 직전 서버 내용을 따로 보관
+async function preSlotBackup(){ // 3시간마다 한 번, 덮어쓰기 직전 서버 내용을 따로 보관 (백그라운드)
  const n=new Date(),slot=ymd(n)+'-'+pad(Math.floor(n.getHours()/3)*3);if(slot===lastPreSlot)return;lastPreSlot=slot;
  if(!itemTotal(serverCopy))return;
- try{const x=await db.doc('backups/pre-'+slot).get();if(!x.exists)await writeBackup('pre-'+slot,{...serverCopy,deleted:deletedIds})}catch(e){}
+ const snap=JSON.parse(JSON.stringify({...serverCopy,deleted:deletedIds})); // 저장 전 상태를 지금 복사해 둠
+ try{const x=await db.doc('backups/pre-'+slot).get();if(!x.exists)await writeBackup('pre-'+slot,snap)}catch(e){}
 }
-function cleanupOld(){ // 오래된 자동 백업 정리 (매일 60일, 3시간 단위 3일)
- if(cleaned||!db)return;cleaned=true;const day=n=>{const d=today();d.setDate(d.getDate()-n);return ymd(d)};
- deleteBackup(day(60));[3,4].forEach(n=>[0,3,6,9,12,15,18,21].forEach(h=>deleteBackup('pre-'+day(n)+'-'+pad(h))));
+function cleanupOld(){ // 오래된 백업 정리: 하루 한 번, 열고 30초 뒤에 하나씩 (예전에는 열 때마다 17개를 한꺼번에 읽어서 느려졌어요)
+ if(cleaned||!db)return;cleaned=true;
  const old=Date.now()-90*864e5;Object.keys(deletedIds).forEach(k=>{if(deletedIds[k]<old)delete deletedIds[k]});
+ try{const k='gagyebu_clean';if(localStorage.getItem(k)===ymd(today()))return;localStorage.setItem(k,ymd(today()))}catch(e){}
+ setTimeout(async()=>{const day=n=>{const d=today();d.setDate(d.getDate()-n);return ymd(d)};
+  const ids=[day(60),...[3,4].flatMap(n=>[0,3,6,9,12,15,18,21].map(h=>'pre-'+day(n)+'-'+pad(h)))];
+  for(const id of ids){if(document.hidden)break;await deleteBackup(id)}},30000);
 }
 function takeLocalSnap(){try{let a=JSON.parse(localStorage.getItem(LSNAP)||'[]');const last=a[a.length-1];if(last&&Date.now()-last.t<30*60000)return;const s=JSON.stringify(dataSnapshot());if(s.length>800000||!itemTotal(S))return;a.push({t:Date.now(),s});while(a.length>3)a.shift();localStorage.setItem(LSNAP,JSON.stringify(a))}catch(e){}}
 const loadLocalSnaps=()=>{try{return JSON.parse(localStorage.getItem(LSNAP))||[]}catch(e){return[]}};
@@ -197,14 +236,13 @@ let toastT;function toast(m){document.querySelectorAll('.toast').forEach(e=>e.re
 let rq;function render(){cancelAnimationFrame(rq);rq=requestAnimationFrame(draw)}
 async function init(){
  cacheLoad();draw();
- let c=null;try{c=await claude.use('db')}catch(e){}
- try{assetsCap=await claude.use('assets')}catch(e){}
- try{dlCap=await claude.use('downloads')}catch(e){}
- try{sampleCap=await claude.use('sample')}catch(e){}
- if(!c){mode='local';await seedLocal();draw();return}
+ const use=n=>{try{return Promise.resolve(claude.use(n)).catch(()=>null)}catch(e){return Promise.resolve(null)}};
+ const [c,ac,dc,sc]=await Promise.all([use('db'),use('assets'),use('downloads'),use('sample')]); // 예전에는 하나씩 차례로 기다렸어요
+ assetsCap=ac;dlCap=dc;sampleCap=sc;
+ if(!c){mode='local';await seedLocal();loadedAll=true;draw();setTimeout(snapNow,500);return}
  db=c;mode='cloud';syncUI();
  const first={};let timer=setTimeout(()=>{if(Object.keys(first).length<COLS.length+1){lastErr='연결 지연(캐시 표시 중)';syncUI()}},10000);
- const got=k=>{first[k]=1;if(Object.keys(first).length===COLS.length+1){clearTimeout(timer);if(lastErr.startsWith('연결')){lastErr='';syncUI()}}};
+ const got=k=>{first[k]=1;if(Object.keys(first).length===COLS.length+1){clearTimeout(timer);perf.load=Date.now()-initT;loadedAll=true;setTimeout(snapNow,500);if(lastErr.startsWith('연결')){lastErr='';syncUI()}}};
  COLS.forEach(col=>db.collection(col).onSnapshot(s=>{
   const arr=s.docs.map(d=>({id:d.id,...d.data()}));
   if(s.metadata.fromCache){if(!arr.length&&S[col].length)return;serverCopy[col]=arr;applyServer(col,arr);cacheSave();render();return} // 캐시가 비어 있다고 내 기기 데이터를 지우지 않음
@@ -222,8 +260,9 @@ async function init(){
  },e=>{});
  db.doc('meta/deleted').onSnapshot(s=>{if(s.exists){deletedIds={...(s.data().ids||{}),...deletedIds};cacheSave()}},e=>{});
  flush();cleanupOld();
+ setInterval(pollRev,8000);pollRev();
 }
-document.addEventListener('visibilitychange',()=>{if(!db)return;if(!document.hidden)flush();else if(outbox.length)flush()});
+document.addEventListener('visibilitychange',()=>{if(!db)return;if(!document.hidden){flush();pollRev()}else if(outbox.length)flush()});
 addEventListener('online',()=>flush());
 const SEED=[{id:'g_apt',name:'서울 34평 아파트',emoji:'🏢',kind:'apt',target:1500000000,img:''},{id:'g_camaro',name:'쉐보레 카마로 컨버터블',emoji:'🏎️',kind:'car',target:75000000,img:''}];
 let seeding=false;
@@ -247,7 +286,7 @@ const fixedPaid=(f,m)=>f.paid&&f.paid[m];
 const dueSoon=()=>{const m=ym(today());return S.fixed.map(f=>({f,d:nextDue(f.day)})).filter(x=>dday(x.d)<=3&&!(dday(x.d)>=0&&fixedPaid(x.f,m)&&x.d.getMonth()===today().getMonth())).sort((a,b)=>a.d-b.d)};
 
 /* ---------- 화면 ---------- */
-function draw(){linkMap=null;
+function draw(){linkMap=null;setTimeout(snapNow,0);
  $('#nav').innerHTML=[['home','🏠','자산'],['tx','📒','내역'],['fixed','📅','고정지출'],['income','💰','수입·FIRE'],['goal','🎯','목표'],['report','📊','리포트']].map(([k,i,n])=>`<div class="${tab===k?'on':''}" data-tab="${k}"><b>${i}</b>${n}</div>`).join('');
  $('#app').innerHTML=`<div class="sync" id="sync" data-a="syncMenu"></div>`+{home:vHome,tx:vTx,fixed:vFixed,income:vIncome,goal:vGoal,report:vReport}[tab]();syncUI();
 }
@@ -279,6 +318,47 @@ function vHome(){
  ${assetRows()||'<div class="card sub">주식·환테크·코인·현금·통장·애드포스트·레뷰포인트를 ＋ 추가로 입력하세요. 직접 입력한 값이 폰과 PC에 동기화돼요.</div>'}
  <h2>목표 진행</h2>${totalGoal(T.net,true)}${S.goals.map(g=>goalMini(g,T.net)).join('')}`;
 }
+/* 자산 기록(하루 한 번 순자산을 남겨서 자산의 움직임을 분석) */
+function snapNow(){
+ if(!loadedAll||!S.assets.length||Date.now()-lastSnapT<60000)return;
+ const net=Math.round(totals().net),day=ymd(today()),cur=S.snaps.find(x=>x.id===day);
+ if(cur&&cur.net===net)return;lastSnapT=Date.now();
+ const usable=Math.round(S.assets.filter(a=>a.type==='현금'||a.type==='통장').reduce((x,a)=>x+val(a),0));
+ const o={id:day,net,usable,_m:Date.now()},i=S.snaps.findIndex(x=>x.id===day);i>=0?S.snaps[i]=o:S.snaps.push(o);cacheSave();
+ if(mode==='cloud')enqueue({k:'set',col:'snaps',id:day,data:clean(o),m:o._m});
+}
+const goalCfg=()=>{const f=S.settings.find(x=>x.id==='goalcfg')||{};return{since:f.since||'2026-11-01',rate:f.rate==null?3:f.rate,mode:f.mode||'auto'}};
+function savingInfo(){
+ const cfg=goalCfg(),t=today(),since=parse(cfg.since),days=Math.max(1,Math.round((t-since)/864e5)+1);
+ const L=S.tx.filter(x=>x.date>=cfg.since&&x.date<=ymd(t)),inc=sum(L,'in'),out=sum(L,'out'),cashM=(inc-out)/days*30.4;
+ const sn=S.snaps.filter(x=>x.id>=cfg.since).sort((a,b)=>a.id.localeCompare(b.id));let asset=null;
+ if(sn.length>=2){const f=sn[0],l=sn[sn.length-1],span=Math.round((parse(l.id)-parse(f.id))/864e5);if(span>=1)asset={span,delta:l.net-f.net,monthly:(l.net-f.net)/span*30.4,n:sn.length,ok:span>=21}}
+ const useAsset=cfg.mode==='asset'?!!(asset&&asset.span>=7):cfg.mode==='auto'?!!(asset&&asset.ok):false;
+ return{cfg,days,inc,out,cashM,asset,sn,used:useAsset?'asset':'cash',monthly:useAsset?asset.monthly:cashM};
+}
+function etaMonths(net,target,monthly,ratePct){
+ if(net>=target)return 0;const r=Math.pow(1+ratePct/100,1/12)-1;if(monthly<=0&&r<=0)return Infinity;let b=net;
+ for(let n=1;n<=1200;n++){b=b*(1+r)+monthly;if(b>=target)return n}return Infinity}
+function etaText(n){if(!isFinite(n))return '100년 안에 도달하기 어려워요';const d=new Date();d.setMonth(d.getMonth()+n);
+ return `약 ${n>=12?Math.floor(n/12)+'년 ':''}${n%12?n%12+'개월':''} 후 (${d.getFullYear()}년 ${d.getMonth()+1}월)`}
+function needMonthly(net,target,years,ratePct){const r=Math.pow(1+ratePct/100,1/12)-1,n=years*12;const g=net*Math.pow(1+r,n);if(g>=target)return 0;return r>0?(target-g)*r/(Math.pow(1+r,n)-1):(target-net)/n}
+function goalEta(target){const si=savingInfo(),net=totals().net;return{si,n:etaMonths(net,target,Math.max(0,si.monthly),si.cfg.rate)}}
+function savingCard(){
+ const si=savingInfo(),c=si.cfg,tot=S.goals.reduce((a,g)=>a+g.target,0),net=totals().net,a=si.asset;
+ const modeTxt={auto:'자동',cash:'수입−지출',asset:'자산 추이'}[c.mode];
+ return `<div class="card"><div class="row sp"><b>📈 저축 기준 · 예상 도달 분석</b><button class="btn g sm" data-a="goalCfgForm">기준 설정</button></div>
+ <div class="item"><div class="grow sub">월 저축(추정) · 적용 기준: ${si.used==='asset'?'자산 추이':'수입−지출'}</div><div class="num mid ${si.monthly>=0?'green':'red'}">${si.monthly>=0?'':'-'}${W(Math.abs(si.monthly))}</div></div>
+ <div class="sub" style="line-height:1.6">① <b>수입−지출 기준</b> (${c.since.slice(5).replace('-','/')}~오늘 ${si.days}일): 수입 ${W(si.inc)} − 지출 ${W(si.out)} = ${W(si.inc-si.out)} → 월 환산 <b>${W(si.cashM)}</b><br>
+ ② <b>자산 추이 기준</b>: ${a?`${a.n}번 기록, ${a.span}일간 ${a.delta>=0?'+':''}${W(a.delta)} → 월 환산 <b>${W(a.monthly)}</b>${a.ok?'':` (21일 이상 쌓이면 자동 적용 — 지금은 ${a.span}일)`}`:'자산 기록이 쌓이는 중이에요 (하루 한 번 순자산을 자동으로 남겨요)'}<br>
+ 설정: ${modeTxt} · 자산 기대수익률 연 ${c.rate}%</div>
+ ${tot?`<div class="sub" style="margin:6px 0 2px">목표를 N년 안에 이루려면 월 저축이 얼마나 필요한지 (전체 합계 ${big(tot)}원 기준)</div>${[10,20,30].map(y=>`<div class="item"><div class="grow sub">${y}년 안에</div><div class="num">${W(needMonthly(net,tot,y,c.rate))}</div></div>`).join('')}`:''}</div>`}
+function goalCfgForm(){const c=goalCfg();
+ sheet(`<div class="mid">📈 저축 기준 설정</div><label>이 날짜부터의 기록만 사용 (제대로 입력한 시작일)</label><input id="gc_since" type="date" value="${c.since}">
+ <label>월 저축 계산 방식</label><select id="gc_mode"><option value="auto" ${c.mode==='auto'?'selected':''}>자동 (자산 기록이 21일 이상이면 자산 추이, 아니면 수입−지출)</option><option value="cash" ${c.mode==='cash'?'selected':''}>수입−지출만 사용</option><option value="asset" ${c.mode==='asset'?'selected':''}>자산 추이만 사용 (7일 이상 기록 필요)</option></select>
+ <label>자산 기대수익률 (연 %, 투자수익 반영. 0이면 저축만으로 계산)</label><input id="gc_rate" type="number" step="0.1" value="${c.rate}">
+ <div class="sub" style="margin-top:6px">자산 추이는 새 자산을 처음 입력한 날도 "늘어난 것"으로 보일 수 있어요. 처음 입력이 끝난 뒤부터의 기록이 정확해요.</div>
+ <div class="row" style="margin-top:12px"><button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="saveGoalCfg">저장</button></div>`)}
+function saveGoalCfg(){const since=v('gc_since'),rate=+v('gc_rate');if(!since)return toast('날짜를 입력하세요');put('settings',{id:'goalcfg',since,rate:isFinite(rate)?rate:0,mode:v('gc_mode')});close();toast('저장됨')}
 function totalGoal(net,mini){
  const tot=S.goals.reduce((a,g)=>a+g.target,0);if(!S.goals.length||!tot)return '';
  const p=Math.max(0,Math.min(100,net/tot*100)),left=Math.max(0,tot-net),cols=['#4c8dff','#9b6bff','#ff8a4c','#2fb67c','#f2c230','#e0645a'];
@@ -287,7 +367,7 @@ function totalGoal(net,mini){
  <div class="pbar" style="margin:6px 0"><i style="width:${p}%"></i></div>
  <div class="row sp"><span class="sub">현재 자산 ${W(net)}</span><span>남은 금액 <b>${W(left)}</b></span></div>
  <div class="sub" style="margin:8px 0 3px">목표 구성 비율</div>${stack(S.goals.map((g,i)=>[g.target,cols[i%cols.length]]))}
- <div class="chips">${S.goals.map((g,i)=>`<span><b class="dot" style="display:inline-block;background:${cols[i%cols.length]};margin-right:4px"></b>${g.emoji} ${esc(g.name)} ${Math.round(g.target/tot*100)}%</span>`).join('')}</div>${avgSave(left)}</div>`}
+ <div class="chips">${S.goals.map((g,i)=>`<span><b class="dot" style="display:inline-block;background:${cols[i%cols.length]};margin-right:4px"></b>${g.emoji} ${esc(g.name)} ${Math.round(g.target/tot*100)}%</span>`).join('')}</div>${avgSave(left,tot)}</div>`}
 const goalMini=(g,net)=>{const p=Math.max(0,Math.min(100,net/g.target*100));return `<div class="card" data-tab="goal"><div class="row sp"><span>${g.emoji} ${esc(g.name)}</span><b>${p.toFixed(1)}%</b></div><div class="pbar" style="margin-top:6px"><i style="width:${p}%"></i></div></div>`};
 
 function spark(m){
@@ -465,16 +545,15 @@ function art(kind){
 const goalImg=g=>g.img?`style="background-image:url('/_blob/${esc(g.img)}')"`:'';
 function vGoal(){
  const T=totals();
- return `<div class="sub" style="margin-bottom:6px">달성률 = 내 자산 합계 ÷ 목표 금액 (목표별 + 전체 합계)</div>`+totalGoal(T.net,false)+S.goals.map(g=>{
+ return `<div class="sub" style="margin-bottom:6px">달성률 = 내 자산 합계 ÷ 목표 금액 (목표별 + 전체 합계)</div>`+totalGoal(T.net,false)+savingCard()+S.goals.map(g=>{
  const p=Math.max(0,Math.min(100,T.net/g.target*100)),left=Math.max(0,g.target-T.net);
  return `<div class="goal"><div class="img" ${goalImg(g)}>${g.img?'':art(g.kind||(/차|카마로/.test(g.name)?'car':'apt'))}<div><div style="font-size:15px;opacity:.95">${g.emoji} ${esc(g.name)}</div><div class="pct">${p.toFixed(1)}<small style="font-size:20px">%</small></div></div></div>
- <div style="padding:10px 12px"><div class="pbar"><i style="width:${p}%"></i></div><div class="row sp" style="margin-top:6px"><span class="sub">현재 ${W(T.net)}</span><span class="sub">목표 ${W(g.target)}</span></div><div class="row sp" style="margin-top:4px"><span>남은 금액 <b>${W(left)}</b></span><button class="btn g sm" data-a="goalForm" data-id="${g.id}">편집</button></div>${avgSave(left)}</div></div>`}).join('')+`<button class="btn g" data-a="goalForm">＋ 목표 추가</button><div class="sub" style="margin-top:10px;line-height:1.5">기본 목표 금액은 추정치예요. 아파트: 서울 84㎡(34평형) 평균 매매가 약 12~14억대, 서울 전체 평균 16억 돌파 보도를 감안해 15억. 카마로 컨버터블: 미국 2SS 컨버터블 MSRP $53,300을 환율 1,400원으로 환산해 약 7,500만 원. 편집에서 바꿀 수 있어요.</div>`;
+ <div style="padding:10px 12px"><div class="pbar"><i style="width:${p}%"></i></div><div class="row sp" style="margin-top:6px"><span class="sub">현재 ${W(T.net)}</span><span class="sub">목표 ${W(g.target)}</span></div><div class="row sp" style="margin-top:4px"><span>남은 금액 <b>${W(left)}</b></span><button class="btn g sm" data-a="goalForm" data-id="${g.id}">편집</button></div>${avgSave(left,g.target)}</div></div>`}).join('')+`<button class="btn g" data-a="goalForm">＋ 목표 추가</button><div class="sub" style="margin-top:10px;line-height:1.5">기본 목표 금액은 추정치예요. 아파트: 서울 84㎡(34평형) 평균 매매가 약 12~14억대, 서울 전체 평균 16억 돌파 보도를 감안해 15억. 카마로 컨버터블: 미국 2SS 컨버터블 MSRP $53,300을 환율 1,400원으로 환산해 약 7,500만 원. 편집에서 바꿀 수 있어요.</div>`;
 }
-function avgSave(left){const ms=[1,2,3].map(i=>shiftM(ym(today()),-i)),a=ms.reduce((s,m)=>{const l=monthTx(m);return s+sum(l,'in')-sum(l,'out')},0)/3;
+function avgSave(left,target){
  if(!left)return '<div class="green" style="margin-top:4px">🎉 목표 달성!</div>';
- if(a<=0)return `<div class="sub" style="margin-top:4px">최근 3개월 평균 저축이 없어 예상 기간을 계산할 수 없어요.</div>`;
- const mo=Math.ceil(left/a);return `<div class="sub" style="margin-top:4px">최근 3개월 월평균 저축 ${W(a)} 기준 약 ${mo>=12?Math.floor(mo/12)+'년 ':''}${mo%12?mo%12+'개월':''} 후</div>`}
-
+ const e=goalEta(target),si=e.si;
+ return `<div style="margin-top:4px"><div class="sub">월 저축 ${W(si.monthly)} (${si.used==='asset'?'자산 추이':'수입−지출'} 기준) · 연 ${si.cfg.rate}% 수익 가정</div><div style="font-weight:700">⏳ 예상 ${etaText(e.n)}</div></div>`}
 function monthChart(n=6){
  const ms=Array.from({length:n},(_,i)=>shiftM(ym(today()),i-n+1)),d=ms.map(m=>{const l=monthTx(m);return[m,sum(l,'in'),sum(l,'out')]});
  const mx=Math.max(...d.flatMap(x=>[x[1],x[2]]),1);
@@ -487,7 +566,9 @@ function weekPrompt(){
  const up=S.fixed.map(f=>({f,d:nextDue(f.day)})).filter(x=>dday(x.d)<=7).sort((a,b)=>a.d-b.d).map(x=>`${x.f.name} ${W(x.f.amt)} (${x.d.getMonth()+1}/${x.d.getDate()})`).join(', ')||'없음';
  const as=ATYPE.map(([n])=>{const v=S.assets.filter(a=>a.type===n).reduce((s,a)=>s+val(a),0);return v?`${n} ${W(v)} (${Math.round(v/T.as*100)}%)`:''}).filter(Boolean).join(', ')||'없음';
  const b3=L.filter(t=>t.type==='out').sort((a,b)=>b.amt-a.amt).slice(0,3).map(t=>`${t.date.slice(5)} ${t.memo||t.cat} ${W(t.amt)}`).join(', ')||'없음';
- return `당신은 냉철하지만 따뜻한 자산관리 전문가(CFP)입니다. 아래는 제 이번 주 가계 요약입니다. 1) 잘한 점 2) 문제점 3) 다음 주 행동 3가지 4) 자산 배분(주식/환테크/코인/현금/통장/애드포스트/레뷰포인트) 코멘트 5) 월 배당·패시브 수입을 늘려 파이어에 가까워지는 방법과 목표 달성을 앞당길 방법을 구체적인 숫자로, 한국어로 간결하게 조언해 주세요. 특정 종목·코인 매수 추천은 하지 말고 원칙 위주로 말해 주세요.
+ return `당신은 냉철하고 직설적인 자산관리 전문가(CFP)입니다. 아래는 제 이번 주 가계 요약입니다. 1) 잘한 점 2) 문제점 3) 다음 주 행동 3가지 4) 자산 배분(주식/환테크/코인/현금/통장/애드포스트/레뷰포인트) 코멘트 5) 월 배당·패시브 수입을 늘려 파이어에 가까워지는 방법과 목표 달성을 앞당길 방법을 구체적인 숫자로, 한국어로 간결하게 조언해 주세요. 특정 종목·코인 매수 추천은 하지 말고 원칙 위주로 말해 주세요.
+
+그리고 조언마다 반드시 '🔨 뼈 때리는 한마디'를 2~3개 넣어 주세요. 제 실제 지출(복권·토토 같은 소비, 큰 지출)과 목표(아파트·카마로)의 예상 도달 시점을 아래 숫자로 직접 비교해서, 예를 들어 "이 속도면 집을 사겠냐, 차를 사겠냐"처럼 현실을 정확히 짚어 주세요. 인신공격이나 비하는 하지 말고, 숫자와 사실에 근거해 따끔하게, 대신 끝에는 바로 실행할 수 있는 한 가지 행동을 같이 제시해 주세요.
 
 [기간] ${ymd(r[0])} ~ ${ymd(r[1])}
 [이번 주] 지출 ${W(sum(L,'out'))} / 수입 ${W(sum(L,'in'))}
@@ -498,9 +579,20 @@ function weekPrompt(){
 [7일 내 고정지출 이체] ${up}
 [월 고정지출 합계] ${W(S.fixed.reduce((s,f)=>s+f.amt,0))}
 [월 고정수입] 합계 ${W(incomeSum())} (패시브/배당 ${W(passiveSum())}, 배당 종목 ${S.divs.map(d=>d.name+' 월평균 '+W(divNet(d)*divMonths(d).length/12)).join(', ')||'없음'}) / 파이어 목표 월 생활비 ${W(fireSet().cost)} → 패시브가 생활비의 ${(passiveSum()/fireSet().cost*100).toFixed(1)}%
+[월 저축(추정)] ${W(savingInfo().monthly)} (${savingInfo().used==='asset'?'자산 추이':'수입−지출'} 기준, 자산 기대수익률 연 ${goalCfg().rate}%)
+[이번 달 복권·토토 지출] ${W(ML.filter(t=>t.type==='out'&&t.cat==='복권·토토').reduce((x,t)=>x+t.amt,0))} / [이번 달 취미·여가] ${W(ML.filter(t=>t.type==='out'&&t.cat==='취미·여가').reduce((x,t)=>x+t.amt,0))}
 [자산] 합계 ${W(T.net)} — ${as}
+[목표 예상 도달] ${S.goals.map(g=>g.name+' → '+etaText(goalEta(g.target).n)).join(' / ')}
 [목표] ${S.goals.map(g=>`${g.name} ${(Math.max(0,T.net/g.target*100)).toFixed(1)}% (목표 ${W(g.target)})`).join(' / ')}`}
 let adviceLive='';
+const boldMd=t=>t.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+function fmtAdvice(text){ // 내용은 그대로, 줄바꿈·제목·목록·굵은 글씨만 보기 좋게
+ return esc(text).split('\n').map(l=>{let m;
+  if(m=l.match(/^\s*#{1,4}\s*(.+)$/))return `<div class="ah">${boldMd(m[1])}</div>`;
+  if(m=l.match(/^\s*[-*•]\s+(.+)$/))return `<div class="ab">• ${boldMd(m[1])}</div>`;
+  if(m=l.match(/^\s*(\d+)[.)]\s+(.+)$/))return `<div class="ab"><b>${m[1]}.</b> ${boldMd(m[2])}</div>`;
+  if(!l.trim())return '<div style="height:8px"></div>';
+  return `<div class="ap">${boldMd(l)}</div>`}).join('')}
 function vReport(){
  const r=weekRange(0),p=weekRange(-1),L=inR(S.tx,r),o=sum(L,'out'),po=sum(inR(S.tx,p),'out'),dw=today().getDay(),end=dw===0||dw===1;
  const rows=Array.from({length:6},(_,i)=>shiftM(ym(today()),-i)).map(m=>{const l=monthTx(m);return`<div class="item sub"><span style="width:44px">${m.slice(2)}</span><span class="grow blue num">${W(sum(l,'in'))}</span><span class="grow red num">${W(sum(l,'out'))}</span><span class="num" style="width:90px;text-align:right">${W(sum(l,'in')-sum(l,'out'))}</span></div>`}).join('');
@@ -509,20 +601,20 @@ function vReport(){
  <h2>주간 자산전문가 조언</h2><div class="card">${end?'<div class="green" style="margin-bottom:6px">📬 한 주가 끝났어요! 아래 버튼으로 조언을 받아 보세요.</div>':''}
  <div class="row sp"><span>${r[0].getMonth()+1}/${r[0].getDate()} ~ ${r[1].getMonth()+1}/${r[1].getDate()} 지출</span><b>${W(o)}</b></div><div class="sub">지난주 ${W(po)} 대비 <span class="${o>po?'red':'blue'}">${o>po?'+':'-'}${W(Math.abs(o-po))}</span></div>
  <div class="row" style="margin:8px 0">${sampleCap?`<button class="btn" id="advBtn" data-a="getAdvice">🧑‍💼 이번 주 조언 받기</button>`:''}<button class="btn g" data-a="copyP">📋 요약 복사</button></div>
- ${adviceLive?`<div class="advice" id="advLive">${esc(adviceLive)}</div>`:''}
- <textarea id="wp" readonly>${esc(weekPrompt())}</textarea><div class="sub" style="margin-top:4px">${sampleCap?'버튼을 누르면 Claude가 바로 조언하고, 결과는 아래에 저장돼요. 복사해서 Claude 대화에 붙여넣어도 됩니다.':'요약을 복사해 Claude 대화에 붙여넣으면 조언을 받을 수 있어요.'}</div></div>
- ${adv.map(a=>`<div class="card"><div class="sub" style="margin-bottom:4px">${esc(a.id)} 주 조언 · ${esc(a.at||'')}</div><div class="advice">${esc(a.text)}</div></div>`).join('')}
+ ${adviceLive?`<div class="advbox"><div class="advice" id="advLive">${fmtAdvice(adviceLive)}</div></div>`:''}
+ <details class="sum"><summary>📋 AI에게 보내는 요약 보기 (눌러서 펼치기)</summary><textarea id="wp" readonly>${esc(weekPrompt())}</textarea></details><div class="sub" style="margin-top:4px">${sampleCap?'버튼을 누르면 Claude가 바로 조언하고, 결과는 아래에 저장돼요. 복사해서 Claude 대화에 붙여넣어도 됩니다.':'요약을 복사해 Claude 대화에 붙여넣으면 조언을 받을 수 있어요.'}</div></div>
+ ${adv.map(a=>`<div class="card"><div class="sub" style="margin-bottom:2px;font-size:14px">${esc(a.id)} 주 조언 · ${esc(a.at||'')}</div><div class="advbox"><div class="advice">${fmtAdvice(a.text)}</div></div></div>`).join('')}
  <h2>화면 모드 (폴드7)</h2><div class="card"><div class="seg"><div class="${layoutMode==='auto'?'on':''}" data-a="layout" data-id="auto">자동</div><div class="${layoutMode==='narrow'?'on':''}" data-a="layout" data-id="narrow">접힘형</div><div class="${layoutMode==='wide'?'on':''}" data-a="layout" data-id="wide">펼침형</div></div><div class="sub" style="margin-top:6px">자동: 폴드를 접으면 세로 한 줄, 펼치면 왼쪽 메뉴 + 2~3단 카드로 바뀌어요. 화면 너비 600px 이상이 펼침형입니다.</div></div>
  <h2>데이터</h2><div class="card row" style="flex-wrap:wrap">${dlCap?'<button class="btn g sm" data-a="exp">백업 내보내기</button>':''}<button class="btn g sm" data-a="impPick">백업 복원</button><button class="btn r sm" data-a="resetAsk">전체 초기화</button><input id="imp" type="file" accept=".json" hidden></div>`;
 }
 async function getAdvice(){
  const b=$('#advBtn');if(b)b.disabled=true;adviceLive='⏳ 분석 중…';render();
- try{const r=await sampleCap(weekPrompt(),{modelTier:'default',onText:({text})=>{adviceLive=text;const e=$('#advLive');if(e)e.textContent=text}});
+ try{const r=await sampleCap(weekPrompt(),{modelTier:'default',onText:({text})=>{adviceLive=text;const e=$('#advLive');if(e)e.innerHTML=fmtAdvice(text)}});
   adviceLive=r.text;const k=ymd(weekRange(0)[0]);await put('advice',{id:k,text:r.text,at:new Date().toLocaleString('ko-KR')});adviceLive='';toast('조언이 저장됐어요')}
  catch(e){adviceLive=e&&e.code==='not_granted'?'허용되지 않았어요. 아래 "요약 복사"를 이용하세요.':'조언을 불러오지 못했어요 ('+((e&&e.code)||'error')+'). 잠시 후 다시 시도하거나 요약을 복사해 주세요.'}
  render();
 }
-function copyP(){const t=$('#wp');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>toast('복사됨! Claude에게 붙여넣어 보세요')).catch(()=>toast('선택됨 — 길게 눌러 복사하세요'))}
+function copyP(){const dt=document.querySelector('details.sum');if(dt)dt.open=true;const t=$('#wp');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>toast('복사됨! Claude에게 붙여넣어 보세요')).catch(()=>toast('선택됨 — 길게 눌러 복사하세요'))}
 async function exp(){try{await dlCap.save({filename:'gagyebu-'+ymd(today())+'.json',data:JSON.stringify({tx:S.tx,assets:S.assets,fixed:S.fixed,goals:S.goals,advice:S.advice,income:S.income,settings:S.settings,divs:S.divs})})}catch(e){toast('저장이 취소됐어요')}}
 async function importFile(f){try{const d=JSON.parse(await f.text());if(!d.tx&&!d.assets)throw 0;let n=0;for(const c of COLS)for(const o of d[c]||[]){if(!o.id)o.id=uid();await put(c,o);n++}toast(n+'건 복원됨')}catch(e){toast('올바른 백업 파일이 아니에요')}}
 
@@ -589,16 +681,16 @@ async function resetGo(){close();for(const c of COLS)for(const o of [...S[c]])aw
 /* ---------- 동기화 관리 · 백업 복원 ---------- */
 function syncMenu(){
  const st=syncState(),g=Object.keys(guard);
- let h=`<div class="mid">☁️ 동기화</div><div class="sub" style="margin:4px 0 10px;line-height:1.6">상태: <b>${{stale:'새로고침 필요',guard:'확인 필요',local:'이 기기에만 저장',err:'재시도 중',busy:'동기화 중',ok:'정상'}[st]}</b><br>대기 중인 저장 ${outbox.length}건 · 마지막 성공 ${lastOk?new Date(lastOk).toLocaleTimeString('ko-KR'):'-'} · 기기 ${DEV}${lastErr?'<br>마지막 오류: '+esc(lastErr):''}</div>`;
+ let h=`<div class="mid">☁️ 동기화</div><div class="sub" style="margin:4px 0 10px;line-height:1.6">상태: <b>${{stale:'새로고침 필요',guard:'확인 필요',local:'이 기기에만 저장',err:'재시도 중',busy:'동기화 중',ok:'정상'}[st]}</b><br>대기 중인 저장 ${outbox.length}건 · 마지막 성공 ${lastOk?new Date(lastOk).toLocaleTimeString('ko-KR'):'-'} · 기기 ${DEV}${lastErr?'<br>마지막 오류: '+esc(lastErr):''}<br>⏱ 서버 응답 ${perf.ping||'-'}ms · 마지막 저장 ${perf.write||'-'}ms · 첫 로딩 ${perf.load||'-'}ms</div>`;
  if(mode!=='cloud')h+=`<div>이 화면은 저장소(claude.ai)에 연결되지 않아 이 기기에만 저장돼요. claude.ai 링크로 로그인해서 열면 폰·PC가 동기화돼요.</div>`;
  else if(stale)h+=`<div>새 버전이 나왔어요. 이 화면은 낡은 데이터를 올리지 않도록 멈춰 있어요. 새로고침해 주세요.</div>`;
- else if(g.length)h+=`<div class="alert" style="margin:0 0 10px">⚠️ ${g.map(c=>({tx:'내역',assets:'자산',fixed:'고정지출',goals:'목표',advice:'조언',income:'수입',settings:'설정',divs:'배당'}[c])).join(', ')} 데이터가 서버에서 갑자기 비어 있어요. 실수로 지워졌을 수 있어 자동으로 지우지 않고 멈췄어요.</div>
+ else if(g.length)h+=`<div class="alert" style="margin:0 0 10px">⚠️ ${g.map(c=>({tx:'내역',assets:'자산',fixed:'고정지출',goals:'목표',advice:'조언',income:'수입',settings:'설정',divs:'배당',snaps:'자산 기록'}[c])).join(', ')} 데이터가 서버에서 갑자기 비어 있어요. 실수로 지워졌을 수 있어 자동으로 지우지 않고 멈췄어요.</div>
   <div class="grid2"><button class="btn" data-a="pushServerAsk">⬆️ 이 기기 내용으로 서버 복구 (추천)</button><button class="btn g" data-a="guardAccept">서버가 비어 있는 게 맞아요</button></div>`;
- else h+=`<div style="display:grid;gap:8px"><button class="btn" data-a="syncNow">🔄 지금 동기화</button><button class="btn g" data-a="restoreOpen">🕘 백업에서 빠진 것 되살리기</button><button class="btn g" data-a="pullServerAsk">⬇️ 서버 내용으로 이 기기 다시 불러오기</button><button class="btn r" data-a="pushServerAsk">⬆️ 이 기기 내용으로 서버 덮어쓰기</button></div>
+ else h+=`<div style="display:grid;gap:8px"><button class="btn" data-a="syncNow">🔄 지금 동기화</button><button class="btn g" data-a="speedTest">⏱ 속도 측정</button><button class="btn g" data-a="restoreOpen">🕘 백업에서 빠진 것 되살리기</button><button class="btn g" data-a="pullServerAsk">⬇️ 서버 내용으로 이 기기 다시 불러오기</button><button class="btn r" data-a="pushServerAsk">⬆️ 이 기기 내용으로 서버 덮어쓰기</button></div>
  <div class="sub" style="margin-top:8px;line-height:1.5">저장 실패 시 대기열에 남아 자동 재시도해요. 서버에는 3시간 단위·매일 백업이 쌓이고, 이 기기에도 임시 저장본이 남아요.</div>`;
  h+=`<div class="row" style="margin-top:12px"><button class="btn g grow" data-a="close">닫기</button></div>`;sheet(h);
 }
-async function reloadAll(){for(const c of COLS){const q=await db.collection(c).get();const arr=q.docs.map(d=>({id:d.id,...d.data()}));serverCopy[c]=arr;S[c]=arr}guard={};cacheSave();render();syncUI()}
+async function reloadAll(){const rs=await Promise.all(COLS.map(c=>db.collection(c).get()));rs.forEach((q,i)=>{const c=COLS[i],arr=q.docs.map(d=>({id:d.id,...d.data()}));serverCopy[c]=arr;applyServer(c,arr)});guard={};cacheSave();render();syncUI()}
 async function syncNow(){close();toast('🔄 동기화 중…');try{await flush();await reloadAll();toast(outbox.length?'일부는 아직 대기 중이에요':'✅ 최신 상태예요')}catch(e){toast('동기화하지 못했어요. 잠시 후 다시 시도해 주세요')}}
 function pullServerAsk(){sheet(`<div class="mid">서버 내용으로 다시 불러올까요?</div><div class="sub" style="margin:6px 0 12px">${outbox.length?`아직 서버로 보내지 못한 ${outbox.length}건이 사라져요. `:''}이 기기의 현재 내용은 임시 저장본에 남겨 둘게요.</div><div class="row"><button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="pullServerGo">불러오기</button></div>`)}
 async function pullServerGo(){close();takeLocalSnapForce();outbox=[];saveOb();try{await reloadAll();toast('✅ 서버 내용으로 바꿨어요')}catch(e){toast('불러오지 못했어요')}}
@@ -640,7 +732,7 @@ function restoreGo(i){takeLocalSnapForce();const n=missingFrom(RST[+i].o,true).l
 
 /* ---------- 이벤트 ---------- */
 const A={assetForm:id=>assetForm(id),fixedForm:id=>fixedForm(id),goalForm:id=>goalForm(id),txForm:id=>txForm(id),mshift:(_,e)=>{cur=shiftM(cur,+e.dataset.d);render()},openCat:id=>{openCat=openCat===id?null:id;render()},pay,unpay,saveTx,delTx,saveAsset,saveFixed,saveGoal,close,txType:id=>txFormSwitch(id),
- delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},usableOpen,catSort:id=>{catSort=id;render()},planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divHist,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
+ delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,speedTest,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},usableOpen,catSort:id=>{catSort=id;render()},goalCfgForm,saveGoalCfg,planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divHist,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a){const f=A[a.dataset.a];if(f)f(a.dataset.id||undefined,a);return}
  const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render();scrollTo(0,0)}});
 document.addEventListener('change',e=>{
