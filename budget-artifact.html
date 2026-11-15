@@ -135,7 +135,7 @@ function del(col,id){linkMap=null;
  S[col]=S[col].filter(x=>x.id!==id);deletedIds[id]=Date.now();cacheSave();render();
  if(mode==='cloud'){enqueue({k:'del',col,id,m:Date.now()});enqueue({k:'set',col:'meta',id:'deleted',data:{ids:deletedIds},m:Date.now()})}
 }
-let perf={load:0,write:0,ping:0},initT=Date.now(),lastRevSeen=0;
+let perf={load:0,write:0,ping:0},initT=Date.now(),lastRevSeen=0,recent=[]; // recent: 방금 서버에 저장한 항목 (서버 알림이 늦어 옛 값이 되돌아오는 것을 막음)
 async function exec(op){
  preSlotBackup(); // 기다리지 않고 백그라운드에서 (예전에는 매 저장마다 기다렸어요)
  const ref=op.col==='meta'?db.doc('meta/'+op.id):db.collection(op.col).doc(op.id);
@@ -152,7 +152,7 @@ async function flush(){
    const batch=outbox.slice(0,4); // 서로 다른 문서는 4개씩 동시에 저장
    const res=await Promise.allSettled(batch.map(exec));let retry=false;
    res.forEach((r,i)=>{const op=batch[i];
-    if(r.status==='fulfilled'){outbox=outbox.filter(o=>o!==op);wrote++;lastOp=op;lastErr='';lastOk=Date.now()}
+    if(r.status==='fulfilled'){outbox=outbox.filter(o=>o!==op);recent.push({...op,until:Date.now()+45000});wrote++;lastOp=op;lastErr='';lastOk=Date.now()}
     else{const c=(r.reason&&r.reason.code)||'error';
      if(['invalid_argument','quota_exceeded','transform_error'].includes(c)){outbox=outbox.filter(o=>o!==op);lastErr=c;toast('저장할 수 없는 항목을 건너뛰었어요 ('+c+')')}
      else{lastErr=c;retry=true}}});
@@ -221,7 +221,8 @@ const loadLocalSnaps=()=>{try{return JSON.parse(localStorage.getItem(LSNAP))||[]
 
 /* 서버에서 받은 문서에 아직 못 보낸 변경(대기열)을 덧입혀 보여줌 */
 function applyServer(col,arr){linkMap=null;
- const out=arr.slice();
+ const out=arr.slice();recent=recent.filter(o=>o.until>Date.now());
+ recent.filter(o=>o.col===col&&o.k==='set').forEach(o=>{const i=out.findIndex(x=>x.id===o.id);if(i>=0&&(out[i]._m||0)<o.m)out[i]={id:o.id,...o.data}}); // 방금 저장한 항목: 서버가 옛 값을 알려줘도 되돌리지 않음 (다른 기기가 지운 항목은 되살리지 않음)
  outbox.filter(o=>o.col===col).forEach(o=>{const i=out.findIndex(x=>x.id===o.id);
   if(o.k==='del'){if(i>=0&&(out[i]._m||0)<=o.m)out.splice(i,1)}
   else if(i<0)out.push({id:o.id,...o.data});else if((out[i]._m||0)<=o.m)out[i]={id:o.id,...o.data}});
@@ -396,7 +397,7 @@ function vFixed(){
  <h2>이체 일정 <button class="btn sm" data-a="fixedForm">＋ 추가</button></h2>
  ${list.map(({f,d})=>{const dd=dday(d),p=fixedPaid(f,m);return `<div class="card ${p?'paid':''}"><div class="row"><div style="font-size:26px">${ocat(f.cat)[1]}</div><div class="grow" data-a="fixedForm" data-id="${f.id}"><div class="ell"><b>${esc(f.name)}</b> <span class="tag ${p?'':dd<=1?'hot':dd<=3?'warn':''}">${p?'이체완료':dd===0?'오늘':'D-'+dd}</span></div><div class="sub">매월 ${f.day}일 · 다음 ${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})${f.acct?' · '+esc(f.acct):''}</div></div><div style="text-align:right"><div class="num">${W(f.amt)}</div>${p?`<button class="btn g sm" data-a="unpay" data-id="${f.id}">취소</button>`:`<button class="btn sm" data-a="pay" data-id="${f.id}">이체했어요</button>`}</div></div></div>`}).join('')||'<div class="card sub">＋ 추가로 월세·통신비·보험·구독료 등을 넣으면 이체일이 임박할 때 빨간 알림이 떠요.</div>'}`;
 }
-function pay(id){const f=S.fixed.find(x=>x.id===id),t=today(),m=ym(t);const tx={id:uid(),date:ymd(t),type:'out',cat:f.cat,amt:f.amt,memo:f.name+' (고정)',acct:f.acct||''};put('tx',tx);put('fixed',{...f,paid:{...(f.paid||{}),[m]:tx.id}})}
+function pay(id){const f=S.fixed.find(x=>x.id===id),t=today(),m=ym(t);if(S.tx.some(x=>x.date===ymd(t)&&x.memo===f.name+' (고정)'&&x.amt===f.amt))return toast('오늘 이미 기록돼 있어요');const tx={id:uid(),date:ymd(t),type:'out',cat:f.cat,amt:f.amt,memo:f.name+' (고정)',acct:f.acct||''};put('tx',tx);put('fixed',{...f,paid:{...(f.paid||{}),[m]:tx.id}})}
 function unpay(id){const f=S.fixed.find(x=>x.id===id),m=ym(today()),p={...(f.paid||{})},t=p[m];delete p[m];if(t)del('tx',t);put('fixed',{...f,paid:p})}
 
 /* SCHD + JEPQ 5:5 목표 계산기 (사용자가 공유한 표의 가정: 세전 6.77%, 세율 15%, 주가는 직접 수정) */
@@ -516,7 +517,7 @@ function vIncomeMain(){
  ${list.map(({i,d})=>{const dd=dday(d),p=recvDone(i,m),k=inkOf(i.kind);return `<div class="card ${p?'paid':''}"><div class="row"><div style="font-size:26px">${k[1]}</div><div class="grow" data-a="incomeForm" data-id="${i.id}"><div class="ell"><b>${esc(i.name)}</b> <span class="tag ${p?'':'warn'}">${p?'입금완료':dd===0?'오늘':'D-'+dd}</span> ${i.passive?'<span class="tag">패시브</span>':''}</div><div class="sub">매월 ${i.day}일 · ${i.kind} · 다음 ${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})</div></div><div style="text-align:right"><div class="num blue">+${W(i.amt)}</div>${p?`<button class="btn g sm" data-a="unrecv" data-id="${i.id}">취소</button>`:`<button class="btn sm" data-a="recv" data-id="${i.id}">입금됐어요</button>`}</div></div></div>`}).join('')||'<div class="card sub">급여, 애드포스트, 레뷰 등 매월 들어오는 수입을 ＋ 추가로 넣어 보세요. 배당은 📈 배당수익 탭에서 종목별로 등록하면 파이어 계산에 자동 반영돼요.</div>'}`;
 }
 function linkAssetFor(i){if(i.link==='none')return '';if(i.link&&S.assets.some(a=>a.id===i.link))return i.link;const type=INKASSET[i.kind];if(!type)return '';let a=S.assets.find(x=>x.type===type);if(!a){a={id:type==='레뷰포인트'?'a_revu':'a_adpost',type,name:type,value:0};put('assets',a)}return a.id}
-function recv(id){const i=S.income.find(x=>x.id===id),t=today(),m=ym(t),k=inkOf(i.kind);const tx={id:uid(),date:ymd(t),type:'in',cat:k[3],amt:i.amt,memo:i.name+' (고정수입)',acct:i.acct||'',asset:linkAssetFor(i)||undefined};put('tx',tx);put('income',{...i,paid:{...(i.paid||{}),[m]:tx.id}})}
+function recv(id){const i=S.income.find(x=>x.id===id),t=today(),m=ym(t),k=inkOf(i.kind);if(S.tx.some(x=>x.date===ymd(t)&&x.memo===i.name+' (고정수입)'&&x.amt===i.amt))return toast('오늘 이미 기록돼 있어요');const tx={id:uid(),date:ymd(t),type:'in',cat:k[3],amt:i.amt,memo:i.name+' (고정수입)',acct:i.acct||'',asset:linkAssetFor(i)||undefined};put('tx',tx);put('income',{...i,paid:{...(i.paid||{}),[m]:tx.id}})}
 function unrecv(id){const i=S.income.find(x=>x.id===id),m=ym(today()),p={...(i.paid||{})},t=p[m];delete p[m];if(t)del('tx',t);put('income',{...i,paid:p})}
 function incomeForm(id){
  const i=S.income.find(x=>x.id===id)||{name:'',kind:'애드포스트',amt:'',day:15,passive:true,acct:''};
