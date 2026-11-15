@@ -338,13 +338,15 @@ function savePlan(){const o={id:'divplan',goal:+v('pl_goal'),yld:+v('pl_y'),tax:
 /* ---------- 배당수익 (종목별) ---------- */
 const MALL=[1,2,3,4,5,6,7,8,9,10,11,12];
 const divGross=d=>d.shares>0&&d.per>0?d.shares*d.per:(d.amt||0);
-const divNet=d=>divGross(d)*(1-(d.tax==null?15.4:d.tax)/100);
+const divRecs=d=>S.tx.filter(t=>t.src===d.id&&t.type==='in').sort((a,b)=>b.date.localeCompare(a.date));
+const divAvg=d=>{const r=divRecs(d).slice(0,3);return r.length?r.reduce((s,t)=>s+t.amt,0)/r.length:null};
+const divNet=d=>{const a=d.useAvg===false?null:divAvg(d);return a!=null?a:divGross(d)*(1-(d.tax==null?15.4:d.tax)/100)};
 const divMonths=d=>(d.months&&d.months.length?d.months:MALL);
 const divMonthly=()=>S.divs.reduce((s,d)=>s+divNet(d)*divMonths(d).length/12,0);
 const divAnnual=()=>S.divs.reduce((s,d)=>s+divNet(d)*divMonths(d).length,0);
-function divTarget(d){const t=today();for(let k=0;k<14;k++){const dt=new Date(t.getFullYear(),t.getMonth()+k,1);if(!divMonths(d).includes(dt.getMonth()+1))continue;if(d.paid&&d.paid[ym(dt)])continue;return new Date(dt.getFullYear(),dt.getMonth(),Math.min(d.day||15,dim(dt.getFullYear(),dt.getMonth())))}return null}
+function divTarget(d){const t=today();for(let k=0;k<14;k++){const dt=new Date(t.getFullYear(),t.getMonth()+k,1);if(!divMonths(d).includes(dt.getMonth()+1))continue;if(S.tx.some(t=>t.src===d.id&&t.date.startsWith(ym(dt))))continue;return new Date(dt.getFullYear(),dt.getMonth(),Math.min(d.day||15,dim(dt.getFullYear(),dt.getMonth())))}return null}
 const monthsLabel=d=>{const m=divMonths(d);return m.length===12?'매월':m.join('·')+'월'};
-let incSub='main';
+let incSub='main',openDiv=null;
 function vDiv(){
  const t=today(),y=t.getFullYear(),m=ym(t),mo=t.getMonth()+1;
  const expM=Array.from({length:12},(_,i)=>S.divs.filter(d=>divMonths(d).includes(i+1)).reduce((s,d)=>s+divNet(d),0));
@@ -354,16 +356,20 @@ function vDiv(){
  const annual=divAnnual(),colors=['#ff8a4c','#4c8dff','#2fb67c','#c07af0','#f2c230','#e0645a','#4aa8c9','#d96fa5'];
  const part=S.divs.map((d,i)=>[divNet(d)*divMonths(d).length,colors[i%colors.length],d]);
  return `<div class="card"><div class="sub">${mo}월 배당 (세후)</div><div class="grid2" style="margin-top:4px"><div><div class="sub">예상</div><div class="mid">${W(expM[mo-1])}</div></div><div><div class="sub">받은 금액</div><div class="mid green">${W(actM[mo-1])}</div></div></div>
+ <button class="btn" style="width:100%;margin:6px 0 2px" data-a="divRecvForm">💰 배당 입금 기록하기</button>
  <div class="item" style="margin-top:6px"><div class="grow sub">연 예상 배당 / 월평균</div><div class="num">${W(annual)} / ${W(mAvg)}</div></div>
  <div class="row sp"><span class="sub">월 생활비 ${W(cost)} 중 배당이 덮는 비율</span><b>${cover.toFixed(1)}%</b></div><div class="pbar" style="margin-top:4px"><i style="width:${cover}%;background:linear-gradient(90deg,#ff8a4c,#ff5a6a)"></i></div></div>
  ${divPlan()}
  <h2>${y}년 월별 배당 (예상 vs 실제)</h2><div class="card"><svg viewBox="0 0 300 120" style="width:100%">${expM.map((e,i)=>{const x=i*25+3,he=e/mx*80,ha=actM[i]/mx*80;return `<rect x="${x}" y="${92-he}" width="10" height="${he}" rx="2" fill="#8b8b96" opacity=".5"/><rect x="${x+11}" y="${92-ha}" width="10" height="${ha}" rx="2" fill="#ff8a4c"/><text class="t" x="${x+11}" y="106" font-size="11" text-anchor="middle">${i+1}</text>`}).join('')}</svg><div class="row sub" style="justify-content:center;gap:14px"><span>■ 예상</span><span style="color:#ff8a4c">■ 실제</span></div></div>
  ${S.divs.length?`<h2>종목별 비중 (연 배당 기준)</h2><div class="card">${stack(part.map(p=>[p[0],p[1]]))}<div class="chips">${part.map(p=>`<span><b class="dot" style="display:inline-block;background:${p[1]};margin-right:4px"></b>${esc(p[2].name)} ${annual?Math.round(p[0]/annual*100):0}%</span>`).join('')}</div></div>`:''}
  <h2>종목별 배당 <button class="btn sm" data-a="divForm">＋ 종목 추가</button></h2>
- ${list.map(({d,dt})=>{const dd=dt?dday(dt):null,paidNow=d.paid&&d.paid[m],got=S.tx.filter(x=>x.src===d.id&&x.date.startsWith(String(y))).reduce((s,x)=>s+x.amt,0);
-  return `<div class="card"><div class="row"><div class="grow" data-a="divForm" data-id="${d.id}"><div class="ell"><b>${esc(d.name)}</b> <span class="tag">${monthsLabel(d)}</span> ${dt?`<span class="tag ${dd<0?'hot':dd<=3?'warn':''}">${dd<0?'지남':dd===0?'오늘':'D-'+dd}</span>`:''}</div>
-  <div class="sub">${d.shares>0&&d.per>0?`${d.shares.toLocaleString()}주 × ${d.per.toLocaleString()}원 · `:''}세율 ${d.tax==null?15.4:d.tax}% · 매월 ${d.day||15}일${dt?` · 다음 ${dt.getMonth()+1}/${dt.getDate()}`:''}</div><div class="sub">올해 받은 금액 ${W(got)}</div></div>
-  <div style="text-align:right"><div class="num">${W(divNet(d))}</div><div class="sub">세후/회</div>${paidNow?`<button class="btn g sm" data-a="divUnrecv" data-id="${d.id}">입금취소</button>`:`<button class="btn sm" data-a="divRecvForm" data-id="${d.id}">입금됐어요</button>`}</div></div></div>`}).join('')||'<div class="card sub">월배당을 받는 종목을 ＋ 종목 추가로 하나씩 등록하세요. 수량×주당배당금(또는 1회 배당금)과 세율, 지급월, 입금일을 넣으면 월별 예상과 파이어 계산에 반영돼요.</div>'}`;
+ ${list.map(({d,dt})=>{const dd=dt?dday(dt):null,recs=divRecs(d),paidNow=recs.some(x=>x.date.startsWith(m)),got=recs.filter(x=>x.date.startsWith(String(y))).reduce((s,x)=>s+x.amt,0),avg=divAvg(d),last=recs[0],open=openDiv===d.id,usingAvg=d.useAvg!==false&&avg!=null;
+  return `<div class="card"><div class="row"><div class="grow" data-a="divForm" data-id="${d.id}"><div class="ell"><b>${esc(d.name)}</b> <span class="tag">${monthsLabel(d)}</span> ${dt?`<span class="tag ${dd<0?'hot':dd<=3?'warn':''}">${dd<0?'지남':dd===0?'오늘':'D-'+dd}</span>`:''}${paidNow?' <span class="tag" style="background:var(--green);color:#fff">이번달 받음</span>':''}</div>
+  <div class="sub">${d.shares>0?`${d.shares.toLocaleString()}주 · `:''}세율 ${d.tax==null?15.4:d.tax}% · 매월 ${d.day||15}일${dt?` · 다음 ${dt.getMonth()+1}/${dt.getDate()}`:''}</div></div>
+  <div style="text-align:right"><div class="num">${W(divNet(d))}</div><div class="sub">${usingAvg?'최근 평균':'예상'}(세후)</div></div></div>
+  <div class="row sub" style="margin-top:4px"><span>올해 ${W(got)}</span>${last?`<span>· 최근 ${last.date.slice(5)} ${W(last.amt)}</span>`:''}<span class="grow"></span></div>
+  <div class="row" style="margin-top:6px"><button class="btn grow" data-a="divRecvForm" data-id="${d.id}">＋ 입금 기록</button><button class="btn g" data-a="divHist" data-id="${d.id}">내역 ${recs.length}건 ${open?'▴':'▾'}</button></div>
+  ${open?`<div style="margin-top:6px">${recs.length?recs.slice(0,12).map((r,i)=>{const pv=recs[i+1],ch=pv&&pv.amt?Math.round((r.amt/pv.amt-1)*100):null;return `<div class="item" data-a="txForm" data-id="${r.id}"><div class="grow">${r.date.slice(2).replace(/-/g,'.')}${r.perShare?` <span class="sub">주당 ${r.perShare.toLocaleString()}원</span>`:''}</div><div class="num">${W(r.amt)}</div><span class="sub" style="width:48px;text-align:right;color:${ch==null?'inherit':ch>=0?'var(--green)':'var(--red)'}">${ch==null?'':(ch>=0?'+':'')+ch+'%'}</span></div>`}).join(''):'<div class="sub">아직 입금 기록이 없어요. 받을 때마다 ＋ 입금 기록으로 실제 금액을 남기세요.</div>'}<div class="sub" style="margin-top:4px">${recs.length>=2?`최근 ${Math.min(3,recs.length)}회 평균 ${W(avg)} · 최저 ${W(Math.min(...recs.map(x=>x.amt)))} · 최고 ${W(Math.max(...recs.map(x=>x.amt)))}`:'기록이 쌓이면 평균·최저·최고가 나와요'}</div></div>`:''}</div>`}).join('')||'<div class="card sub">월배당을 받는 종목을 ＋ 종목 추가로 하나씩 등록하세요. 수량×주당배당금(또는 1회 배당금)과 세율, 지급월, 입금일을 넣으면 월별 예상과 파이어 계산에 반영돼요.</div>'}`;
 }
 function divForm(id){
  const d=S.divs.find(x=>x.id===id)||{name:'',shares:'',per:'',amt:'',tax:15.4,months:MALL,day:15,acct:''};
@@ -372,19 +378,26 @@ function divForm(id){
  <label>또는 1회 배당금 총액 (세전, 수량·주당 비워둘 때)</label><input id="d_amt" type="number" inputmode="numeric" value="${d.amt||''}">
  <label>세율 (%) — 국내 15.4, 미국 15</label><input id="d_tax" type="number" step="0.1" value="${d.tax==null?15.4:d.tax}">
  <label>지급월 (눌러서 선택)</label><div class="chips" style="flex-wrap:wrap" id="d_mo">${MALL.map(i=>`<span data-a="divMo" data-id="${i}" class="${divMonths(d).includes(i)?'mon':''}" style="cursor:pointer;${divMonths(d).includes(i)?'background:var(--blue);color:#fff':''}">${i}월</span>`).join('')}</div>
+ <label>예상 배당금 계산 방식</label><select id="d_avg"><option value="1" ${d.useAvg===false?'':'selected'}>입금 기록의 최근 3회 평균 사용 (기록 없으면 위 입력값)</option><option value="0" ${d.useAvg===false?'selected':''}>위 입력값만 사용</option></select>
  <label>입금일 (매월 몇 일)</label><input id="d_day" type="number" min="1" max="31" value="${d.day||15}"><label>입금 계좌</label><input id="d_acct" value="${esc(d.acct||'')}">
  <div class="row" style="margin-top:12px">${id?`<button class="btn r" data-a="delDiv" data-id="${id}">삭제</button>`:''}<button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="saveDiv" data-id="${id||''}">저장</button></div>`)}
 function divMo(i,el){const on=el.classList.toggle('mon');el.style.background=on?'var(--blue)':'';el.style.color=on?'#fff':''}
 function saveDiv(id){const name=v('d_name').trim(),sh=+v('d_sh'),per=+v('d_per'),amt=+v('d_amt');
- if(!name)return toast('종목명을 입력하세요');if(!((sh>0&&per>0)||amt>0))return toast('수량·주당배당금 또는 1회 배당금을 입력하세요');
+ if(!name)return toast('종목명을 입력하세요');
  const months=[...document.querySelectorAll('#d_mo .mon')].map(e=>+e.dataset.id);if(!months.length)return toast('지급월을 하나 이상 선택하세요');
- const old=S.divs.find(x=>x.id===id);put('divs',{id:id||uid(),name,shares:sh||0,per:per||0,amt:amt||0,tax:+v('d_tax'),months,day:Math.min(31,Math.max(1,+v('d_day')||15)),acct:v('d_acct'),paid:old?.paid||{}});close();toast('저장됨')}
-function divRecvForm(id){const d=S.divs.find(x=>x.id===id);
- sheet(`<div class="mid">💰 ${esc(d.name)} 배당 입금</div><label>실제 입금액 (세후, 원)</label><input id="dr_amt" type="number" inputmode="numeric" value="${Math.round(divNet(d))}"><label>입금일</label><input id="dr_date" type="date" value="${ymd(today())}">
- <div class="row" style="margin-top:12px"><button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="divRecvGo" data-id="${id}">기록</button></div>`)}
-function divRecvGo(id){const d=S.divs.find(x=>x.id===id),amt=+v('dr_amt'),date=v('dr_date');if(!(amt>0)||!date)return toast('금액과 날짜를 확인하세요');
- const tx={id:uid(),date,type:'in',cat:'이자·배당',amt,memo:d.name+' 배당',acct:d.acct||'',src:d.id};put('tx',tx);put('divs',{...d,paid:{...(d.paid||{}),[date.slice(0,7)]:tx.id}});close();toast('✅ 배당 입금을 기록했어요')}
-function divUnrecv(id){const d=S.divs.find(x=>x.id===id),m=ym(today()),p={...(d.paid||{})},t=p[m];delete p[m];if(t)del('tx',t);put('divs',{...d,paid:p})}
+ const old=S.divs.find(x=>x.id===id);put('divs',{id:id||uid(),name,shares:sh||0,per:per||0,amt:amt||0,tax:+v('d_tax'),months,day:Math.min(31,Math.max(1,+v('d_day')||15)),acct:v('d_acct'),useAvg:v('d_avg')!=='0',paid:old?.paid||{}});close();toast('저장됨')}
+function divRecvForm(id){
+ const cur=S.divs.find(x=>x.id===id)||S.divs[0];if(!cur)return toast('먼저 종목을 등록하세요');
+ sheet(`<div class="mid">💰 배당 입금 기록</div><div class="sub" style="margin:2px 0">배당금은 매번 달라서, 받은 실제 금액을 그대로 적어 주세요.</div>
+ <label>종목</label><select id="dr_id" data-ch="drPick">${S.divs.map(d=>`<option value="${d.id}" ${d.id===cur.id?'selected':''}>${esc(d.name)}</option>`).join('')}</select>
+ <label>실제 입금액 (세후, 원)</label><input id="dr_amt" type="number" inputmode="numeric" value="" placeholder="예상 ${Math.round(divNet(cur)).toLocaleString()}원">
+ <label>입금일</label><input id="dr_date" type="date" value="${ymd(today())}">
+ <label>주당 배당금 (원, 선택 — 알고 있으면)</label><input id="dr_per" type="number" step="any" placeholder="비워도 돼요">
+ <div class="row" style="margin-top:12px"><button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="divRecvGo">기록</button></div>`)}
+function divRecvGo(){const d=S.divs.find(x=>x.id===v('dr_id')),amt=+v('dr_amt'),date=v('dr_date');if(!d)return;if(!(amt>0))return toast('입금액을 입력하세요');if(!date)return toast('입금일을 입력하세요');
+ const per=+v('dr_per');const tx={id:uid(),date,type:'in',cat:'이자·배당',amt,memo:d.name+' 배당',acct:d.acct||'',src:d.id,perShare:per>0?per:undefined};
+ put('tx',tx);openDiv=d.id;close();toast('✅ '+d.name+' 배당 '+W(amt)+' 기록했어요')}
+function divHist(id){openDiv=openDiv===id?null:id;render()}
 
 /* ---------- 수입 · 파이어 ---------- */
 const fireSet=()=>{const f=S.settings.find(x=>x.id==='fire')||{};return{cost:f.cost||5000000,yld:f.yld||5}};
@@ -532,7 +545,7 @@ function txForm(id,keep){
 }
 function txFormSwitch(ty){const id=document.querySelector('[data-a=saveTx]').dataset.id;txType=ty;txForm(id,{id,date:v('f_date'),type:ty,cat:'',amt:v('f_amt'),memo:v('f_memo'),acct:v('f_acct'),asset:v('f_asset')})}
 function saveTx(id){const amt=+v('f_amt');if(!(amt>0))return toast('금액을 입력하세요');const date=v('f_date');if(!date)return toast('날짜를 입력하세요');
- put('tx',{id:id||uid(),date,type:txType,cat:v('f_cat'),amt,memo:v('f_memo'),acct:v('f_acct'),asset:v('f_asset')||undefined});cur=date.slice(0,7);close();toast('저장됨')}
+ const old=S.tx.find(x=>x.id===id)||{};put('tx',{...old,id:id||uid(),date,type:txType,cat:v('f_cat'),amt,memo:v('f_memo'),acct:v('f_acct'),asset:v('f_asset')||undefined});cur=date.slice(0,7);close();toast('저장됨')}
 function delTx(id){S.fixed.forEach(f=>{for(const k in f.paid||{})if(f.paid[k]===id){const p={...f.paid};delete p[k];put('fixed',{...f,paid:p})}});del('tx',id);close()}
 function assetForm(id,keep){
  const a=keep||S.assets.find(x=>x.id===id)||{type:'통장',name:'',value:''};if(!a.name&&(a.type==='네이버 애드포스트'||a.type==='레뷰포인트'))a.name=a.type;const calc=a.type==='환테크'||a.type==='코인';
@@ -619,13 +632,14 @@ function restoreGo(i){takeLocalSnapForce();const n=missingFrom(RST[+i].o,true).l
 
 /* ---------- 이벤트 ---------- */
 const A={assetForm:id=>assetForm(id),fixedForm:id=>fixedForm(id),goalForm:id=>goalForm(id),txForm:id=>txForm(id),mshift:(_,e)=>{cur=shiftM(cur,+e.dataset.d);render()},openCat:id=>{openCat=openCat===id?null:id;render()},pay,unpay,saveTx,delTx,saveAsset,saveFixed,saveGoal,close,txType:id=>txFormSwitch(id),
- delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},usableOpen,planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divUnrecv,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
+ delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},usableOpen,planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divHist,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a){const f=A[a.dataset.a];if(f)f(a.dataset.id||undefined,a);return}
  const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render();scrollTo(0,0)}});
 document.addEventListener('change',e=>{
  if(e.target.id==='imp'&&e.target.files[0]){importFile(e.target.files[0]);e.target.value=''}
  if(e.target.dataset.ch==='assetType'){assetForm(document.querySelector('[data-a=saveAsset]').dataset.id||undefined,{type:v('a_type'),name:(['네이버 애드포스트','레뷰포인트'].includes(v('a_name'))?'':v('a_name')),value:''})}
  if(e.target.dataset.ch==='incKind'){const k=inkOf(v('i_kind'));document.getElementById('i_pas').value=k[2]?'1':'0';if(!v('i_name').trim())document.getElementById('i_name').value=v('i_kind')==='월배당'?'월배당':v('i_kind')}
+ if(e.target.dataset.ch==='drPick'){const d=S.divs.find(x=>x.id===v('dr_id'));if(d)document.getElementById('dr_amt').placeholder='예상 '+Math.round(divNet(d)).toLocaleString()+'원'}
  if(e.target.dataset.ch==='curRate'){const r=CUR.find(x=>x[0]===v('a_cur'));if(r)document.getElementById('a_rate').value=r[1]}});
 $('#fab').onclick=()=>txForm();
 init();
