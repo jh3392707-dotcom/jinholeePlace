@@ -28,7 +28,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .fab{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--blue);border:0;font-size:32px;color:#fff;box-shadow:0 4px 14px #0006;z-index:6;cursor:pointer}
 .mnav{display:flex;justify-content:center;align-items:center;gap:14px;font-weight:800;font-size:20px;margin-bottom:6px}.mnav span{padding:2px 12px;color:var(--sub);font-size:22px;cursor:pointer}
 .sheet-bg{position:fixed;inset:0;background:#000a;z-index:10;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--card);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow:auto}
+.sheet{overscroll-behavior:contain;background:var(--card);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow:auto}
 .sheet label{display:block;font-size:14px;color:var(--sub);margin:8px 0 3px}
 .sheet input,.sheet select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:17px;outline:0}
 .seg{display:flex;background:var(--card2);border-radius:8px;padding:2px}.seg div{flex:1;text-align:center;padding:9px 6px;font-size:16px;border-radius:6px;color:var(--sub);font-weight:600;cursor:pointer}.seg .on{background:var(--blue);color:#fff}
@@ -485,7 +485,14 @@ async function exp(){try{await dlCap.save({filename:'gagyebu-'+ymd(today())+'.js
 async function importFile(f){try{const d=JSON.parse(await f.text());if(!d.tx&&!d.assets)throw 0;let n=0;for(const c of COLS)for(const o of d[c]||[]){if(!o.id)o.id=uid();await put(c,o);n++}toast(n+'건 복원됨')}catch(e){toast('올바른 백업 파일이 아니에요')}}
 
 /* ---------- 입력 시트 ---------- */
-function sheet(h){close();const e=document.createElement('div');e.className='sheet-bg';e.innerHTML=`<div class="sheet">${h}</div>`;e.onclick=ev=>{if(ev.target===e)e.remove()};document.body.appendChild(e);return e}
+/* 키보드가 올라와도 입력창이 가려지지 않게: 시트를 '보이는 화면(visualViewport)'에 맞춤 */
+function fitSheet(){const bg=document.querySelector('.sheet-bg');if(!bg)return;const vv=window.visualViewport;if(!vv)return;
+ bg.style.inset='auto';bg.style.left=vv.offsetLeft+'px';bg.style.top=vv.offsetTop+'px';bg.style.width=vv.width+'px';bg.style.height=vv.height+'px';
+ const sh=bg.firstChild;if(sh)sh.style.maxHeight=Math.max(200,vv.height-12)+'px';
+ const f=document.activeElement;if(f&&bg.contains(f)&&/^(INPUT|SELECT|TEXTAREA)$/.test(f.tagName))f.scrollIntoView({block:'center'})}
+try{if(window.visualViewport){visualViewport.addEventListener('resize',fitSheet);visualViewport.addEventListener('scroll',fitSheet)}}catch(e){}
+document.addEventListener('focusin',e=>{if(e.target.closest&&e.target.closest('.sheet')){setTimeout(fitSheet,50);setTimeout(()=>e.target.scrollIntoView&&e.target.scrollIntoView({block:'center',behavior:'smooth'}),350)}});
+function sheet(h){close();const e=document.createElement('div');e.className='sheet-bg';e.innerHTML=`<div class="sheet">${h}</div>`;e.onclick=ev=>{if(ev.target===e)e.remove()};document.body.appendChild(e);fitSheet();return e}
 const close=()=>document.querySelector('.sheet-bg')?.remove();
 const v=id=>document.getElementById(id).value;
 const opts=(l,sel)=>l.map(x=>`<option ${x===sel?'selected':''}>${x}</option>`).join('');
