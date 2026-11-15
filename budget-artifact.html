@@ -47,6 +47,23 @@ textarea{width:100%;height:150px;background:var(--card2);border:1px solid var(--
 .sync{font-size:12px;color:var(--sub);text-align:right;margin-bottom:4px;cursor:pointer}.sync.bad{color:var(--red)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));font-size:15px;max-width:92vw;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:20px;z-index:20;font-weight:600}
 .t{fill:var(--sub)}.gl{stroke:var(--line)}
+
+/* ===== 폴드7: 접힘(커버, 좁고 긴 화면) / 펼침(안쪽, 넓고 정사각형에 가까운 화면) ===== */
+@media (max-width:430px){body{padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}.card{padding:8px 11px}.big{font-size:27px}}
+body.wide{font-size:15px;padding-left:calc(88px + env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-block:8px 14px}
+body.wide #app{max-width:none;column-count:2;column-gap:10px}
+body.wide.xl #app{column-count:3}
+body.wide #app>*{break-inside:avoid}
+body.wide #app>h2,body.wide #app>.sync,body.wide #app>.mnav,body.wide #app>.seg,body.wide #app>.alert,body.wide #app>.card:has(textarea),body.wide #app>.card:has(.tl){column-span:all}
+body.wide #app>.btn{column-span:all}
+body.wide #app>.card,body.wide #app>.goal{margin-bottom:8px}
+body.wide .big{font-size:26px}body.wide .mid{font-size:18px}
+body.wide .nav{top:0;bottom:0;right:auto;left:0;width:calc(80px + env(safe-area-inset-left,0px));flex-direction:column;justify-content:center;gap:6px;border-top:0;border-right:1px solid var(--line);padding:0 0 0 env(safe-area-inset-left,0px)}
+body.wide .nav div{flex:none;padding:10px 0}
+body.wide .fab{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+body.wide .sheet-bg{align-items:center}body.wide .sheet{border-radius:18px;max-width:520px;max-height:90vh}
+body.wide .goal .img{height:150px}
+body.wide .toast{bottom:80px}
 </style>
 <div id="app"></div>
 <button class="fab" id="fab" aria-label="내역 추가">＋</button>
@@ -72,6 +89,9 @@ const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
 const ym=d=>d.getFullYear()+'-'+pad(d.getMonth()+1);
 const dim=(y,m)=>new Date(y,m+1,0).getDate();
 const DOW='일월화수목금토';
+let layoutMode='auto';try{layoutMode=localStorage.getItem('gagyebu_layout')||'auto'}catch(e){}
+function applyLayout(){const w=innerWidth,wide=layoutMode==='wide'||(layoutMode==='auto'&&w>=600);document.body.classList.toggle('wide',wide);document.body.classList.toggle('xl',wide&&w>=900)}
+addEventListener('resize',applyLayout);applyLayout();
 let tab='home',cur=ym(today()),openCat=null,txType='out',mode='connecting',db=null,assetsCap=null,dlCap=null,sampleCap=null,lastErr='';
 
 /* ---------- 저장/동기화 ----------
@@ -238,7 +258,7 @@ function vHome(){
  <div class="grid2"><div class="card"><div class="sub">${+m.slice(5)}월 지출</div><div class="mid red">${W(sum(L,'out'))}</div></div><div class="card"><div class="sub">${+m.slice(5)}월 수입</div><div class="mid blue">${W(sum(L,'in'))}</div></div></div>
  ${fireMini()}
  <h2>내 자산 <button class="btn sm" data-a="assetForm">＋ 추가</button></h2>
- ${groups.map(g=>g.l.length===1?`<div class="card" data-a="assetForm" data-id="${g.l[0].id}"><div class="row sp"><div class="grow ell"><span style="font-size:22px">${g.ic}</span> ${esc(g.l[0].name)}${g.l[0].amt!=null&&g.l[0].rate!=null?`<div class="sub">${esc(g.l[0].cur||'')} ${g.l[0].amt.toLocaleString()} × ${g.l[0].rate.toLocaleString()}원</div>`:''}<div class="sub">${g.n}</div></div><div class="num mid">${W(val(g.l[0]))}</div></div></div>`:`<div class="card"><div class="row sp sub"><span>${g.ic} ${g.n}</span><span class="num">${W(g.l.reduce((s,a)=>s+val(a),0))}</span></div>${g.l.map(a=>`<div class="item" data-a="assetForm" data-id="${a.id}"><div class="grow ell">${esc(a.name)}${a.amt!=null&&a.rate!=null?`<div class="sub">${esc(a.cur||'')} ${a.amt.toLocaleString()} × ${a.rate.toLocaleString()}원</div>`:''}</div><div class="num">${W(val(a))}</div></div>`).join('')}</div>`).join('')||'<div class="card sub">주식·환테크·코인·현금·통장·애드포스트·레뷰포인트를 ＋ 추가로 입력하세요. 직접 입력한 값이 폰과 PC에 동기화돼요.</div>'}
+ ${groups.map(g=>g.l.length===1?`<div class="card" data-a="assetForm" data-id="${g.l[0].id}"><div class="row sp"><div class="grow ell"><span style="font-size:22px">${g.ic}</span> ${esc(g.l[0].name)}${g.l[0].name.replace(/\s/g,'').includes(g.n.replace(/\s/g,''))?'':` <span class="sub">${g.n}</span>`}${g.l[0].amt!=null&&g.l[0].rate!=null?`<div class="sub">${esc(g.l[0].cur||'')} ${g.l[0].amt.toLocaleString()} × ${g.l[0].rate.toLocaleString()}원</div>`:''}</div><div class="num mid">${W(val(g.l[0]))}</div></div></div>`:`<div class="card"><div class="row sp sub"><span>${g.ic} ${g.n}</span><span class="num">${W(g.l.reduce((s,a)=>s+val(a),0))}</span></div>${g.l.map(a=>`<div class="item" data-a="assetForm" data-id="${a.id}"><div class="grow ell">${esc(a.name)}${a.amt!=null&&a.rate!=null?`<div class="sub">${esc(a.cur||'')} ${a.amt.toLocaleString()} × ${a.rate.toLocaleString()}원</div>`:''}</div><div class="num">${W(val(a))}</div></div>`).join('')}</div>`).join('')||'<div class="card sub">주식·환테크·코인·현금·통장·애드포스트·레뷰포인트를 ＋ 추가로 입력하세요. 직접 입력한 값이 폰과 PC에 동기화돼요.</div>'}
  <h2>목표 진행</h2>${S.goals.map(g=>goalMini(g,T.net)).join('')}`;
 }
 const goalMini=(g,net)=>{const p=Math.max(0,Math.min(100,net/g.target*100));return `<div class="card" data-tab="goal"><div class="row sp"><span>${g.emoji} ${esc(g.name)}</span><b>${p.toFixed(1)}%</b></div><div class="pbar" style="margin-top:6px"><i style="width:${p}%"></i></div></div>`};
@@ -450,6 +470,7 @@ function vReport(){
  ${adviceLive?`<div class="advice" id="advLive">${esc(adviceLive)}</div>`:''}
  <textarea id="wp" readonly>${esc(weekPrompt())}</textarea><div class="sub" style="margin-top:4px">${sampleCap?'버튼을 누르면 Claude가 바로 조언하고, 결과는 아래에 저장돼요. 복사해서 Claude 대화에 붙여넣어도 됩니다.':'요약을 복사해 Claude 대화에 붙여넣으면 조언을 받을 수 있어요.'}</div></div>
  ${adv.map(a=>`<div class="card"><div class="sub" style="margin-bottom:4px">${esc(a.id)} 주 조언 · ${esc(a.at||'')}</div><div class="advice">${esc(a.text)}</div></div>`).join('')}
+ <h2>화면 모드 (폴드7)</h2><div class="card"><div class="seg"><div class="${layoutMode==='auto'?'on':''}" data-a="layout" data-id="auto">자동</div><div class="${layoutMode==='narrow'?'on':''}" data-a="layout" data-id="narrow">접힘형</div><div class="${layoutMode==='wide'?'on':''}" data-a="layout" data-id="wide">펼침형</div></div><div class="sub" style="margin-top:6px">자동: 폴드를 접으면 세로 한 줄, 펼치면 왼쪽 메뉴 + 2~3단 카드로 바뀌어요. 화면 너비 600px 이상이 펼침형입니다.</div></div>
  <h2>데이터</h2><div class="card row" style="flex-wrap:wrap">${dlCap?'<button class="btn g sm" data-a="exp">백업 내보내기</button>':''}<button class="btn g sm" data-a="impPick">백업 복원</button><button class="btn r sm" data-a="resetAsk">전체 초기화</button><input id="imp" type="file" accept=".json" hidden></div>`;
 }
 async function getAdvice(){
@@ -573,7 +594,7 @@ function restoreGo(i){takeLocalSnapForce();const n=missingFrom(RST[+i].o,true).l
 
 /* ---------- 이벤트 ---------- */
 const A={assetForm:id=>assetForm(id),fixedForm:id=>fixedForm(id),goalForm:id=>goalForm(id),txForm:id=>txForm(id),mshift:(_,e)=>{cur=shiftM(cur,+e.dataset.d);render()},openCat:id=>{openCat=openCat===id?null:id;render()},pay,unpay,saveTx,delTx,saveAsset,saveFixed,saveGoal,close,txType:id=>txFormSwitch(id),
- delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},planForm,savePlan,divForm,divMo,saveDiv,divRecvForm,divRecvGo,divUnrecv,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
+ delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divUnrecv,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a){const f=A[a.dataset.a];if(f)f(a.dataset.id||undefined,a);return}
  const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render();scrollTo(0,0)}});
 document.addEventListener('change',e=>{
