@@ -538,17 +538,12 @@ function assetForm(id,keep){
  const a=keep||S.assets.find(x=>x.id===id)||{type:'통장',name:'',value:''};if(!a.name&&(a.type==='네이버 애드포스트'||a.type==='레뷰포인트'))a.name=a.type;const calc=a.type==='환테크'||a.type==='코인';
  sheet(`<label>종류</label><select id="a_type" data-ch="assetType">${opts(ATYPE.map(x=>x[0]),a.type)}</select>
  <label>이름</label><input id="a_name" value="${esc(a.name)}" placeholder="${a.type==='네이버 애드포스트'?'네이버 애드포스트':a.type==='레뷰포인트'?'레뷰 포인트':'예: 삼성전자, 달러 예금, 비트코인, 토스뱅크'}">
- ${a.type==='환테크'?`<label>통화</label><select id="a_cur" data-ch="curRate">${opts(CUR.map(x=>x[0]),a.cur||'USD')}</select><label>외화 금액</label><input id="a_amt" type="number" step="any" value="${a.amt??''}"><label>환율 (원)</label><input id="a_rate" type="number" step="any" value="${a.rate??1400}">`:
-  a.type==='코인'?`<label>코인 종류</label><input id="a_cur" value="${esc(a.cur||'')}" placeholder="BTC"><label>보유 수량 (모르면 비워두고 아래 평가금액만)</label><input id="a_amt" type="number" step="any" value="${a.amt??''}"><label>현재가 (원/개)</label><input id="a_rate" type="number" step="any" value="${a.rate??''}"><label>평가금액 (수량·현재가를 비웠을 때)</label><input id="a_val" type="number" inputmode="numeric" value="${id&&!keep&&a.amt==null?Math.round(val(a)):(a.value??'')}">`:
-  `<label>${a.type==='주식'?'평가금액 (원)':a.type==='네이버 애드포스트'?'애드포스트 잔액/미정산 수익 (원)':a.type==='레뷰포인트'?'레뷰 포인트 (1P=1원 기준, 원)':'금액 (원)'}</label><input id="a_val" type="number" inputmode="numeric" value="${id&&!keep&&a.amt==null?Math.round(val(a)):(a.value??'')}">`}
+ <label>${a.type==='주식'?'평가금액 (원)':a.type==='환테크'?'평가금액 (원화로 환산한 금액)':a.type==='코인'?'평가금액 (원)':a.type==='네이버 애드포스트'?'애드포스트 잔액/미정산 수익 (원)':a.type==='레뷰포인트'?'레뷰 포인트 (1P=1원 기준, 원)':'금액 (원)'}</label><input id="a_val" type="number" inputmode="numeric" value="${id&&!keep?Math.round(val(a)):(a.value??'')}">
  <div class="row" style="margin-top:12px">${id?`<button class="btn r" data-a="delAsset" data-id="${id}">삭제</button>`:''}<button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="saveAsset" data-id="${id||''}">저장</button></div>`);
 }
 function saveAsset(id){const type=v('a_type'),name=v('a_name').trim();if(!name)return toast('이름을 입력하세요');
- const o={id:id||uid(),type,name};
- if(type==='환테크'){o.cur=v('a_cur');o.amt=+v('a_amt');o.rate=+v('a_rate');if(!(o.amt>=0&&o.rate>0))return toast('금액과 환율을 확인하세요')}
- else if(type==='코인'){o.cur=v('a_cur').trim();const q=v('a_amt'),r=v('a_rate');if(q!==''&&r!==''){o.amt=+q;o.rate=+r}else{o.value=+v('a_val')-(id?linkSum(id):0);if(!(+v('a_val')>=0))return toast('평가금액을 입력하세요')}}
- else{o.value=+v('a_val')-(id?linkSum(id):0);if(!(+v('a_val')>=0))return toast('금액을 입력하세요')}
- put('assets',o);close();toast('저장됨')}
+ const val0=+v('a_val');if(!(val0>=0)||v('a_val')==='')return toast('금액을 입력하세요');
+ const o={id:id||uid(),type,name,value:val0-(id?linkSum(id):0)};put('assets',o);close();toast('저장됨')}
 function fixedForm(id){
  const f=S.fixed.find(x=>x.id===id)||{name:'',amt:'',day:25,cat:'주거·통신',acct:''};
  sheet(`<label>이름</label><input id="x_name" value="${esc(f.name)}" placeholder="예: 월세, 통신비, 보험"><label>금액</label><input id="x_amt" type="number" inputmode="numeric" value="${f.amt}">
