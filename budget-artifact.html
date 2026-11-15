@@ -70,7 +70,7 @@ body.wide .toast{bottom:80px}
 <button class="fab" id="fab" aria-label="내역 추가">＋</button>
 <div class="nav" id="nav"></div>
 <script>
-const OUT=[['선물','🎁','#3b82f6'],['취미·여가','🎮','#1f8a5f'],['이체','💸','#9a6424'],['식비','🍚','#e0645a'],['카페·간식','☕','#b08968'],['보험·세금·기타금융','🧾','#8b7fd6'],['교통·자동차','🚌','#4aa8c9'],['쇼핑','🛍️','#d96fa5'],['편의점·마트·잡화','🏪','#c9b24a'],['의료·건강·피트니스','💊','#59b86d'],['주거·통신','🏠','#6d8bb8'],['기타','📦','#7d7d88']];
+const OUT=[['선물','🎁','#3b82f6'],['취미·여가','🎮','#1f8a5f'],['복권·토토','🎰','#e8b04a'],['이체','💸','#9a6424'],['식비','🍚','#e0645a'],['카페·간식','☕','#b08968'],['보험·세금·기타금융','🧾','#8b7fd6'],['교통·자동차','🚌','#4aa8c9'],['쇼핑','🛍️','#d96fa5'],['의료·건강·피트니스','💊','#59b86d'],['주거·통신','🏠','#6d8bb8'],['기타','📦','#7d7d88']];
 const IN=[['급여','💼'],['부수입','🧩'],['용돈','🎀'],['이자·배당','🌱'],['환급·기타','💰']];
 const ATYPE=[['현금','💵','#2fb67c'],['통장','🏦','#4c8dff'],['주식','📈','#ff8a4c'],['환테크','💱','#c07af0'],['코인','🪙','#f2c230'],['네이버 애드포스트','💚','#03c75a'],['레뷰포인트','🎟️','#ff6b6b']];
 const INK=[['월배당','📈',true,'이자·배당'],['급여','💼',false,'급여'],['애드포스트','💚',true,'부수입'],['레뷰','🎟️',false,'부수입'],['기타수입','💰',false,'환급·기타']];
@@ -237,6 +237,9 @@ const totals=()=>{let as=0;S.assets.forEach(a=>as+=val(a));return{as,net:as}};
 const monthTx=m=>S.tx.filter(t=>t.date.startsWith(m));
 const sum=(l,ty)=>l.filter(t=>t.type===ty).reduce((s,t)=>s+t.amt,0);
 const shiftM=(m,d)=>{const[y,mm]=m.split('-').map(Number);return ym(new Date(y,mm-1+d,1))};
+const catStats=l=>{const o={};l.filter(t=>t.type==='out').forEach(t=>{const e=o[t.cat]||(o[t.cat]=[t.cat,0,0]);e[1]+=t.amt;e[2]++});return Object.values(o)};
+let catSort='amt';
+const catUse=()=>{const c={};S.tx.forEach(t=>c[t.type+t.cat]=(c[t.type+t.cat]||0)+1);return c};
 const catSum=l=>{const o={};l.filter(t=>t.type==='out').forEach(t=>o[t.cat]=(o[t.cat]||0)+t.amt);return Object.entries(o).sort((a,b)=>b[1]-a[1])};
 const nextDue=day=>{const t=today();let y=t.getFullYear(),m=t.getMonth();let d=new Date(y,m,Math.min(day,dim(y,m)));if(d<t){m++;d=new Date(y,m,Math.min(day,dim(y,m)))}return d};
 const dday=d=>Math.round((d-today())/864e5);
@@ -291,13 +294,13 @@ function spark(m){
  return `<svg viewBox="0 0 100 38" preserveAspectRatio="none" style="width:120px;height:50px"><polyline points="${pts(b,n)}" fill="none" stroke="#777" stroke-width="1.5" vector-effect="non-scaling-stroke"/><polyline points="${pts(a,last)}" fill="none" stroke="#ff5a6a" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`}
 function vTx(){
  const L=monthTx(cur),o=sum(L,'out'),i=sum(L,'in'),po=sum(monthTx(shiftM(cur,-1)),'out'),diff=o-po;
- const cs=catSum(L),fx=S.fixed.reduce((s,f)=>s+f.amt,0);
+ const cst=catStats(L).sort((x,y)=>catSort==='cnt'?(y[2]-x[2]||y[1]-x[1]):(y[1]-x[1]||y[2]-x[2])),cs=cst.map(x=>[x[0],x[1]]),fx=S.fixed.reduce((s,f)=>s+f.amt,0);
  const days=[...new Set(L.map(t=>t.date))].sort().reverse();
  return `<div class="mnav"><span data-a="mshift" data-d="-1">◀</span>${+cur.slice(5)}월 <small class="sub">${cur.slice(0,4)}</small><span data-a="mshift" data-d="1">▶</span></div>
  <div class="grid2"><div><div class="sub">지출</div><div class="big">${W(o)}</div></div><div><div class="sub">수입</div><div class="big">${W(i)}</div></div></div>
  <div class="card row sp" style="margin-top:10px"><div><div style="font-size:17px;font-weight:700">지난달보다 <span class="${diff>0?'red':'blue'}">${W(Math.abs(diff))}</span> ${diff>0?'더':'덜'} 썼어요</div><div class="sub">━ ${+shiftM(cur,-1).slice(5)}월 &nbsp;<span class="red">━ ${+cur.slice(5)}월</span></div></div>${spark(cur)}</div>
- <h2>카테고리별 소비</h2><div class="card">${stack(cs.map(([n,v])=>[v,ocat(n)[2]]))}
- ${cs.map(([n,v])=>`<div class="item" data-a="openCat" data-id="${esc(n)}"><span class="dot" style="background:${ocat(n)[2]}"></span><div class="grow">${ocat(n)[1]} ${n}</div><div class="num">${W(v)}</div><span class="sub">${openCat===n?'⌄':'›'}</span></div>${openCat===n?L.filter(t=>t.type==='out'&&t.cat===n).sort((a,b)=>b.date.localeCompare(a.date)).map(t=>`<div class="row sub" style="padding:3px 0 3px 18px" data-a="txForm" data-id="${t.id}"><span>${t.date.slice(5)}</span><span class="grow ell">${esc(t.memo)}</span><span class="num">${W(t.amt)}</span></div>`).join(''):''}`).join('')||'<div class="sub" style="padding:8px 0">이번 달 지출 내역이 없어요.</div>'}</div>
+ <h2>카테고리별 소비 <span class="seg" style="width:150px"><div class="${catSort==='amt'?'on':''}" data-a="catSort" data-id="amt" style="padding:5px 4px;font-size:13px">금액순</div><div class="${catSort==='cnt'?'on':''}" data-a="catSort" data-id="cnt" style="padding:5px 4px;font-size:13px">횟수순</div></span></h2><div class="card">${stack(cs.map(([n,v])=>[v,ocat(n)[2]]))}
+ ${cst.map(([n,v,c])=>`<div class="item" data-a="openCat" data-id="${esc(n)}"><span style="width:36px;height:36px;border-radius:50%;background:${ocat(n)[2]}33;border:2px solid ${ocat(n)[2]};display:flex;align-items:center;justify-content:center;font-size:20px;flex:none">${ocat(n)[1]}</span><div class="grow">${n}<div class="sub">${c}건${o?` · ${Math.round(v/o*100)}%`:''}</div></div><div class="num">${W(v)}</div><span class="sub">${openCat===n?'⌄':'›'}</span></div>${openCat===n?L.filter(t=>t.type==='out'&&t.cat===n).sort((a,b)=>b.date.localeCompare(a.date)).map(t=>`<div class="row sub" style="padding:3px 0 3px 18px" data-a="txForm" data-id="${t.id}"><span>${t.date.slice(5)}</span><span class="grow ell">${esc(t.memo)}</span><span class="num">${W(t.amt)}</span></div>`).join(''):''}`).join('')||'<div class="sub" style="padding:8px 0">이번 달 지출 내역이 없어요.</div>'}</div>
  <div class="card row sp" data-tab="fixed"><div><div class="sub">고정지출 (월)</div><div class="mid">${W(fx)}</div></div><span class="sub">${S.fixed.length}건 ›</span></div>
  <h2>전체 내역</h2>${days.map(d=>{const dt=parse(d),l=L.filter(t=>t.date===d);return `<div class="card"><div class="row sp sub"><span>${+d.slice(8)}일 (${DOW[dt.getDay()]})</span><span>${sum(l,'in')?'<span class="blue">+'+W(sum(l,'in'))+'</span> ':''}${sum(l,'out')?'-'+W(sum(l,'out')):''}</span></div>${l.map(t=>`<div class="item" data-a="txForm" data-id="${t.id}"><div style="font-size:24px">${t.type==='out'?ocat(t.cat)[1]:(IN.find(x=>x[0]===t.cat)||[0,'💰'])[1]}</div><div class="grow"><div class="ell">${esc(t.memo||t.cat)}</div><div class="sub">${t.cat}${t.acct?' · '+esc(t.acct):''}</div></div><div class="num ${t.type==='in'?'blue':''}">${t.type==='in'?'+':'-'}${W(t.amt)}</div></div>`).join('')}</div>`}).join('')||'<div class="card sub">내역이 없어요. ＋ 버튼으로 추가하세요.</div>'}`;
 }
@@ -531,12 +534,13 @@ function sheet(h){close();const e=document.createElement('div');e.className='she
 const close=()=>document.querySelector('.sheet-bg')?.remove();
 const v=id=>document.getElementById(id).value;
 const opts=(l,sel)=>l.map(x=>`<option ${x===sel?'selected':''}>${x}</option>`).join('');
+function catOpts(cats,sel){const u=catUse(),ty=txType,list=cats.slice().sort((a,b)=>(u[ty+b]||0)-(u[ty+a]||0));const em=n=>ty==='out'?ocat(n)[1]:(IN.find(x=>x[0]===n)||[0,'💰'])[1];const pick=cats.includes(sel)?sel:list[0];return list.map(n=>`<option value="${n}" ${n===pick?'selected':''}>${em(n)} ${n}${u[ty+n]?` (${u[ty+n]}회)`:''}</option>`).join('')}
 function txForm(id,keep){
  const t=keep||S.tx.find(x=>x.id===id)||{date:ymd(today()),type:txType,cat:'',amt:'',memo:'',acct:''};txType=t.type;
  const cats=txType==='out'?OUT.map(x=>x[0]):IN.map(x=>x[0]);
  sheet(`<div class="seg"><div class="${txType==='out'?'on':''}" data-a="txType" data-id="out">지출</div><div class="${txType==='in'?'on':''}" data-a="txType" data-id="in">수입</div></div>
  <label>금액</label><input id="f_amt" type="number" inputmode="numeric" value="${t.amt}">
- <label>분류</label><select id="f_cat">${opts(cats,cats.includes(t.cat)?t.cat:cats[txType==='out'?3:0])}</select>
+ <label>분류 (자주 쓰는 순)</label><select id="f_cat">${catOpts(cats,t.cat)}</select>
  <label>날짜</label><input id="f_date" type="date" value="${t.date}">
  <label>내용</label><input id="f_memo" value="${esc(t.memo)}" placeholder="예: 점심, 급여">
  <label>결제수단/계좌</label><input id="f_acct" value="${esc(t.acct)}" placeholder="예: 신한카드, 토스뱅크">
@@ -632,7 +636,7 @@ function restoreGo(i){takeLocalSnapForce();const n=missingFrom(RST[+i].o,true).l
 
 /* ---------- 이벤트 ---------- */
 const A={assetForm:id=>assetForm(id),fixedForm:id=>fixedForm(id),goalForm:id=>goalForm(id),txForm:id=>txForm(id),mshift:(_,e)=>{cur=shiftM(cur,+e.dataset.d);render()},openCat:id=>{openCat=openCat===id?null:id;render()},pay,unpay,saveTx,delTx,saveAsset,saveFixed,saveGoal,close,txType:id=>txFormSwitch(id),
- delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},usableOpen,planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divHist,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
+ delAsset:id=>{del('assets',id);close()},delFixed:id=>{del('fixed',id);close()},delGoal:id=>{del('goals',id);close()},noImg:()=>{gImg='';toast('저장하면 사진이 제거돼요')},syncMenu,syncNow,pullServerAsk,pullServerGo,pushServerAsk,pushServerGo,guardAccept,restoreOpen,restoreView,restoreGo,getAdvice,copyP,exp,resetAsk,incSub:id=>{incSub=id;render()},usableOpen,catSort:id=>{catSort=id;render()},planForm,savePlan,layout:id=>{layoutMode=id;try{localStorage.setItem('gagyebu_layout',id)}catch(e){}applyLayout();render()},divForm,divMo,saveDiv,divRecvForm,divRecvGo,divHist,delDiv:id=>{del('divs',id);close()},recv,unrecv,incomeForm,saveIncome,fireForm,saveFire,delIncome:id=>{del('income',id);close()},resetGo,impPick:()=>$('#imp').click()};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a){const f=A[a.dataset.a];if(f)f(a.dataset.id||undefined,a);return}
  const t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;render();scrollTo(0,0)}});
 document.addEventListener('change',e=>{
