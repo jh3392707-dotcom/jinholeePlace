@@ -117,6 +117,48 @@ tuber:{n:'유튜버',e:'📹',req:{cha:60,soc:40},edu:0,base:2000,kind:'var',lo:
 star:{n:'연예인',e:'🎤',req:{cha:85},edu:0,base:4000,kind:'var',lo:.4,hi:2,st:6,hp:1,ranks:['연습생','신인','스타','국민스타'],d:'뜨면 월드스타, 못 뜨면...'},
 athlete:{n:'프로 운동선수',e:'🏅',req:{str:80},edu:0,base:5000,kind:'var',lo:.8,hi:1.3,st:4,hp:1,ranks:['신인','주전','에이스','레전드'],d:'전성기는 짧다'},
 ceo:{n:'창업가',e:'🚀',req:{soc:45},edu:0,base:1500,kind:'var',lo:.3,hi:2.5,st:7,hp:0,ranks:['예비창업자','스타트업 대표','중견기업 대표','회장'],d:'대박 or 쪽박'},
+soldier:{n:'직업군인',e:'🎖️',req:{str:55,chr:45},edu:0,base:3600,g:0.035,st:4,hp:0,ranks:['하사','중사','상사','원사'],d:'규율과 책임. 간부로 군에 남는다'},
+pharmacist:{n:'약사',e:'💊',req:{int:75},edu:2,base:5200,g:0.04,st:3,hp:0,ranks:['근무약사','관리약사','약국 대표'],d:'안정적인 전문직'},
+nurse:{n:'간호사',e:'💉',req:{int:55,chr:55},edu:1,base:3800,g:0.04,st:6,hp:0,ranks:['신규간호사','주임','수간호사'],d:'생명을 돌보는 직업. 교대근무는 힘들다'},
+pt:{n:'물리치료사',e:'🦴',req:{int:55,str:40},edu:1,base:3700,g:0.035,st:3,hp:1,ranks:['물리치료사','수석','센터장'],d:'몸을 고치는 사람. 친구 경연이처럼!'},
+coordinator:{n:'병원 코디네이터',e:'🏥',req:{cha:45,chr:45},edu:1,base:3300,g:0.035,st:3,hp:0,ranks:['코디네이터','팀장','실장'],d:'병원의 얼굴. 친구 찬호처럼!'},
+carrnd:{n:'자동차 연구원',e:'🚗',req:{int:70},edu:2,base:5300,g:0.045,st:4,hp:0,ranks:['연구원','선임','책임','수석'],d:'신차를 만든다. 친구 세민이처럼!'},
+architect:{n:'건축가',e:'📐',req:{int:65},edu:2,base:4600,g:0.04,st:5,hp:0,ranks:['사원','설계사','건축사','대표'],d:'도시의 스카이라인을 그린다'},
+accountant:{n:'회계사',e:'🧮',req:{int:75},edu:2,base:5500,g:0.04,st:5,hp:0,ranks:['스태프','시니어','매니저','파트너'],d:'숫자의 신. 결산철엔 야근'},
+banker:{n:'은행원',e:'🏦',req:{int:60},edu:1,base:4200,g:0.035,st:4,hp:0,ranks:['행원','대리','지점장'],d:'차분한 금융맨'},
+professor:{n:'교수',e:'👨‍🏫',req:{int:85},edu:3,base:6000,g:0.04,st:3,hp:1,ranks:['강사','조교수','부교수','정교수'],d:'학문의 길. 존경은 덤'},
+scientist:{n:'연구원(과학자)',e:'🔬',req:{int:75},edu:2,base:5000,g:0.04,st:3,hp:1,ranks:['연구원','선임연구원','책임연구원','소장'],d:'세상을 바꾸는 발견을 꿈꾼다'},
+analyst:{n:'데이터 분석가',e:'📊',req:{int:65},edu:1,base:4800,g:0.05,st:4,hp:0,ranks:['주니어','시니어','리드','헤드'],d:'데이터가 곧 돈'},
+gamedev:{n:'게임 개발자',e:'🎮',req:{int:60},edu:1,base:4500,g:0.045,st:6,hp:0,ranks:['신입','대리','리드','디렉터'],d:'크런치 모드는 전통'},
+ai:{n:'AI 엔지니어',e:'🤖',req:{int:80},edu:2,base:6500,g:0.06,st:6,hp:0,ranks:['엔지니어','시니어','리서처','CTO'],d:'지금 가장 뜨거운 직업'},
+designer:{n:'디자이너',e:'🎨',req:{int:40,cha:50},edu:0,base:3400,g:0.04,st:4,hp:1,ranks:['주니어','디자이너','리드','디렉터'],d:'감각으로 먹고산다'},
+anchor:{n:'아나운서',e:'🎙️',req:{cha:70,int:55},edu:2,base:5000,g:0.04,st:5,hp:0,ranks:['신입','앵커','메인앵커'],d:'또박또박, 카메라 앞에서'},
+reporter:{n:'기자',e:'📰',req:{int:60,soc:50},edu:2,base:4000,g:0.035,st:6,hp:0,ranks:['수습','기자','차장','부장'],d:'특종을 쫓는 사람'},
+judge:{n:'판사·검사',e:'🔨',req:{int:85,chr:45},edu:3,base:6000,g:0.04,st:6,hp:0,ranks:['판사/검사','부장','고위직'],d:'법의 최전선'},
+diplomat:{n:'외교관',e:'🌐',req:{int:78,cha:50},edu:3,base:5500,g:0.04,st:5,hp:0,ranks:['사무관','서기관','참사관','대사'],d:'세계를 무대로'},
+pilot:{n:'파일럿',e:'✈️',req:{int:75,str:60},edu:2,base:8000,g:0.05,st:5,hp:0,ranks:['부기장','기장','교관 기장'],d:'하늘 위의 억대 연봉'},
+crew:{n:'승무원',e:'🛫',req:{cha:60},edu:1,base:3800,g:0.03,st:5,hp:1,ranks:['승무원','선임','사무장'],d:'세계를 누비는 서비스 전문가'},
+taxi:{n:'택시·배달 기사',e:'🚕',req:{str:30},edu:0,base:3200,g:0.01,st:3,hp:1,ranks:['기사'],d:'자유로운 도로 위. 수입은 몸으로 번다'},
+courier:{n:'택배 기사',e:'📦',req:{str:60},edu:0,base:4000,g:0.02,st:6,hp:0,ranks:['택배기사'],d:'새벽부터 밤까지 뛴다'},
+builder:{n:'건설 현장직',e:'👷',req:{str:65},edu:0,base:4200,g:0.02,st:5,hp:0,ranks:['조공','기공','반장','소장'],d:'땀의 대가는 확실하다'},
+electrician:{n:'전기기사',e:'⚡',req:{int:45,str:40},edu:0,base:4300,g:0.03,st:3,hp:0,ranks:['사원','기사','팀장','대표'],d:'기술이 곧 밥줄'},
+sailor:{n:'선원·어부',e:'⚓',req:{str:65},edu:0,base:4500,g:0.025,st:5,hp:0,ranks:['선원','항해사','선장'],d:'바다 위의 인생'},
+translator:{n:'번역가',e:'🌍',req:{int:60},edu:1,base:3200,g:0.03,st:2,hp:1,ranks:['번역가','선임','전문번역가'],d:'언어를 잇는 사람'},
+tutor:{n:'학원 강사',e:'📚',req:{int:65},edu:1,base:4500,g:0.04,st:5,hp:0,ranks:['강사','부원장','원장'],d:'일타강사가 되면 대박'},
+kinder:{n:'유치원 교사',e:'🧸',req:{chr:55},edu:1,base:2800,g:0.025,st:4,hp:1,ranks:['교사','부장','원장'],d:'아이들의 웃음이 월급'},
+social:{n:'사회복지사',e:'🤝',req:{chr:60},edu:1,base:3000,g:0.025,st:4,hp:1,ranks:['사회복지사','팀장','관장'],d:'도움이 필요한 이웃 곁에'},
+monk:{n:'성직자·수행자',e:'🙏',req:{chr:70},edu:0,base:3000,g:0.01,st:0,hp:2,ranks:['수련자','정식 사제','주지'],d:'마음의 평화를 얻는다'},
+proplayer:{n:'프로게이머',e:'🕹️',req:{int:45,soc:30},edu:0,base:3500,g:0,st:6,hp:1,ranks:['연습생','주전','에이스','레전드'],d:'전성기는 20대. 이후엔 코치나 스트리머',kind:'var',lo:0.5,hi:1.7},
+singer:{n:'가수·뮤지션',e:'🎸',req:{cha:60},edu:0,base:3000,g:0,st:5,hp:1,ranks:['지망생','신인','인기가수','레전드'],d:'히트곡 한 방이면 인생역전',kind:'var',lo:0.4,hi:1.9},
+actor:{n:'배우',e:'🎬',req:{cha:75},edu:0,base:3500,g:0,st:5,hp:1,ranks:['단역','조연','주연','대배우'],d:'한 작품이 모든 걸 바꾼다',kind:'var',lo:0.5,hi:1.9},
+comedian:{n:'개그맨',e:'🎭',req:{cha:65,soc:50},edu:0,base:3000,g:0,st:5,hp:1,ranks:['공채','패널','MC','국민MC'],d:'웃기는 게 직업',kind:'var',lo:0.5,hi:1.8},
+photographer:{n:'사진작가',e:'📷',req:{cha:45},edu:0,base:2800,g:0,st:3,hp:2,ranks:['어시스턴트','작가','대표작가'],d:'세상을 찍는다',kind:'var',lo:0.7,hi:1.4},
+realtor:{n:'부동산 중개사',e:'🏘️',req:{soc:55},edu:0,base:2800,g:0,st:4,hp:0,ranks:['중개보조','중개사','대표'],d:'발품이 돈. 호황과 불황이 갈린다',kind:'var',lo:0.5,hi:1.9},
+insurance:{n:'보험설계사',e:'🛡️',req:{soc:60},edu:0,base:2800,g:0,st:5,hp:0,ranks:['설계사','팀장','지점장'],d:'인맥이 곧 실적',kind:'var',lo:0.6,hi:1.6},
+trainer:{n:'헬스 트레이너',e:'🏋️',req:{str:70,cha:40},edu:0,base:2800,g:0,st:3,hp:2,ranks:['트레이너','팀장','센터 대표'],d:'몸이 곧 명함',kind:'var',lo:0.7,hi:1.5},
+hair:{n:'미용사',e:'✂️',req:{cha:45},edu:0,base:3000,g:0,st:3,hp:1,ranks:['스태프','디자이너','원장'],d:'손님이 늘면 내 가게',kind:'var',lo:0.8,hi:1.4},
+cafe:{n:'카페 사장',e:'☕',req:{soc:40},edu:0,base:2600,g:0,st:4,hp:1,ranks:['알바','점장','사장'],d:'로망과 현실 사이',kind:'var',lo:0.6,hi:1.5},
+shop:{n:'자영업(편의점)',e:'🏪',req:{},edu:0,base:2800,g:0,st:5,hp:0,ranks:['점주'],d:'24시간 내 가게. 쉬는 날은 없다',kind:'var',lo:0.6,hi:1.5},
 mp:{n:'국회의원',e:'🏛️',req:{},edu:0,hid:1,base:15000,g:.02,st:4,hp:0,ranks:['초선','재선','다선'],d:''},
 none:{n:'백수',e:'🛋️',req:{},edu:0,base:0,g:0,st:-2,hp:0,ranks:['무직'],d:'일단 쉬자. 부모님 눈치는 덤'}
 };
@@ -282,10 +324,10 @@ c('친구들과 시간을 보낸다',{soc:5,hap:6,sts:-6},'친구들과의 수�
 c('운동을 시작한다',{str:6,hap:4,sts:-8},'땀 흘리고 나면 마음도 가벼워진다.')],{c:S=>S.flags.discharged,once:1,w:5});
 /* --- 직업 선택 --- */
 Q('jobpick','💼 취업 시즌',S=>`졸업(또는 사회 진출) 시즌이다. 학력: ${EDU[S.edu]}\n재민이의 능력치로 도전 가능한 직업을 골라보자.\n(조건이 부족하면 잠겨 있다)`,S=>{
-return Object.keys(JOBS).filter(id=>!JOBS[id].hid).map(id=>{const j=JOBS[id];const miss=[];
+return Object.keys(JOBS).filter(id=>!JOBS[id].hid).sort((a,b)=>JOBS[b].base-JOBS[a].base).map(id=>{const j=JOBS[id];const miss=[];
 for(const k in j.req)if(S[k]<j.req[k])miss.push(`${LB[k]} ${j.req[k]}`);
 if(S.edu<j.edu)miss.push(`학력 ${EDU[j.edu]}`);
-return Object.assign(c(`${j.e} ${j.n}`,{job:id,q:id==='none'?null:'negot'},id==='none'?'일단 쉬어가기로 했다. 부모님의 눈빛이 따갑다.':`${j.n}(으)로 새 출발!`),{d:`${j.d} · 초봉 ${fmt(j.base)}`+(miss.length?` 🔒 ${miss.join(', ')}`:''),dis:miss.length>0})})});
+return Object.assign(c(`${j.e} ${j.n}`,{job:id,q:id==='none'?null:'negot'},id==='none'?'일단 쉬어가기로 했다. 부모님의 눈빛이 따갑다.':`${j.n}(으)로 새 출발!`),{d:`${j.d} · 초봉 ${fmt(j.base)}`+(miss.length?` 🔒 ${miss.join(', ')}`:''),dis:miss.length>0})}).sort((a,b)=>(a.dis?1:0)-(b.dis?1:0))});
 ev('graduate',23,23,'🎓 졸업과 취업 준비','사회로 나갈 시간. 이제 직업을 정해야 한다.',[c('취업 시장으로!',{q:'jobpick'},'')],{at:23,c:S=>!S.job});
 Q('negot','💰 연봉 협상',S=>`${JOBS[S.job].n} 합격! 제시 연봉은 ${fmt(S.s)}.\n연봉을 어떻게 할까?`,[
 c('제시 연봉에 사인',{},'안정적으로 입사했다.'),
@@ -714,7 +756,7 @@ function getText(e){return typeof e.text==='function'?e.text(S):e.text}
 function tick(n){
   const j=S.job?JOBS[S.job]:JOBS.none;let income=0;
   if(S.job&&S.job!=='none'){
-    if(j.kind==='var'){let lo=j.lo,hi=j.hi;if(S.job==='athlete'&&S.age>=34){lo=.6;hi=.95}
+    if(j.kind==='var'){let lo=j.lo,hi=j.hi;if(S.job==='athlete'&&S.age>=34||S.job==='proplayer'&&S.age>=30||S.job==='singer'&&S.age>=55){lo=.6;hi=.95}
       if(S.job==='tuber'&&S.flags.tuber)lo=.8;
       S.s=Math.round(clamp(S.s*R(lo,hi),S.job==='ceo'?0:600,400000));}
     else S.s=Math.round(S.s*Math.pow(1+j.g,n));
@@ -809,7 +851,7 @@ function calc(){
   let pen=S.over==='bankrupt'?-80:S.over==='health'?-70:S.over==='karoshi'?-90:0;
   const parts=[['재산',wealth,250],['연봉',inc,100],['행복',hap,150],['능력',abil,100],['가족',fam,110],['업적',ach,100],['스트레스',stp,0],['엔딩',pen,0]];
   const total=Math.round(parts.reduce((p,x)=>p+x[1],0));
-  const grade=total>=540?'A':total>=468?'B':'C'; /* 목표 비율 A:B:C = 1:2:7 (자동 플레이 500판 기준 보정) */
+  const grade=total>=558?'A':total>=495?'B':'C'; /* 목표 비율 A:B:C = 1:2:7 (자동 플레이 500판 기준 보정) */
   return {total,grade,parts};
 }
 function ending(){
@@ -838,7 +880,7 @@ function ending(){
 }
 
 /* ===== render ===== */
-const JV={doctor:{c:'#4fc3f7',hat:'⚕️',prop:'🥼'},lawyer:{c:'#b39ddb',hat:'🎩',prop:'⚖️'},dev:{c:'#69f0ae',hat:'🎧',prop:'💻'},big:{c:'#90a4ae',hat:'',prop:'💼'},civil:{c:'#81c784',hat:'',prop:'📋'},teacher:{c:'#ffb74d',hat:'🎓',prop:'🍎'},sme:{c:'#a1887f',hat:'⛑️',prop:'🏭'},police:{c:'#5c6bc0',hat:'🧢',prop:'🚔'},chef:{c:'#ffd54f',hat:'',prop:'🍳'},farmer:{c:'#aed581',hat:'👒',prop:'🌾'},writer:{c:'#f48fb1',hat:'',prop:'✏️'},tuber:{c:'#ef5350',hat:'🎧',prop:'📹'},star:{c:'#ffee58',hat:'🌟',prop:'🎤'},athlete:{c:'#ff7043',hat:'',prop:'🏅'},ceo:{c:'#26c6da',hat:'',prop:'🚀'},mp:{c:'#7e57c2',hat:'',prop:'🏛️'},none:{c:'#bdbdbd',hat:'',prop:'🛋️'}};
+const JV={doctor:{c:'#4fc3f7',hat:'⚕️',prop:'🥼'},lawyer:{c:'#b39ddb',hat:'🎩',prop:'⚖️'},dev:{c:'#69f0ae',hat:'🎧',prop:'💻'},big:{c:'#90a4ae',hat:'',prop:'💼'},civil:{c:'#81c784',hat:'',prop:'📋'},teacher:{c:'#ffb74d',hat:'🎓',prop:'🍎'},sme:{c:'#a1887f',hat:'⛑️',prop:'🏭'},police:{c:'#5c6bc0',hat:'🧢',prop:'🚔'},chef:{c:'#ffd54f',hat:'',prop:'🍳'},farmer:{c:'#aed581',hat:'👒',prop:'🌾'},writer:{c:'#f48fb1',hat:'',prop:'✏️'},tuber:{c:'#ef5350',hat:'🎧',prop:'📹'},star:{c:'#ffee58',hat:'🌟',prop:'🎤'},athlete:{c:'#ff7043',hat:'',prop:'🏅'},ceo:{c:'#26c6da',hat:'',prop:'🚀'},mp:{c:'#7e57c2',hat:'',prop:'🏛️'},soldier:{c:'#6d8b4a',hat:'🪖',prop:'🎖️'},pharmacist:{c:'#4db6ac',hat:'',prop:'💊'},nurse:{c:'#f48fb1',hat:'',prop:'💉'},pt:{c:'#4dd0e1',hat:'',prop:'🦴'},coordinator:{c:'#9fa8da',hat:'',prop:'🏥'},carrnd:{c:'#78909c',hat:'👷',prop:'🚗'},architect:{c:'#a1887f',hat:'👷',prop:'📐'},accountant:{c:'#9ccc65',hat:'',prop:'🧮'},banker:{c:'#5c6bc0',hat:'',prop:'🏦'},professor:{c:'#8d6e63',hat:'🎓',prop:'📖'},scientist:{c:'#26a69a',hat:'🥽',prop:'🔬'},analyst:{c:'#42a5f5',hat:'',prop:'📊'},gamedev:{c:'#ab47bc',hat:'🎧',prop:'🎮'},ai:{c:'#00e5ff',hat:'🤖',prop:'💻'},designer:{c:'#ec407a',hat:'',prop:'🎨'},anchor:{c:'#ef5350',hat:'',prop:'🎙️'},reporter:{c:'#bdbdbd',hat:'',prop:'📰'},judge:{c:'#455a64',hat:'',prop:'🔨'},diplomat:{c:'#7986cb',hat:'',prop:'🌐'},pilot:{c:'#29b6f6',hat:'🧢',prop:'✈️'},crew:{c:'#ff8a65',hat:'🎩',prop:'🛫'},taxi:{c:'#ffee58',hat:'',prop:'🚕'},courier:{c:'#ffa726',hat:'🧢',prop:'📦'},builder:{c:'#ffb300',hat:'👷',prop:'🧱'},electrician:{c:'#fdd835',hat:'⛑️',prop:'⚡'},sailor:{c:'#0288d1',hat:'⚓',prop:'🐟'},translator:{c:'#66bb6a',hat:'',prop:'🌍'},tutor:{c:'#ffca28',hat:'',prop:'📚'},kinder:{c:'#ff80ab',hat:'',prop:'🧸'},social:{c:'#ffab91',hat:'',prop:'🤝'},monk:{c:'#a5d6a7',hat:'',prop:'🙏'},proplayer:{c:'#7c4dff',hat:'🎧',prop:'🕹️'},singer:{c:'#ff4081',hat:'',prop:'🎸'},actor:{c:'#ffd740',hat:'',prop:'🎬'},comedian:{c:'#ff6e40',hat:'🤡',prop:'🎭'},photographer:{c:'#90a4ae',hat:'',prop:'📷'},realtor:{c:'#8bc34a',hat:'',prop:'🏘️'},insurance:{c:'#4fc3f7',hat:'',prop:'🛡️'},trainer:{c:'#ff5252',hat:'',prop:'🏋️'},hair:{c:'#f06292',hat:'',prop:'✂️'},cafe:{c:'#a1887f',hat:'',prop:'☕'},shop:{c:'#4caf50',hat:'',prop:'🏪'},none:{c:'#bdbdbd',hat:'',prop:'🛋️'}};
 /* 상황에 맞는 재민이 사진 고르기: 망함 > 지침 > 직업 > 기분 > 매력 > 기본 */
 function photoKey(){
   if(S.hap<30||net()<0)return 'mess';
@@ -927,7 +969,7 @@ function rankView(){
   <button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
 }
-const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 -8%, 스트레스 ×1.4, 지출 ×1.3)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','직업 16종 + 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 A/B/C(목표 비율 1:2:7) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진 아바타(직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화)','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
+const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 -8%, 스트레스 ×1.4, 지출 ×1.3)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','직업 58종(의사·파일럿·AI엔지니어·직업군인·물리치료사·배우·프로게이머·카페 사장 등) + 능력·학력 요건 잠금, 연봉순 정렬','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 A/B/C(목표 비율 1:2:7) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진 아바타(직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화)','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
 function info(){
   $('#main').innerHTML=`<div class="card"><h2>✨ 추가된 재미 요소 ${FEATURES.length}가지</h2><ol style="padding-left:18px;font-size:14px">${FEATURES.map(f=>`<li>${f}</li>`).join('')}</ol></div><button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW='title';render()};
