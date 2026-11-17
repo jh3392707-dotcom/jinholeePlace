@@ -108,7 +108,7 @@ spender:{n:'플렉스 요정',e:'💸',d:'돈은 새지만 행복이 +'},
 const ARCH=[{n:'공부형',e:'📚',v:[70,40,50,45,45]},{n:'운동형',e:'⚽',v:[40,70,50,45,45]},{n:'인싸형',e:'🎉',v:[40,45,45,60,60]},{n:'올라운더',e:'🎯',v:[52,52,48,48,50]},{n:'착한형',e:'😇',v:[48,45,72,42,43]}];
 const FORT=[['대흉','😱',-.05,'오늘은 조심, 또 조심'],['흉','😟',-.025,'사소한 불운이 따라와요'],['평','🙂',0,'평범한 하루'],['길','😄',.025,'작은 행운이 있어요'],['대길','🤩',.05,'오늘은 뭘 해도 잘 풀려요']];
 function fortune(){const d=new Date();const seed=d.getFullYear()*10000+d.getMonth()*100+d.getDate();const x=Math.abs(Math.sin(seed*9301+49297)*233280)%1;return FORT[Math.floor(x*5)]}
-const DIFF={heal:{n:'힐링',d:'확률 +10%, 스트레스 완화',l:.1,sk:.6},norm:{n:'보통',d:'표준 난이도',l:0,sk:1},hell:{n:'지옥',d:'확률 -8%, 스트레스 폭증',l:-.08,sk:1.4}};
+const DIFF={heal:{n:'힐링',d:'확률 +10%, 스트레스 완화',l:.1,sk:.6},norm:{n:'보통',d:'표준 난이도',l:0,sk:1},hell:{n:'하드',d:'도전 성공률 -8%, 스트레스 ×1.4, 지출 ×1.3',l:-.08,sk:1.4}};
 
 /* ===== achievements ===== */
 const net=()=>S.m+S.inv;
@@ -811,7 +811,7 @@ function header(){
   const bg=BG[S.bg],tr=TRAITS[S.trait];
   return `<div class="card"><div class="hero"><div class="av">${avatar()}${j&&S.job!=='none'?`<span style="font-size:22px">${j.e}</span>`:''}</div>
   <div><b>${esc(S.name)} · ${S.age}세</b><div class="mut">${j?`${j.e} ${j.n} · ${j.ranks[S.rank]||''}`:'학생'} ${S.married?'· 💍':''}${S.kids?' · 👶'+S.kids:''}${S.pet?' · 🐾':''}</div>
-  <div style="margin-top:4px"><span class="tag">${bg.e} ${bg.n}</span><span class="tag">${tr.e} ${tr.n}</span><span class="tag">🔮 ${S.fort}</span></div></div></div>
+  <div style="margin-top:4px"><span class="tag">${bg.e} ${bg.n}</span><span class="tag">${tr.e} ${tr.n}</span><span class="tag">🔮 ${S.fort}</span><span class="tag">🔥 하드</span></div></div></div>
   <div class="stats">${STATS.concat(['hap','sts']).map(statBar).join('')}</div>
   <div class="money"><span class="pill">💰 재산 ${fmt(S.m)}</span>${S.inv>0?`<span class="pill">📈 투자 ${fmt(S.inv)}</span>`:''}<span class="pill">💼 연봉 ${fmt(S.s)}</span><span class="pill">🎓 ${EDU[S.edu]}</span></div></div>`;
 }
@@ -873,7 +873,7 @@ function rankView(){
   <button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
 }
-const FEATURES=['시작 후보 3명 중 선택(스타일별 능력 분배)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 7종(천재, 강골, 행운아 등)','오늘의 운세(날짜별 확률 보정)','난이도 3종(힐링/보통/지옥)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','직업 16종 + 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','결과 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
+const FEATURES=['시작 후보 3명 중 선택(스타일별 능력 분배)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 7종(천재, 강골, 행운아 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 -8%, 스트레스 ×1.4, 지출 ×1.3)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','직업 16종 + 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','결과 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
 function info(){
   $('#main').innerHTML=`<div class="card"><h2>✨ 추가된 재미 요소 ${FEATURES.length}가지</h2><ol style="padding-left:18px;font-size:14px">${FEATURES.map(f=>`<li>${f}</li>`).join('')}</ol></div><button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW='title';render()};
@@ -888,10 +888,10 @@ function title(){
   <div class="row"><button class="btn c" id="rk">🏅 랭킹/업적</button><button class="btn c" id="inf">✨ 재미 요소</button></div>
   <div class="row"><button class="btn c" id="ld">📂 저장 불러오기</button></div>`;
   $('#nw').onclick=()=>{VIEW='create';create()};
-  const ct=$('#cont');if(ct)ct.onclick=()=>{S=sv;VIEW='play';SNAP=null;render()};
+  const ct=$('#cont');if(ct)ct.onclick=()=>{S=sv;S.diff='hell';VIEW='play';SNAP=null;render()};
   $('#rk').onclick=()=>{VIEW='rank';rankView()};$('#inf').onclick=()=>{VIEW='info';info()};$('#ld').onclick=importSave;
 }
-let CANDS=[],CSEL=0,FOC=[],DF='norm',REB=false,NM='재민',REROLL=2;
+let CANDS=[],CSEL=0,FOC=[],DF='hell',REB=false,NM='재민',REROLL=2;
 function create(){
   if(!CANDS.length||CANDS.length!==3)CANDS=[pickCand(),pickCand(),pickCand()];
   const f=fortune(),pts=META.pts,k=Math.min(10,Math.floor(pts/4));
@@ -900,7 +900,7 @@ function create(){
   ${CANDS.map((c,i)=>`<button class="choice" data-c="${i}" style="${i===CSEL?'border-color:var(--ac)':''}"><b>${c.ae} ${c.arch}</b> ${BG[c.bg].e} ${BG[c.bg].n} · ${TRAITS[c.trait].e} ${TRAITS[c.trait].n}<small>지능 ${c.v[0]} · 체력 ${c.v[1]} · 인성 ${c.v[2]} · 매력 ${c.v[3]} · 인맥 ${c.v[4]}</small><small>${TRAITS[c.trait].d} / ${BG[c.bg].tx}</small></button>`).join('')}
   <button class="btn c" id="rr">🎲 후보 다시 뽑기 (${REROLL}회 남음)</button>
   <div class="mut" style="margin-top:8px">집중 육성 (최대 2개, +8)</div><div class="chips">${STATS.map(s=>`<button class="chip" data-f="${s}" style="border:1px solid var(--bd);cursor:pointer;color:${FOC.includes(s)?'var(--ac)':'var(--tx)'}">${FOC.includes(s)?'✔ ':''}${LB[s]}</button>`).join('')}</div>
-  <div class="mut" style="margin-top:8px">난이도</div><div class="chips">${Object.keys(DIFF).map(d=>`<button class="chip" data-d="${d}" style="border:1px solid var(--bd);cursor:pointer;color:${DF===d?'var(--ac)':'var(--tx)'}">${DF===d?'✔ ':''}${DIFF[d].n}</button>`).join('')}</div><div class="mut">${DIFF[DF].d}</div>
+  <div class="mut" style="margin-top:8px">난이도: <b style="color:var(--bad)">🔥 하드 (고정)</b> · ${DIFF.hell.d}</div>
   ${k>0?`<label style="display:block;margin-top:8px"><input type="checkbox" id="rb" ${REB?'checked':''}> 환생 보너스 사용 (포인트 ${pts} → 능력치 전체 +${k}, ${k*4}pt 소모)</label>`:`<div class="mut" style="margin-top:8px">환생 포인트 ${pts} (4pt당 능력치 +1 보너스)</div>`}
   </div><button class="btn pri" id="go">🚀 인생 시작</button><button class="btn c" id="bk">◀ 돌아가기</button>`;
   document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{NM=$('#nm').value;CSEL=+b.dataset.c;create()});
