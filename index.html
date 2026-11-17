@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>재민이 키우기 : 선택으로 완성하는 인생 시뮬레이션</title>
+<meta name="description" content="7살 재민이를 80살까지. 선택으로 직업과 연봉을 정하고 최종 인생 점수로 평가받는 인생 키우기 게임.">
+<style>
+:root{--bg:#0f1226;--card:#1a1f3d;--card2:#232a52;--tx:#eef0ff;--mut:#9aa3d6;--ac:#ffd166;--ac2:#6ee7b7;--bad:#ff6b8b;--ok:#6ee7b7;--bd:#2f376b}
+:root[data-theme=light]{--bg:#f4f5ff;--card:#fff;--card2:#eceeff;--tx:#1b1f3b;--mut:#5a628f;--ac:#e08a00;--ac2:#0a9e73;--bad:#d6335a;--ok:#0a9e73;--bd:#cdd2f3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.5}
+#app{max-width:560px;margin:0 auto;padding:12px 16px 80px}
+header{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
+header h1{font-size:18px;margin:0;color:var(--ac)}
+.tools button{background:var(--card);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:4px 8px;margin-left:4px;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin:10px 0}
+.hero{display:flex;align-items:center;gap:12px}
+.av{font-size:52px;line-height:1;background:var(--card2);border-radius:16px;padding:8px 10px;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.hero b{font-size:18px}.mut{color:var(--mut);font-size:13px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:10px}
+.st{font-size:12px}.bar{height:7px;background:var(--card2);border-radius:5px;overflow:hidden;margin-top:2px}
+.bar i{display:block;height:100%;background:var(--ac2);transition:width .5s}
+.bar i.sts{background:var(--bad)}
+.money{display:flex;gap:8px;margin-top:10px;font-size:13px;flex-wrap:wrap}
+.pill{background:var(--card2);border-radius:999px;padding:3px 10px}
+h2{margin:0 0 6px;font-size:18px}
+.ev p{margin:6px 0 12px;white-space:pre-line}
+.choice,.btn{display:block;width:100%;text-align:left;background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin:8px 0;font-size:15px;cursor:pointer;font-family:inherit}
+.choice:hover:not([disabled]),.btn:hover{border-color:var(--ac)}
+.choice[disabled]{opacity:.4;cursor:not-allowed}
+.choice small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
+.btn.pri{background:var(--ac);color:#1b1500;border:none;text-align:center;font-weight:700}
+.btn.c{text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--card2)}
+.chip.u{color:var(--ok)}.chip.d{color:var(--bad)}
+.tag{display:inline-block;font-size:11px;background:var(--card2);padding:2px 8px;border-radius:999px;margin-right:4px;color:var(--mut)}
+.grade{font-size:76px;font-weight:900;text-align:center;color:var(--ac);line-height:1}
+.center{text-align:center}
+.tl{max-height:260px;overflow:auto;font-size:13px;border-left:2px solid var(--bd);padding-left:10px;margin-top:8px}
+.tl div{margin-bottom:6px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+input[type=text]{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--card2);color:var(--tx);font-size:16px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ac);color:#1b1500;padding:10px 16px;border-radius:12px;font-weight:700;z-index:9;box-shadow:0 4px 18px #0006;max-width:90%}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:4px 6px;border-bottom:1px solid var(--bd);text-align:left}
+.sbar{display:flex;align-items:center;gap:8px;font-size:12px;margin:3px 0}.sbar span{width:62px}.sbar .bar{flex:1}.sbar b{width:44px;text-align:right}
+</style>
+</head>
+<body>
+<div id="app">
+<header><h1>🧒 재민이 키우기</h1><div class="tools"><button id="bSnd" title="효과음">🔊</button><button id="bTh" title="테마">🌓</button></div></header>
+<main id="main"></main>
+</div>
+<script>
+/* ===== utils ===== */
+const $=s=>document.querySelector(s);
+const clamp=(v,a=0,b=100)=>Math.max(a,Math.min(b,v));
+const R=(a,b)=>a+Math.random()*(b-a), ri=(a,b)=>Math.floor(R(a,b+1)), pick=a=>a[ri(0,a.length-1)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=m=>{m=Math.round(m);const a=Math.abs(m),s=m<0?'-':'';if(a>=10000)return s+(a/10000).toFixed(a>=100000?0:1)+'억';return s+a.toLocaleString()+'만'};
+const LB={int:'지능',str:'체력',chr:'인성',cha:'매력',soc:'인맥',hap:'행복',sts:'스트레스',m:'재산',s:'연봉',inv:'투자금'};
+const STATS=['int','str','chr','cha','soc'];
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+
+/* ===== sound ===== */
+let sndOn=lsGet('jmk_snd',true),AC=null;
+function beep(f=520,d=.08,t='sine'){if(!sndOn)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=t;o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
+const sGood=()=>{beep(660,.09);setTimeout(()=>beep(880,.12),90)},sBad=()=>{beep(220,.16,'sawtooth')},sTap=()=>beep(480,.05);
+
+/* ===== meta (persistent across runs) ===== */
+let META=lsGet('jmk_meta',{ranks:[],ach:{},pts:0,runs:0,best:0});
+const saveMeta=()=>lsSet('jmk_meta',META);
+
+/* ===== data ===== */
+const JOBS={
+doctor:{n:'의사',e:'🩺',req:{int:80},edu:3,base:6500,g:.05,st:6,hp:0,ranks:['인턴','전문의','부교수','병원장'],d:'연봉 최상위. 대신 늘 바쁨'},
+lawyer:{n:'변호사',e:'⚖️',req:{int:75,chr:35},edu:3,base:6000,g:.05,st:6,hp:0,ranks:['어쏘','파트너','대표변호사'],d:'말빨과 머리의 직업'},
+dev:{n:'개발자',e:'💻',req:{int:60},edu:1,base:4800,g:.06,st:4,hp:0,ranks:['주니어','시니어','리드','CTO'],d:'야근하면 버그가 줄긴 함'},
+big:{n:'대기업 직원',e:'🏢',req:{int:62,soc:35},edu:2,base:5000,g:.05,st:5,hp:0,ranks:['사원','대리','과장','부장','임원'],d:'승진 사다리 + 구조조정 공포'},
+civil:{n:'공무원',e:'📋',req:{int:55},edu:1,base:3400,g:.03,st:1,hp:1,ranks:['9급','7급','5급','국장'],d:'안정이 곧 행복'},
+teacher:{n:'교사',e:'🍎',req:{int:55,chr:50},edu:2,base:3600,g:.03,st:2,hp:1,ranks:['교사','부장교사','교감','교장'],d:'제자들이 인생의 보람'},
+sme:{n:'중소기업 직원',e:'🏭',req:{},edu:0,base:3000,g:.03,st:4,hp:0,ranks:['사원','대리','과장','이사'],d:'일단 취업! 누구나 가능'},
+police:{n:'경찰/소방관',e:'🚒',req:{str:60,chr:55},edu:0,base:3800,g:.035,st:4,hp:1,ranks:['순경','경장','경위','경감'],d:'정의감과 체력'},
+chef:{n:'요리사',e:'🍳',req:{str:45,cha:35},edu:0,base:3000,g:.04,st:5,hp:1,ranks:['보조','셰프','총괄셰프','오너셰프'],d:'언젠가 내 가게를'},
+farmer:{n:'귀농 농부',e:'🌾',req:{str:50},edu:0,base:2800,g:.02,st:0,hp:2,ranks:['초보농부','숙련농부','농업경영인'],d:'스트레스 제로, 연봉도 제로에 가깝게'},
+writer:{n:'웹툰 작가',e:'✏️',req:{int:45,cha:40},edu:0,base:2500,kind:'var',lo:.7,hi:1.45,st:5,hp:1,ranks:['지망생','연재작가','히트작가'],d:'히트하면 인생역전'},
+tuber:{n:'유튜버',e:'📹',req:{cha:60,soc:40},edu:0,base:2000,kind:'var',lo:.5,hi:1.8,st:4,hp:1,ranks:['구독자 100명','실버버튼','골드버튼','다이아'],d:'알고리즘의 간택을 기다린다'},
+star:{n:'연예인',e:'🎤',req:{cha:85},edu:0,base:4000,kind:'var',lo:.4,hi:2,st:6,hp:1,ranks:['연습생','신인','스타','국민스타'],d:'뜨면 월드스타, 못 뜨면...'},
+athlete:{n:'프로 운동선수',e:'🏅',req:{str:80},edu:0,base:5000,kind:'var',lo:.8,hi:1.3,st:4,hp:1,ranks:['신인','주전','에이스','레전드'],d:'전성기는 짧다'},
+ceo:{n:'창업가',e:'🚀',req:{soc:45},edu:0,base:1500,kind:'var',lo:.3,hi:2.5,st:7,hp:0,ranks:['예비창업자','스타트업 대표','중견기업 대표','회장'],d:'대박 or 쪽박'},
+mp:{n:'국회의원',e:'🏛️',req:{},edu:0,hid:1,base:15000,g:.02,st:4,hp:0,ranks:['초선','재선','다선'],d:''},
+none:{n:'백수',e:'🛋️',req:{},edu:0,base:0,g:0,st:-2,hp:0,ranks:['무직'],d:'일단 쉬자. 부모님 눈치는 덤'}
+};
+const EDU=['고졸','전문대/지방대','일반 대학','명문대'];
+const BG={gold:{n:'금수저 가정',e:'💎',m:30000,tx:'부모님이 든든한 지원군'},mid:{n:'평범한 가정',e:'🏠',m:2000,tx:'특별할 것 없는 보통의 출발'},poor:{n:'흙수저 가정',e:'🥔',m:-1500,tx:'학자금 대출과 함께하는 시작'}};
+const TRAITS={
+genius:{n:'천재 기질',e:'🧠',d:'지능이 오를 때 +30%'},
+strongbody:{n:'강골',e:'🦴',d:'나이 들어도 체력이 덜 떨어짐'},
+lucky:{n:'행운아',e:'🍀',d:'모든 도전 성공 확률 +5%'},
+charming:{n:'인기쟁이',e:'✨',d:'매력·인맥이 오를 때 +30%'},
+latebloom:{n:'대기만성',e:'🌱',d:'30살 이후 해마다 능력이 오름'},
+frugal:{n:'짠테크 달인',e:'🐷',d:'해마다 저절로 돈이 모임'},
+spender:{n:'플렉스 요정',e:'💸',d:'돈은 새지만 행복이 +'},
+};
+const ARCH=[{n:'공부형',e:'📚',v:[70,40,50,45,45]},{n:'운동형',e:'⚽',v:[40,70,50,45,45]},{n:'인싸형',e:'🎉',v:[40,45,45,60,60]},{n:'올라운더',e:'🎯',v:[52,52,48,48,50]},{n:'착한형',e:'😇',v:[48,45,72,42,43]}];
+const FORT=[['대흉','😱',-.05,'오늘은 조심, 또 조심'],['흉','😟',-.025,'사소한 불운이 따라와요'],['평','🙂',0,'평범한 하루'],['길','😄',.025,'작은 행운이 있어요'],['대길','🤩',.05,'오늘은 뭘 해도 잘 풀려요']];
+function fortune(){const d=new Date();const seed=d.getFullYear()*10000+d.getMonth()*100+d.getDate();const x=Math.abs(Math.sin(seed*9301+49297)*233280)%1;return FORT[Math.floor(x*5)]}
+const DIFF={heal:{n:'힐링',d:'확률 +10%, 스트레스 완화',l:.1,sk:.6},norm:{n:'보통',d:'표준 난이도',l:0,sk:1},hell:{n:'지옥',d:'확률 -8%, 스트레스 폭증',l:-.08,sk:1.4}};
+
+/* ===== achievements ===== */
+const net=()=>S.m+S.inv;
+const ACH=[
+['first','🎒 첫 출근','첫 직장을 가졌다',()=>S.job&&S.job!=='none'],
+['mil','🪖 대한민국 육군','군 복무를 마쳤다',()=>S.flags.army],
+['elite','🎓 명문대 입학','명문대에 진학했다',()=>S.edu>=3],
+['m1','💰 1억 클럽','순자산 1억 달성',()=>net()>=10000],
+['m10','🏦 10억 부자','순자산 10억 달성',()=>net()>=100000],
+['m100','👑 100억 부자','순자산 100억 달성',()=>net()>=1000000],
+['debt','📉 빚쟁이','순자산 -5000만 이하를 찍었다',()=>net()<=-5000],
+['wed','💍 결혼','가정을 꾸렸다',()=>S.married],
+['kids3','👶 다둥이','자녀 3명',()=>S.kids>=3],
+['pet','🐶 집사','반려동물과 함께',()=>S.pet],
+['genius','🧠 천재','지능 95 이상',()=>S.int>=95],
+['hulk','💪 근육몬스터','체력 95 이상',()=>S.str>=95],
+['pop','🤝 인싸','인맥 90 이상',()=>S.soc>=90],
+['joy','😊 행복부자','행복 95 이상',()=>S.hap>=95],
+['burn','🔥 번아웃','번아웃을 겪었다',()=>S.burn>=1],
+['lotto','🎰 로또 당첨','로또 1등!',()=>S.flags.lotto],
+['scam','🎣 사기 피해자','사기를 당했다',()=>S.flags.scammed],
+['gam','🃏 도박의 늪','도박에 빠졌다',()=>S.flags.gamble],
+['rew','⏪ 시간여행자','되감기를 사용했다',()=>S.rewound],
+['mp','🏛️ 국회의원','국회의원이 됐다',()=>S.flags.mp],
+['star','⭐ 스타','연봉 5억 이상을 찍었다',()=>S.peakS>=50000],
+['dad','🏡 화목한 가정','결혼+자녀2+행복70',()=>S.married&&S.kids>=2&&S.hap>=70],
+['hermit','🐺 고독한 늑대','인맥 20 이하로 40세 이상',()=>S.soc<=20&&S.age>=40],
+['phoenix','🐦‍🔥 불사조','빚더미에서 순자산 1억까지',()=>S.flags.wasDebt&&net()>=10000],
+];
+
+/* ===== event helpers ===== */
+const EV={};const EVL=[];
+const c=(t,fx,m,o)=>Object.assign({t,fx:fx||{},m:m||''},o||{});
+const g=(t,p,win,lose,o)=>Object.assign({t,p,win,lose},o||{});
+function ev(id,a,b,title,text,choices,o){const e=Object.assign({id,a,b,title,text,choices,w:1},o||{});EV[id]=e;EVL.push(e)}
+const Q=(id,title,text,choices,o)=>{const e=Object.assign({id,a:0,b:999,title,text,choices,w:0},o||{});EV[id]=e;return e};
+
+/* --- 어린 시절 --- */
+ev('enter',7,7,'🎒 초등학교 입학','오늘은 입학식. 커다란 책가방이 재민이보다 커 보인다.\n어떤 학교생활을 하고 싶어?',[
+c('📚 공부 열심히 하는 모범생',{int:8,hap:-2,sts:3},'선생님께 칭찬 도장을 한가득 받았다.'),
+c('⚽ 운동장에서 뛰어논다',{str:8,soc:3,hap:3},'점심시간마다 땀범벅! 체력이 쑥쑥 큰다.'),
+c('🤝 친구부터 사귄다',{soc:8,cha:3,hap:4},'입학 첫날 반 친구 절반과 친구가 됐다.'),
+c('🎮 만화책과 게임이 최고',{hap:8,int:-1,cha:1},'행복하긴 한데... 숙제가 쌓여간다.')],{at:7});
+ev('homework',7,12,'📝 숙제 vs 게임','숙제는 산더미. 그런데 새로 나온 게임이 너무 하고 싶다.',[
+c('숙제부터 끝낸다',{int:4,hap:-2,chr:1},'뿌듯하지만 게임은 짧게 했다.'),
+c('게임 먼저!',{hap:6,int:-2},'신나게 놀았다. 숙제는 내일의 재민이가...'),
+g('몰래 게임하고 숙제는 대충',.5,[{hap:5,int:-1},'들키지 않았다! 완전범죄!'],[{hap:-5,chr:-2,sts:4},'엄마한테 딱 걸렸다. 폰 압수.'])]);
+ev('class',10,12,'🗳️ 반장 선거','반장 선거 날, 친구들이 "재민이 나가봐!"라고 부추긴다.',[
+g('출마한다',.5,[{soc:8,chr:3,cha:3,hap:6},'당선! 이제 재민이는 반장님이다.'],[{hap:-5,soc:-1},'낙선... 그래도 용기는 박수받았다.'],{k:'soc'}),
+c('친구를 밀어준다',{chr:4,soc:3},'친구가 당선됐고 재민이에게 간식을 사줬다.'),
+c('관심 없다',{hap:1},'조용히 구경만 했다.')]);
+ev('piggy',7,13,'🐷 용돈 사용법','세뱃돈 5만 원이 생겼다.',[
+c('저금한다',{m:30,chr:2,int:1},'통장에 차곡차곡. 어른의 맛.'),
+c('뽑기 기계에 전부 투입',{hap:5,m:-5},'꽝 12번, 대박 1번... 인형이 방에 가득하다.'),
+c('친구들에게 쏜다',{soc:5,hap:3,m:-10},'인기 폭발! 지갑은 비었다.')]);
+ev('bully',9,15,'😠 교실의 그림자','같은 반 친구가 다른 애한테 괴롭힘을 당하고 있다.',[
+g('직접 막는다',.5,[{chr:8,soc:4,hap:3},'용기를 냈다! 모두가 재민이를 다시 봤다.'],[{str:-4,hap:-5,sts:8},'막다가 같이 휘말렸다...'],{k:'str'}),
+c('선생님께 알린다',{chr:4,soc:-2},'문제는 해결됐다. 조금 찜찜했지만 옳은 일이었다.'),
+c('모른 척한다',{sts:6,chr:-5,hap:-3},'계속 마음이 불편하다.')]);
+ev('academy',8,17,'🏫 방과 후의 선택','학원 시간표가 빽빽하다. 오늘은 뭘 할까?',[
+c('학원 뺑뺑이',{int:7,sts:8,hap:-4,m:-100},'성적은 올랐지만 눈 밑이 어둡다.'),
+c('동네 축구/농구',{str:6,soc:4,hap:3},'땀 흘리고 먹는 컵라면이 천국.'),
+c('집에서 쉰다',{hap:6,sts:-6},'오랜만에 푹 쉬었다.')]);
+ev('phone',11,14,'📱 첫 스마트폰','드디어 생애 첫 스마트폰이 생겼다!',[
+c('유튜브 쇼츠 삼매경',{hap:6,int:-4,sts:-3},'정신 차려보니 새벽 2시.'),
+c('코딩 앱을 깔아본다',{int:6,hap:1},'간단한 게임을 직접 만들어 봤다. 신기해!'),
+c('SNS 시작',{cha:4,soc:5,sts:3},'팔로워 80명! 이게 인싸의 시작?')]);
+ev('love1',13,18,'💘 가슴이 두근두근','옆 반 아이가 자꾸 눈에 밟힌다.',[
+g('고백한다',.4,[{hap:12,cha:3,soc:3},'"...나도 좋아했어." 인생 첫 연애 시작!'],[{hap:-10,sts:5},'"미안, 친구로만..." 이불킥 100번.'],{k:'cha'}),
+c('공부에 집중한다',{int:4,sts:2},'마음을 접고 문제집을 폈다.'),
+c('친구에게 털어놓는다',{soc:4,hap:2},'친구가 응원해 줬다. 하지만 소문이 퍼졌다...')]);
+ev('teen',14,16,'🌪️ 사춘기','왜인지 모든 게 짜증난다. 부모님 말씀이 다 잔소리로 들린다.',[
+c('방황한다',{hap:4,chr:-4,int:-4},'반항은 시원했지만 성적이 흔들린다.'),
+c('부모님과 대화한다',{chr:4,hap:2},'의외로 부모님도 재민이를 이해하려 하셨다.'),
+c('운동으로 푼다',{str:5,sts:-6},'러닝 한 시간에 마음이 맑아졌다.')]);
+ev('cheat',13,18,'📄 시험 중 유혹','시험 도중 옆자리 친구의 답안지가 보인다...',[
+g('슬쩍 본다',.5,[{int:1,chr:-5,hap:2},'점수는 올랐다. 양심이 따끔하다.'],[{chr:-8,hap:-6,soc:-3},'걸렸다! 교무실 호출, 부모님 호출.']),
+c('내 힘으로 푼다',{int:2,chr:4},'점수는 아쉬웠지만 떳떳했다.')]);
+ev('club',13,18,'🎸 동아리 선택','어느 동아리에 들어갈까?',[
+c('밴드부',{cha:6,soc:5,hap:3},'축제 무대에서 환호를 받았다.'),
+c('코딩 동아리',{int:6,soc:2},'해커톤에서 상을 받았다.'),
+c('농구부',{str:6,soc:4},'3점슛이 들어갈 때의 쾌감!'),
+c('봉사 동아리',{chr:7,soc:3},'보람찬 주말을 보냈다.')]);
+ev('gamer',12,19,'🎮 새벽 랭크 게임','티어가 한 단계만 오르면 다이아다. 지금은 새벽 3시.',[
+c('자러 간다',{int:3,str:2},'다음 날 컨디션이 좋았다.'),
+c('한 판만 더!',{hap:8,int:-5,str:-4},'다이아 달성... 학교에서 졸았다.'),
+g('대회에 출전해 본다',.3,[{cha:5,soc:6,hap:10,f:['gamer']},'지역 대회 입상! 스카우트 연락까지 왔다.'],[{hap:-4,int:-2},'1회전 탈락. 그래도 경험이 됐다.'],{k:'cha'})]);
+ev('hs',16,16,'🏫 고등학교 진학','고등학교를 선택할 시간이다.',[
+g('특목고에 도전한다',.45,[{int:8,sts:10,soc:3},'합격! 천재들 사이에서 치열한 경쟁이 시작된다.'],[{hap:-6,int:2},'떨어졌다... 일반고로 간다.'],{k:'int'}),
+c('집 근처 일반고',{int:2,soc:3,hap:3},'무난한 고교 생활이 시작된다.'),
+c('특성화고 (기술)',{str:3,int:1,m:300,f:['tech'],hap:2},'자격증을 일찍 따고 실무를 경험한다.')],{at:16});
+Q('scol','🎓 수능 결과',S=>{const e=S.flags.exam;return `수능 성적표가 나왔다.\n환산 점수: ${e}점 (${e>=85?'최상위권':e>=65?'상위권':e>=45?'중위권':'도전이 필요한 점수'})\n어디로 갈까?`},S=>{
+const e=S.flags.exam,tier=e>=85?3:e>=65?2:e>=45?1:0;const ch=[];
+ch.push(c(`${EDU[tier]} 진학`,{edu:tier,hap:tier>=2?6:2,sts:-4},tier===3?'합격 소식에 온 동네가 떠들썩했다!':'새로운 캠퍼스 생활이 시작된다.'));
+if(tier>0)ch.push(c(`한 단계 낮춰 안전 지원 (장학금 +500)`,{edu:tier-1,m:500,hap:2},'장학금까지 받으며 여유롭게 시작한다.'));
+ch.push(g('재수에 도전한다',.6,[{edu:Math.min(3,tier+1),sts:10,hap:-4,int:4},'1년의 고생 끝에 한 단계 높은 대학에 합격!'],[{edu:tier,sts:12,hap:-8},'결과는 제자리... 마음이 무겁다.']));
+ch.push(c('대학 대신 바로 사회로',{edu:0,m:600,soc:2,hap:1},'일찍 돈을 벌기로 했다.'));
+return ch},{});
+ev('suneung',19,19,'📖 수능','1년을 바친 수능 날. 재민이의 컨디션은?',[
+c('시험장에 들어간다',{ex:1},'')],{at:19,w:0,pre:S=>{S.flags.exam=clamp(Math.round(S.int+ri(-15,15)+(S.flags.tech?-6:0)+(S.str>60?2:0)-S.sts*.1),10,100)}});
+EV.suneung.choices=[c('결과를 확인한다',{q:'scol'},'수능이 끝났다...')];
+ev('campus',19,23,'🍻 캠퍼스 라이프','대학 생활의 낭만과 현실.',[
+c('학점 4.5 도전',{int:6,sts:8,hap:-3},'도서관 지박령이 되었다.'),
+c('과팅·동아리·MT',{soc:7,cha:4,hap:6,m:-100},'술자리가 늘고 인맥도 늘었다.'),
+c('알바 하며 돈 모으기',{m:400,str:2,sts:4},'통장 잔고가 든든해졌다.'),
+c('휴학하고 세계여행',{hap:10,cha:4,soc:3,m:-500,sts:-10},'인생이 넓어졌다!')],{rep:1});
+ev('army',20,22,'🪖 입영통지서','대한민국 남자라면 피할 수 없는 그날이 왔다.',[
+c('현역 입대',{str:6,chr:3,soc:3,hap:-4,sts:5,f:['army']},'군대 라면이 제일 맛있다는 건 사실이었다.'),
+g('카투사 지원',.35,[{int:4,cha:2,str:3,f:['army']},'선발! 영어와 인맥을 얻었다.'],[{str:5,chr:2,sts:5,f:['army']},'탈락해서 일반 현역으로 입대했다.'],{k:'int'}),
+c('상근/보충역',{hap:3,m:300,f:['army']},'출퇴근하는 군 생활. 비교적 여유롭다.')],{at:21,c:S=>!S.flags.army});
+/* --- 직업 선택 --- */
+Q('jobpick','💼 취업 시즌',S=>`졸업(또는 사회 진출) 시즌이다. 학력: ${EDU[S.edu]}\n재민이의 능력치로 도전 가능한 직업을 골라보자.\n(조건이 부족하면 잠겨 있다)`,S=>{
+return Object.keys(JOBS).filter(id=>!JOBS[id].hid).map(id=>{const j=JOBS[id];const miss=[];
+for(const k in j.req)if(S[k]<j.req[k])miss.push(`${LB[k]} ${j.req[k]}`);
+if(S.edu<j.edu)miss.push(`학력 ${EDU[j.edu]}`);
+return Object.assign(c(`${j.e} ${j.n}`,{job:id,q:id==='none'?null:'negot'},id==='none'?'일단 쉬어가기로 했다. 부모님의 눈빛이 따갑다.':`${j.n}(으)로 새 출발!`),{d:`${j.d} · 초봉 ${fmt(j.base)}`+(miss.length?` 🔒 ${miss.join(', ')}`:''),dis:miss.length>0})})});
+ev('graduate',23,23,'🎓 졸업과 취업 준비','사회로 나갈 시간. 이제 직업을 정해야 한다.',[c('취업 시장으로!',{q:'jobpick'},'')],{at:23,c:S=>!S.job});
+Q('negot','💰 연봉 협상',S=>`${JOBS[S.job].n} 합격! 제시 연봉은 ${fmt(S.s)}.\n연봉을 어떻게 할까?`,[
+c('제시 연봉에 사인',{},'안정적으로 입사했다.'),
+g('10% 더 달라고 한다',.55,[{smul:1.1,soc:1},'"음, 재민 씨 마음에 드네요." 협상 성공!'],[{smul:.97,hap:-3},'조금 괘씸했나 보다...'],{k:'cha'}),
+g('배짱 +30% 요구',.25,[{smul:1.3,hap:6,cha:2},'인사팀이 두 손 들었다. 대박!'],[{smul:.92,hap:-6,sts:4},'면접관 표정이 싸늘하다. 연봉이 깎였다.'],{k:'int'})]);
+ev('negot2',24,60,'💼 연봉 협상 시즌','올해도 연봉 협상 시즌이 왔다.',[
+c('조용히 받아들인다',{smul:1.03},'3% 인상. 물가는 5% 올랐는데...'),
+g('성과를 내세워 인상 요구',.5,[{smul:1.15,hap:5},'성과를 인정받아 큰 폭 인상!'],[{hap:-4,sts:4},'"올해는 어렵습니다." 다음을 기약했다.'],{k:'int'}),
+g('이직 카드를 꺼낸다',.4,[{smul:1.25,hap:4,sts:3},'붙잡으려고 연봉을 확 올려줬다!'],[{smul:.97,sts:6,soc:-3},'"그럼 나가세요." 분위기가 싸해졌다.'],{k:'soc'})],{c:S=>S.job&&S.job!=='none'&&JOBS[S.job].kind!=='var',rep:4,w:1.2});
+ev('promo',26,58,'📈 승진 심사','올해 승진 대상자에 이름이 올랐다.',[
+g('야근 불사 올인',.6,[{rank:1,smul:1.2,sts:8,hap:3},'승진! 연봉과 책임이 함께 늘었다.'],[{sts:12,hap:-6},'탈락... 번아웃이 올 것 같다.'],{k:'int'}),
+g('인맥으로 승부',.5,[{rank:1,smul:1.2,soc:2,hap:4},'"재민 씨가 팀에 꼭 필요해요" 추천을 받아 승진!'],[{soc:-2,hap:-3},'정치 싸움에서 밀렸다.'],{k:'soc'}),
+c('일과 삶의 균형',{hap:4,sts:-4},'승진 욕심은 내려놓고 퇴근 후 시간을 즐겼다.')],{c:S=>S.job&&S.job!=='none'&&S.rank<JOBS[S.job].ranks.length-1,rep:3,w:1.3});
+ev('offer',27,52,'📞 헤드헌터의 전화','더 좋은 조건이라며 이직 제안이 왔다.',[
+g('이직한다',.55,[{smul:1.3,sts:6,hap:4,soc:2},'새 회사에서 대우가 달라졌다!'],[{smul:.9,sts:8,hap:-6},'막상 가보니 소문과 달랐다...'],{k:'soc'}),
+c('지금 회사에 남는다',{hap:1,sts:-2},'안정이 최고다.')],{c:S=>S.job&&S.job!=='none',rep:5});
+ev('boss',25,55,'😤 갑질 상사','상사가 또 회식에서 말도 안 되는 요구를 한다.',[
+c('참는다',{sts:10,hap:-4},'속은 터지지만 월급 앞에서는 조용해진다.'),
+g('정중하게 받아친다',.5,[{chr:4,soc:3,hap:5},'용기에 팀원들이 박수쳤다!'],[{sts:10,soc:-3,smul:.98},'찍혔다. 눈치가 보인다.'],{k:'chr'}),
+c('퇴사한다',{job:'none',hap:8,sts:-15,m:-300,q:'jobpick'},'사직서를 던졌다. 시원하다! ...통장은 조금 불안하다.')],{c:S=>S.job&&S.job!=='none'&&JOBS[S.job].kind!=='var'});
+ev('layoff',35,56,'📢 구조조정 바람','회사에 구조조정 소문이 돈다.',[
+c('희망퇴직 (위로금 8000만)',{job:'none',m:8000,sts:-5,hap:-3,q:'jobpick'},'퇴직금을 챙겨 새 출발을 한다.'),
+g('버틴다',.55,[{sts:6,hap:1},'살아남았다. 남은 자의 슬픔이 있다.'],[{job:'none',m:3000,hap:-10,sts:8,q:'jobpick'},'결국 정리 대상에 포함됐다...'],{k:'soc'})],{c:S=>['big','sme','dev'].includes(S.job)});
+ev('sidejob',24,50,'🛍️ 부업 도전','퇴근 후 시간에 부업을 해볼까?',[
+g('스마트스토어 개설',.45,[{m:1500,sts:4,int:2},'작은 쇼핑몰이 제법 팔린다!'],[{m:-300,hap:-3},'재고만 한가득 남았다.']),
+c('자격증 공부',{int:5,sts:5},'시간을 투자해 자격증을 땄다.'),
+c('그냥 푹 쉰다',{sts:-8,hap:4},'에너지를 충전했다.')],{c:S=>S.age>=24});
+/* --- 재테크 --- */
+ev('invest',25,60,'📊 재테크 시작?','월급이 통장을 스쳐 간다. 불리는 방법을 찾아볼까?',[
+c('적금만 한다',{m:200,hap:1},'안전하지만 이자는 소소하다.'),
+Object.assign(c('주식 소액 투자 (500만)',{m:-500,inv:500,risk:1,int:1},'첫 주식 계좌 개설! 매일 시세를 보게 된다.'),{need:500}),
+Object.assign(c('코인에 올인 (2000만)',{m:-2000,inv:2000,risk:2.2,sts:6},'가즈아! 심장이 쫄깃하다.'),{need:2000}),
+c('투자는 무서워',{sts:-2},'마음은 편하다.')],{rep:5,c:S=>S.age>=25});
+ev('house',29,50,'🏠 내 집 마련','집값이 매일 오른다는 뉴스가 쏟아진다. 어떻게 할까?',[
+Object.assign(g('영끌해서 매수',.5,[{m:-5000,inv:12000,risk:.6,sts:8,hap:6,f:['house']},'집값이 올랐다! 영끌의 승리?'],[{m:-5000,inv:5000,risk:.6,sts:12,hap:-5,f:['house']},'매수 직후 하락... 이자가 무겁다.'],{k:'int'}),{need:5000}),
+c('전세로 안정',{m:-800,hap:2},'전세 계약. 적당히 편안하다.'),
+c('월세로 자유롭게',{hap:-1,m:-200},'이사 다니기 편하다.')],{c:S=>!S.flags.house,once:1});
+ev('lotto',25,72,'🎟️ 로또 한 장','편의점 계산대 옆에서 로또가 손짓한다.',[
+g('1장 산다 (5천 원)',.02,[{m:200000,hap:30,f:['lotto']},'🎉 1등 당첨!!! 20억이 통장에!'],[{m:-1},'꽝. 5천 원으로 일주일의 설렘을 샀다.']),
+c('사지 않는다',{},'현명한 소비.')],{w:.8,rep:6});
+ev('scam',30,72,'☎️ 모르는 번호','"검찰입니다. 계좌가 범죄에 연루되었습니다."',[
+c('즉시 끊고 112 확인',{int:1,chr:1},'침착하게 대응했다. 보이스피싱 방어 성공!'),
+g('일단 통화를 이어간다',.45,[{sts:5},'이상함을 눈치채고 끊었다. 휴.'],[{m:-4000,hap:-12,sts:12,f:['scammed']},'통장이 털렸다... 보이스피싱이었다.'],{k:'int'})],{rep:6});
+ev('loan',28,56,'🤝 친구의 보증 부탁','오랜 친구가 눈물로 보증을 부탁한다.',[
+c('정중히 거절',{soc:-4,sts:2},'미안했지만 마음은 편하다.'),
+g('보증을 선다',.35,[{soc:6,chr:5,hap:5},'친구가 무사히 갚았다. 우정 만세!'],[{m:-8000,soc:-6,hap:-10,sts:10},'친구가 잠적했다. 빚은 재민이 몫...'])],{once:1});
+ev('bizinv',30,56,'🧑‍💼 사촌의 사업 투자 권유','"형(오빠/누나/동생), 이건 진짜 대박이야."',[
+Object.assign(g('2000만 투자',.3,[{m:8000,hap:8,soc:3},'진짜 대박! 사촌이 갚았다.'],[{m:-2000,hap:-6,soc:-4},'사업이 망했다. 명절이 불편해졌다.']),{need:2000}),
+c('정중히 거절',{},'가족과 돈은 섞지 않는다.')],{once:1});
+ev('gamble',25,58,'🃏 지인의 달콤한 제안','"한 번만 가보자, 잃어도 재밌잖아?"',[
+c('안 간다',{chr:2,hap:1},'발을 들이지 않는 것이 승리다.'),
+g('딱 한 번만...',.3,[{m:2000,hap:8,f:['gamble']},'땄다! 그런데 자꾸 생각난다...'],[{m:-2000,sts:8,f:['gamble']},'잃었다. 본전 생각에 손이 떨린다...'])],{once:1});
+ev('quitgamble',26,76,'🆘 도박을 끊을 수 있을까',S=>'돈도 건강도 갉아먹는 도박. 이제 정말 끊어야 한다.',[
+g('단도박 모임에 나간다',.55,[{uf:['gamble'],hap:6,sts:-10,chr:5,soc:3},'가족과 함께 극복했다. 새로운 시작!'],[{m:-3000,hap:-8,sts:10},'재발했다... 다시 도전해야 한다.']),
+g('한 번만 더 해서 만회한다',.1,[{m:8000,uf:['gamble']},'기적적으로 만회하고 손을 털었다. (정말?)'],[{m:-6000,hap:-12,sts:12,soc:-6},'더 깊은 늪으로...'])],{c:S=>S.flags.gamble,rep:2,w:2.5});
+ev('startup',28,46,'💡 대박 아이디어','샤워 중 번뜩인 아이디어. 이건 세상을 바꿀 수 있다!',[
+Object.assign(g('모든 걸 걸고 창업 (3000만)',.3,[{m:-3000,job:'ceo',smul:3,hap:10,sts:8,f:['founder']},'시드 투자 유치 성공! 스타트업 대표가 됐다.'],[{m:-3000,hap:-8,sts:10},'시장 반응이 차갑다. 접었다.'],{k:'int'}),{need:3000}),
+c('퇴근 후 사이드로만',{int:3,sts:5},'작게 시작하며 가능성을 본다.'),
+c('그냥 메모만 해둔다',{},'그 아이디어는 3년 뒤 누군가 대박을 냈다...')],{c:S=>S.int>=55&&S.job!=='ceo',once:1});
+ev('youtube',18,45,'📹 채널 개설','"요즘 다 유튜브 하잖아." 재민이도 카메라를 잡아볼까?',[
+g('채널을 연다',.3,[{cha:4,soc:5,m:800,hap:8,f:['tuber']},'어느 영상이 알고리즘을 탔다! 구독자가 폭발!'],[{hap:-3,sts:2},'조회수 12회. 그래도 엄마는 보셨다.'],{k:'cha'}),
+c('시청자로 남는다',{hap:3},'구독과 좋아요 담당.')],{once:1});
+ev('politics',45,62,'🏛️ 정계의 러브콜','지역 정당에서 총선 출마를 권유한다.',[
+Object.assign(g('출마한다 (3000만)',.35,[{job:'mp',m:-3000,hap:10,soc:8,f:['mp']},'당선! 국회의원 재민 의원님이 됐다.'],[{m:-3000,hap:-8,soc:2},'낙선... 이름은 알렸다.'],{k:'soc'}),{need:3000}),
+c('정중히 사양',{},'정치는 내 길이 아니다.')],{c:S=>S.soc>=65&&S.cha>=55&&S.chr>=40,once:1});
+/* --- 인생 이벤트 --- */
+ev('meet',24,38,'🥰 소개팅','친구가 소개팅을 주선했다.',[
+g('나간다',.5,[{hap:10,f:['lover'],cha:2},'대화가 술술! 다음 주에 또 만나기로 했다.'],[{hap:-3},'어색한 침묵 한 시간... 밥만 맛있었다.'],{k:'cha'}),
+c('일이 바빠서 패스',{int:1,sts:2},'다음 기회에.')],{c:S=>!S.married&&!S.flags.lover,rep:3,w:1.3});
+ev('propose',26,44,'💍 프러포즈','오래 만난 연인과 결혼 이야기가 나온다.',[
+Object.assign(c('결혼한다 (3000만)',{m:-3000,married:1,hap:12,soc:4,sts:5},'하객 200명의 축복 속에 결혼! 두 사람의 새 출발.'),{need:3000}),
+c('더 만나본다',{hap:1},'조금 더 시간이 필요하다.'),
+c('헤어진다',{hap:-10,uf:['lover'],sts:6},'각자의 길을 가기로 했다.')],{c:S=>S.flags.lover&&!S.married,rep:3,w:2});
+ev('baby',28,46,'👶 아이가 찾아왔다','가족 계획을 세울 때가 왔다.',[
+c('아이를 가진다',{kids:1,hap:12,m:-500,sts:10,chr:3},'세상에서 가장 작은 손이 재민이 손가락을 꼭 잡았다.'),
+c('둘이서 행복하게',{hap:3,m:300},'DINK로 여유로운 삶을 즐긴다.')],{c:S=>S.married&&S.kids<3,rep:3,w:1.5});
+ev('kidschool',40,60,'🧒 자녀의 입시와 사춘기','아이가 슬슬 부모 말을 안 듣는다.',[
+Object.assign(c('학원·유학 전폭 지원 (2000만)',{m:-2000,hap:2,sts:5,chr:2},'아이가 좋은 학교에 갔다. 지갑은 가볍다.'),{need:2000}),
+c('아이의 선택을 존중한다',{hap:5,chr:4,sts:-3},'스스로 길을 찾아가는 아이가 대견하다.'),
+c('자꾸 잔소리를 한다',{hap:-4,sts:5},'집안 분위기가 서먹해졌다.')],{c:S=>S.kids>0,once:1});
+ev('divorce',32,62,'💔 위기의 부부','대화가 줄고 다툼이 늘었다.',[
+Object.assign(c('부부 상담을 받는다 (300만)',{m:-300,hap:4,sts:-6,chr:3},'서로를 다시 이해하게 됐다.'),{need:300}),
+c('이혼한다',{married:0,m:-4000,hap:-8,sts:-4,soc:-3},'합의 이혼. 마음 한쪽이 시리다.'),
+c('참고 산다',{sts:6,hap:-5},'차가운 평화가 이어진다.')],{c:S=>S.married&&(S.sts>55||S.hap<45),once:1,w:1.5});
+ev('petadopt',24,70,'🐾 눈이 마주친 아이','유기견 보호소에서 눈이 마주친 작은 생명이 있다.',[
+c('입양한다',{pet:1,hap:8,sts:-6,m:-100},'새로운 가족이 생겼다. 꼬리가 빠르게 흔들린다.'),
+c('봉사만 한다',{chr:4,hap:2},'따뜻한 마음을 전했다.'),
+c('지나간다',{},'')],{c:S=>!S.pet,once:1});
+ev('travel',24,66,'✈️ 여행 가고 싶다','연차를 모아 훌쩍 떠나고 싶다.',[
+Object.assign(c('유럽 3주 여행 (500만)',{m:-500,hap:10,sts:-10,cha:2},'에펠탑 앞에서 인생샷을 남겼다!'),{need:500}),
+c('국내 캠핑',{hap:6,sts:-6,m:-50,str:1},'불멍이 최고다.'),
+c('돈 아끼자',{m:100,hap:-1},'통장에 숫자가 늘었다.')],{rep:5});
+ev('hobby',24,66,'🎯 취미 찾기','일 말고 나를 위한 시간이 필요하다.',[
+c('등산',{str:5,sts:-8,hap:3},'정상에서 마시는 막걸리가 꿀맛.'),
+c('요리',{hap:5,cha:2,m:-50},'레시피를 하나씩 정복 중이다.'),
+c('기타 연주',{cha:4,hap:5,soc:2},'가족 앞에서 처음으로 한 곡 완주했다.'),
+g('마라톤 도전',.5,[{str:8,hap:7,sts:-6},'완주! 메달이 눈부시다.'],[{str:-4,hap:-2},'무릎이 나갔다.'],{k:'str'})],{rep:5});
+ev('reunion',28,62,'🥂 동창회','십몇 년 만의 동창회. 연락이 왔다.',[
+c('참석한다',{soc:5},'',{fn:S=>{const n=net();return n>=10000?[{hap:8,cha:2},'성공한 친구로 대접받았다!']:n<0?[{hap:-7,sts:4},'잘나가는 친구들 사이에서 위축됐다...']:[{hap:2},'추억 이야기로 즐거운 밤이었다.']}}),
+c('불참한다',{sts:-2},'다들 어떻게 지낼까 궁금하긴 하다.')],{rep:8});
+ev('mentor',20,45,'🧙 귀인을 만나다','우연히 만난 선배가 재민이를 눈여겨본다.',[
+c('조언을 적극적으로 구한다',{int:6,soc:5,hap:3},'인생의 방향을 알려준 귀인이 되었다.'),
+c('예의상 인사만',{soc:1},'')],{once:1});
+ev('wallet',10,70,'👛 길에서 주운 지갑','길바닥에 지갑이 떨어져 있다. 두툼하다.',[
+c('경찰서에 맡긴다',{chr:6,hap:3,soc:1},'주인이 눈물로 감사했다.'),
+g('슬쩍 챙긴다',.5,[{m:300,chr:-6},'현금 300만 원... 양심이 쓰리다.'],[{chr:-8,hap:-5,soc:-3},'CCTV에 찍혔다. 망신살.'])],{once:1});
+ev('lonely',25,62,'🌙 외로운 밤','연락할 사람이 별로 없다는 걸 문득 깨달았다.',[
+c('동호회에 가입한다',{soc:8,hap:3},'뜻밖의 친구를 사귀었다.'),
+c('그냥 산다',{hap:-8,sts:4},'혼자가 편하다고 되뇐다.')],{c:S=>S.soc<=30,once:1,w:2});
+ev('checkup',35,80,'🩺 건강검진 결과','"이상 소견이 있습니다."',[
+Object.assign(c('바로 치료한다 (800만)',{m:-800,str:5,sts:2},'조기 발견 덕분에 큰 탈 없이 지나갔다.'),{need:800}),
+g('바빠서 미룬다',.4,[{},'다행히 별일 없었다.'],[{str:-12,hap:-6},'악화됐다... 진작 치료할걸.']),
+c('운동·식단부터 바꾼다',{str:5,hap:2,sts:-3},'아침 러닝이 시작됐다.')],{rep:4,w:1.3});
+ev('disease',50,80,'🏥 큰 병이 찾아왔다','몸이 보내는 신호를 무시할 수 없게 됐다.',[
+Object.assign(c('수술과 치료 (3000만)',{m:-3000,str:10,hap:-4},'긴 투병 끝에 회복했다.'),{need:3000}),
+g('민간요법에 기대본다',.25,[{str:5,hap:3},'기적적으로 좋아졌다!'],[{str:-22,hap:-10},'병이 깊어졌다...']),
+c('가족과 시간을 보낸다',{hap:6,str:-6,sts:-6},'남은 시간을 소중하게 쓰기로 했다.')],{c:S=>S.str<50,rep:3,w:1.6});
+ev('accident',20,75,'🚗 교통사고','횡단보도에서 갑자기 오토바이가 튀어나왔다.',[
+c('입원 치료',{str:-12,m:-500,hap:-6,sts:4},'다행히 큰 부상은 아니었지만 한참 고생했다.')],{w:.4,once:1});
+ev('midlife',42,56,'🌅 중년의 위기','"나 지금 잘 살고 있는 걸까?"',[
+Object.assign(c('스포츠카 지른다 (3000만)',{m:-3000,hap:9,cha:3,sts:-4},'엔진 소리가 가슴을 뛰게 한다!'),{need:3000}),
+c('새 취미에 올인',{hap:7,sts:-6,soc:3},'제2의 청춘이 시작됐다.'),
+c('퇴사를 꿈꾼다',{sts:5,hap:-3},'일단 버티기로 했다.')],{once:1});
+ev('parent',50,66,'👵 부모님의 병환','부모님의 건강이 나빠지셨다.',[
+c('직접 모신다',{chr:8,hap:-5,sts:8,soc:-2},'힘들지만 마음은 따뜻했다.'),
+Object.assign(c('좋은 요양시설로 모신다 (3000만)',{m:-3000,chr:2,sts:2},'자주 찾아뵙기로 했다.'),{need:3000}),
+c('형제들에게 맡긴다',{chr:-6,sts:-2,soc:-3},'가족 단톡방이 얼어붙었다.')],{once:1});
+ev('inherit',40,72,'📜 유산 상속','먼 친척의 유언장에 재민이의 이름이 있었다.',[
+c('감사히 받는다',{},'',{fn:S=>S.flags.bg==='gold'?[{m:40000,hap:5},'원래 부자였는데 더 부자가 됐다.']:[{m:3000,hap:6},'뜻밖의 선물 3천만 원!']})],{w:.5,once:1});
+ev('era',30,60,'📰 경제 위기 뉴스','연일 폭락장 뉴스다. 시장이 요동친다.',[
+c('투자 상황 확인',{},'',{fn:S=>S.inv>0?[{invmul:.55,sts:8,hap:-6},'계좌가 반토막... 손이 떨린다.']:[{sts:3,mmul:.95},'투자는 안 했지만 물가가 무섭게 오른다.']})],{w:.7,once:1});
+ev('boom',30,60,'🚀 대세상승장','시장이 불타오른다! 뉴스마다 투자 이야기다.',[
+c('계좌를 열어본다',{},'',{fn:S=>S.inv>0?[{invmul:1.7,hap:8},'수익률이 하늘을 찌른다!']:[{hap:-3},'투자를 안 해서 배가 아프다.']})],{w:.7,once:1});
+ev('grand',60,80,'👶 손주 탄생','"할아버지!" 하고 달려오는 작은 손이 있다.',[
+c('품에 안는다',{hap:12,sts:-8},'세상에서 가장 따뜻한 순간.')],{c:S=>S.kids>0,once:1});
+ev('memoir',68,80,'📖 자서전','살아온 이야기를 글로 남겨볼까?',[
+c('쓴다',{int:3,chr:3,hap:6},'"재민이의 인생" 초고를 완성했다.'),
+c('사진첩만 정리한다',{hap:3},'옛날 사진이 정말 많다.')],{once:1});
+ev('retire',60,70,'🎉 정년 퇴임','오랜 직장생활을 마무리할 시간.',[
+c('퇴임한다 (연금 수령)',{retire:1,hap:8,sts:-15},'수고했습니다! 이제 여유로운 노후다.'),
+c('조금 더 일한다',{sts:6,smul:.8},'일하는 게 건강에 좋다고 믿는다.')],{at:60,c:S=>S.job&&S.job!=='none'&&!S.flags.retired});
+ev('athlete_end',33,45,'🏅 은퇴 기로','체력이 예전 같지 않다. 선수 생활을 더 이어갈까?',[
+c('지도자로 전향',{job:'teacher',smul:.7,hap:2},'코치로 제2의 인생을 시작한다.'),
+g('한 시즌 더 뛴다',.4,[{hap:6,smul:1.1},'마지막 불꽃을 태웠다!'],[{str:-8,hap:-6,smul:.5},'부상으로 연봉이 반토막...'])],{c:S=>S.job==='athlete',once:1,w:3});
+ev('will',76,79,'📜 마지막 선택','인생을 정리할 시간. 모아둔 재산과 마음을 어떻게 쓸까?',[
+c('사회에 기부한다',{chr:15,hap:10,soc:4,mmul:.7,invmul:.7},'기부 소식이 뉴스에 났다. 많은 사람들이 재민이를 기억할 것이다.'),
+c('가족에게 남긴다',{hap:8,chr:3},'가족들이 둘러앉아 재민이의 손을 잡았다.'),
+c('여행과 맛집으로 탕진!',{hap:12,m:-1500,sts:-10},'후회 없이 놀다 가는 인생도 멋지다.')],{at:76});
+ev('quiet',7,79,'🍃 평범한 한 해','큰일은 없었다. 그냥 평범한 한 해.',[
+c('자기계발',{int:3,sts:3},'책을 읽고 강의를 들었다.'),
+c('푹 쉰다',{sts:-8,hap:3},'게으름도 능력이다.'),
+c('운동한다',{str:4,sts:-3},'몸이 가벼워졌다.'),
+c('친구를 만난다',{soc:4,hap:3},'수다가 보약이다.')],{w:.35,rep:1,fallback:1});
+
+/* ===== state ===== */
+let S=null,SNAP=null,VIEW='title';
+function newState(cand,name,focus,opt){
+  const s={name,age:7,v:1,int:cand.v[0],str:cand.v[1],chr:cand.v[2],cha:cand.v[3],soc:cand.v[4],hap:60,sts:10,m:BG[cand.bg].m,inv:0,risk:1,s:0,peakS:0,job:null,rank:0,edu:1,bg:cand.bg,trait:cand.trait,arch:cand.arch,
+   married:0,kids:0,pet:0,pension:0,flags:{bg:cand.bg},seen:{},log:[],queue:[],cur:'enter',res:null,rewound:false,burn:0,runAch:{},diff:opt.diff,luck:0,over:null,boost:0,newAch:[]};
+  focus.forEach(k=>s[k]=clamp(s[k]+8));
+  if(opt.rebirth){const k=Math.min(10,Math.floor(META.pts/4));if(k>0){META.pts-=k*4;saveMeta();STATS.forEach(x=>s[x]=clamp(s[x]+k));s.boost=k}}
+  s.luck=opt.fort[2]+DIFF[opt.diff].l+(cand.trait==='lucky'?.05:0);
+  s.fort=opt.fort[0];
+  s.seen.enter=7;S=s;
+  return s;
+}
+const step=()=>S.age<30?1:S.age<50?2:3;
+const save=()=>{if(S&&!S.over)lsSet('jmk_save',S)};
+function pickCand(){
+  const r=Math.random(),bg=r<.15?'gold':r<.75?'mid':'poor';
+  const a=pick(ARCH);const v=a.v.map(x=>x+ri(-4,4));let diff=250-v.reduce((p,q)=>p+q,0);v[ri(0,4)]+=diff;
+  return {arch:a.n,ae:a.e,v,bg,trait:pick(Object.keys(TRAITS))};
+}
+
+/* ===== effects ===== */
+function apply(fx){
+  for(const k in fx){let v=fx[k];
+    if(STATS.includes(k)||k==='hap'||k==='sts'){
+      if(v>0){if(k==='int'&&S.trait==='genius')v*=1.3;if((k==='cha'||k==='soc')&&S.trait==='charming')v*=1.3}
+      if(k==='sts')v*=(v>0?DIFF[S.diff].sk:1);
+      S[k]=clamp(S[k]+Math.round(v));
+    }
+    else if(k==='m')S.m+=v;
+    else if(k==='s'){S.s=Math.max(0,S.s+v);S.peakS=Math.max(S.peakS,S.s)}
+    else if(k==='smul'){S.s=Math.round(S.s*v);S.peakS=Math.max(S.peakS,S.s)}
+    else if(k==='inv')S.inv=Math.max(0,S.inv+v);
+    else if(k==='invmul')S.inv=Math.round(S.inv*v);
+    else if(k==='mmul'){if(S.m>0)S.m=Math.round(S.m*v)}
+    else if(k==='risk')S.risk=v;
+    else if(k==='job')setJob(v);
+    else if(k==='f')v.forEach(x=>S.flags[x]=1);
+    else if(k==='uf')v.forEach(x=>delete S.flags[x]);
+    else if(k==='q'){if(v)S.queue.push(v)}
+    else if(k==='kids')S.kids+=v;
+    else if(k==='rank')S.rank=Math.min(S.rank+v,S.job&&JOBS[S.job]?JOBS[S.job].ranks.length-1:0);
+    else if(k==='edu'||k==='married'||k==='pet')S[k]=v;
+    else if(k==='retire'){S.flags.retired=1;S.pension=Math.round(S.s*.35);S.job='none';S.s=0;S.rank=0}
+  }
+}
+function setJob(id){S.job=id;S.rank=0;const j=JOBS[id];S.s=Math.round(j.base*R(.92,1.08));S.peakS=Math.max(S.peakS,S.s)}
+function getChoices(e){return typeof e.choices==='function'?e.choices(S):e.choices}
+function getText(e){return typeof e.text==='function'?e.text(S):e.text}
+
+/* ===== time ===== */
+function tick(n){
+  const j=S.job?JOBS[S.job]:JOBS.none;let income=0;
+  if(S.job&&S.job!=='none'){
+    if(j.kind==='var'){let lo=j.lo,hi=j.hi;if(S.job==='athlete'&&S.age>=34){lo=.6;hi=.95}
+      if(S.job==='tuber'&&S.flags.tuber)lo=.8;
+      S.s=Math.round(clamp(S.s*R(lo,hi),S.job==='ceo'?0:600,400000));}
+    else S.s=Math.round(S.s*Math.pow(1+j.g,n));
+    S.peakS=Math.max(S.peakS,S.s);income=S.s*.5*n;
+  }else if(S.flags.retired&&S.age>=60){income=S.pension*.8*n}
+  else if(S.age>=(S.bg==='gold'?45:35)){income=-700*n}
+  S.m+=income;
+  if(S.m>0)S.m*=Math.pow(1.015,n);
+  if(S.kids)S.m-=S.kids*450*n*(S.age<60?1:.3);
+  if(S.pet)S.m-=60*n;
+  if(S.trait==='frugal')S.m+=200*n;
+  if(S.trait==='spender'){S.m-=300*n;S.hap=clamp(S.hap+n)}
+  if(S.flags.gamble){S.m-=900*n;S.hap=clamp(S.hap-2*n);S.sts=clamp(S.sts+2*n)}
+  if(S.inv>0){const rk=S.risk||1;S.inv=Math.max(0,Math.round(S.inv*(1+(R(-.1,.17))*rk*Math.sqrt(n))))}
+  S.sts=clamp(S.sts+(j.st*.6-2.2)*n*DIFF[S.diff].sk);
+  if(S.age>=40){S.str=clamp(S.str-(S.age>=60?1.6:.8)*n*(S.trait==='strongbody'?.5:1))}
+  if(S.age>=70)S.int=clamp(S.int-.8*n);
+  S.hap=clamp(S.hap+(55-S.hap)*.06*n+(j.hp||0)*.5*n+(S.married?.8*n:0)+(S.pet?.8*n:0)-(S.sts>70?3*n:0)-(net()<0?2*n:0));
+  if(S.trait==='latebloom'&&S.age>=30)['int','cha','soc'].forEach(k=>S[k]=clamp(S[k]+.5*n));
+  S.s=Math.max(0,S.s);S.str=clamp(S.str);
+  if(net()<=-3000)S.flags.wasDebt=1;
+  if(S.sts>=100){S.burn++;S.sts=60;S.hap=clamp(S.hap-15);S.str=clamp(S.str-10);S.flags.burnoutNow=1}
+}
+function checkEnd(){
+  if(S.over)return;
+  if(S.str<=0)S.over='health';
+  else if(S.burn>=3)S.over='karoshi';
+  else if(net()<-20000)S.over='bankrupt';
+  else if(S.age>=80)S.over='natural';
+}
+function eligible(){
+  return EVL.filter(e=>{
+    if(e.w<=0&&!e.at)return false;
+    if(S.age<e.a||S.age>e.b)return false;
+    if(e.at!=null)return false;
+    if(e.fallback)return false;
+    const last=S.seen[e.id];
+    if(last!=null){if(!e.rep)return false;if(S.age-last<e.rep)return false}
+    if(e.once&&last!=null)return false;
+    if(e.c&&!e.c(S))return false;
+    return true;
+  });
+}
+function chooseEvent(){
+  for(const e of EVL){if(e.at!=null&&S.age>=e.at&&!S.seen[e.id]&&S.age<=e.b+(e.id==='retire'?0:3)){S.seen[e.id]=S.age;if(e.c&&!e.c(S))continue;return e.id}}
+  const pool=eligible();
+  if(!pool.length||Math.random()<.08)return 'quiet';
+  const tot=pool.reduce((p,e)=>p+e.w,0);let r=Math.random()*tot;
+  for(const e of pool){r-=e.w;if(r<=0)return e.id}
+  return pool[0].id;
+}
+function advance(){
+  if(S.over){S.cur=null;return}
+  if(S.queue.length){S.cur=S.queue.shift();onEnter();return}
+  const n=step();S.age+=n;S.flags.burnoutNow=0;tick(n);checkAch();checkEnd();
+  if(S.over){S.cur=null;return}
+  S.cur=chooseEvent();S.seen[S.cur]=S.age;onEnter();
+}
+function onEnter(){const e=EV[S.cur];if(e&&e.pre&&S.flags.exam==null)e.pre(S);S.seen[S.cur]=S.age}
+
+/* ===== achievements ===== */
+function checkAch(){ACH.forEach(([id,n,d,f])=>{if(!S.runAch[id]){try{if(f()){S.runAch[id]=1;S.newAch.push(n);if(!META.ach[id]){META.ach[id]=Date.now()}}}catch(e){}}});saveMeta()}
+
+/* ===== choose ===== */
+function choose(i){
+  const e=EV[S.cur];const chs=getChoices(e);const ch=chs[i];if(!ch||ch.dis)return;
+  if(ch.need&&S.m<ch.need)return;
+  SNAP=JSON.stringify(S);
+  const before={};['int','str','chr','cha','soc','hap','sts','m','s','inv'].forEach(k=>before[k]=S[k]);
+  let out,ok=null;
+  if(ch.p!=null){const p=clamp(ch.p+S.luck+(ch.k?(S[ch.k]-50)/250:0),.02,.97);ok=Math.random()<p;out=ok?ch.win:ch.lose;out=[out[0],out[1],p]}
+  else if(ch.fn){out=ch.fn(S)}
+  else out=[ch.fx,ch.m];
+  const fx=Object.assign({},out[0]);
+  if(S.diff==='hell'&&fx.m<0)fx.m=Math.round(fx.m*1.3);
+  apply(fx);
+  const d=[];for(const k in before){const dv=Math.round(S[k]-before[k]);if(dv!==0)d.push([k,dv])}
+  S.log.push({age:S.age,t:e.title.replace(/^[^\s]+\s/,''),p:ch.t.replace(/[^\p{L}\p{N}\s\-%()+,.!?~]/gu,'').trim()||ch.t,m:out[1],ok});
+  S.res={d,m:out[1]||'',ok,p:out[2],t:e.title,pk:ch.t};
+  S.cur=null;checkAch();checkEnd();
+  ok===false?sBad():sGood();
+  save();render();
+}
+
+/* ===== score ===== */
+function calc(){
+  const n=net();
+  const wealth=clamp(n/1500,-100,250),inc=Math.min(100,S.peakS/120),hap=S.hap*1.5,abil=(S.int+S.str+S.chr+S.cha+S.soc)/5;
+  const fam=Math.min(110,(S.married?35:0)+Math.min(3,S.kids)*18+(S.pet?10:0)+(S.flags.mp?10:0));
+  const ach=Math.min(100,Object.keys(S.runAch).length*5);
+  const stp=-S.sts*.25;
+  let pen=S.over==='bankrupt'?-80:S.over==='health'?-70:S.over==='karoshi'?-90:0;
+  const parts=[['재산',wealth,250],['연봉',inc,100],['행복',hap,150],['능력',abil,100],['가족',fam,110],['업적',ach,100],['스트레스',stp,0],['엔딩',pen,0]];
+  const total=Math.round(parts.reduce((p,x)=>p+x[1],0));
+  const grade=total>=620?'S':total>=500?'A':total>=390?'B':total>=290?'C':total>=190?'D':'F';
+  return {total,grade,parts};
+}
+function ending(){
+  const n=net(),jn=S.job&&S.job!=='none'?JOBS[S.job].n:'';
+  if(S.over==='bankrupt')return ['💸','빚더미에 앉은 인생','통장은 마이너스. 하지만 재민이는 어딘가에서 또 일어서고 있을 것이다.'];
+  if(S.over==='health')return ['🏥','일찍 쓰러진 인생','건강을 챙기지 못했다. 다음엔 꼭 운동을...'];
+  if(S.over==='karoshi')return ['🔥','과로로 쓰러진 인생','일만 하다 번아웃이 세 번. 쉬는 것도 능력이다.'];
+  const L=[
+  [n>=500000,'👑','전설의 재벌','재민 그룹 회장. 이름만 대면 아는 사람이 없는 곳이 없다.'],
+  [S.peakS>=150000,'🌟','월드 스타','전 세계가 아는 재민. 연봉 15억 이상의 정점을 찍었다.'],
+  [S.flags.mp&&S.soc>=70,'🏛️','국민의 대변인','국회의원으로서 많은 사람의 삶을 바꿨다.'],
+  [S.job==='doctor'&&S.rank>=2&&n>=30000,'🩺','존경받는 명의','수많은 생명을 살린 의사 재민.'],
+  [S.flags.founder&&n>=100000,'🚀','성공한 창업가','작은 아이디어로 거대한 기업을 만들었다.'],
+  [S.flags.lotto,'🎰','로또 인생','인생은 한방! ... 이라지만 그 한방은 진짜였다.'],
+  [S.married&&S.kids>=2&&S.hap>=75,'🏡','화목한 가장','돈보다 소중한 가족과 웃음이 가득한 노후.'],
+  [S.int>=90,'🧠','천재 학자','평생 연구한 업적이 교과서에 실렸다.'],
+  [S.hap>=85&&n<30000,'🍀','가난해도 행복한 철학자','가진 건 없어도 웃음은 부자.'],
+  [S.soc>=85,'🤝','인싸의 정점','장례식에 사람이 줄을 서는 사람.'],
+  [n>=100000,'💰','자수성가한 부자','젊은 시절의 고생이 결실을 맺었다.'],
+  [S.flags.gamble,'🃏','도박의 그림자','평생 따라다닌 도박의 기억이 아프게 남았다.'],
+  [!S.married&&S.soc<30,'🐺','고독한 늑대','혼자서도 잘 살았지만 가끔은 외로웠다.'],
+  [n<0,'📉','빚에 쫓긴 인생','끝까지 빚과 싸웠다.'],
+  [S.job==='none'&&S.peakS===0,'🛋️','전설의 백수','평생 직장 없이 살아낸 의미에서의 달인.'],
+  [true,'🙂','평범하지만 소중한 인생','특별하진 않아도 하루하루를 살아낸 재민이.']];
+  for(const x of L)if(x[0])return x.slice(1);
+}
+
+/* ===== render ===== */
+const avatar=()=>{const a=S.age;return a<13?'🧒':a<19?'👦':a<30?'🧑':a<50?'👨':a<65?'🧔':'👴'};
+function statBar(k){const v=Math.round(S[k]);return `<div class="st">${LB[k]} <b>${v}</b><div class="bar"><i class="${k==='sts'?'sts':''}" style="width:${v}%"></i></div></div>`}
+function header(){
+  const j=S.job?JOBS[S.job]:null;
+  const bg=BG[S.bg],tr=TRAITS[S.trait];
+  return `<div class="card"><div class="hero"><div class="av">${avatar()}${j&&S.job!=='none'?`<span style="font-size:22px">${j.e}</span>`:''}</div>
+  <div><b>${esc(S.name)} · ${S.age}세</b><div class="mut">${j?`${j.e} ${j.n} · ${j.ranks[S.rank]||''}`:'학생'} ${S.married?'· 💍':''}${S.kids?' · 👶'+S.kids:''}${S.pet?' · 🐾':''}</div>
+  <div style="margin-top:4px"><span class="tag">${bg.e} ${bg.n}</span><span class="tag">${tr.e} ${tr.n}</span><span class="tag">🔮 ${S.fort}</span></div></div></div>
+  <div class="stats">${STATS.concat(['hap','sts']).map(statBar).join('')}</div>
+  <div class="money"><span class="pill">💰 재산 ${fmt(S.m)}</span>${S.inv>0?`<span class="pill">📈 투자 ${fmt(S.inv)}</span>`:''}<span class="pill">💼 연봉 ${fmt(S.s)}</span><span class="pill">🎓 ${EDU[S.edu]}</span></div></div>`;
+}
+function render(){
+  const m=$('#main');
+  if(!S||VIEW==='title'){return title()}
+  if(VIEW==='info'){return info()}
+  if(VIEW==='rank'){return rankView()}
+  if(S.over&&!S.cur&&!S.res){return endView()}
+  let h=header();
+  if(S.newAch.length){h+=`<div class="card" style="border-color:var(--ac)">🏆 업적 달성: ${S.newAch.join(', ')}</div>`;S.newAch=[]}
+  if(S.res){
+    const r=S.res;
+    h+=`<div class="card ev"><h2>${r.t}</h2><p><span class="tag">${esc(r.pk)}</span></p><p>${r.ok===true?'✅ 성공! ':r.ok===false?'❌ 실패... ':''}${esc(r.m)}</p>
+    ${r.p!=null?`<div class="mut">성공 확률 ${Math.round(r.p*100)}%</div>`:''}
+    <div class="chips">${r.d.map(([k,v])=>{const good=k==='sts'?v<0:v>0;return `<span class="chip ${good?'u':'d'}">${LB[k]} ${v>0?'+':''}${k==='m'||k==='s'||k==='inv'?fmt(v):v}</span>`}).join('')}</div>
+    <button class="btn pri" id="next">${S.over?'🏁 인생 결과 보기':S.queue.length?'계속 ▶':'다음 해로 ▶'}</button>
+    ${!S.rewound&&SNAP?`<button class="btn c" id="rew">⏪ 과거로 돌아가기 (1회)</button>`:''}</div>`;
+  }else if(S.cur){
+    const e=EV[S.cur],chs=getChoices(e);
+    h+=`<div class="card ev"><h2>${e.title}</h2><p>${esc(getText(e))}</p>`;
+    chs.forEach((ch,i)=>{const dis=ch.dis||(ch.need&&S.m<ch.need);
+      h+=`<button class="choice" data-i="${i}" ${dis?'disabled':''}>${i+1}. ${ch.t}${ch.p!=null?` <small>🎲 도전 · 성공률 약 ${Math.round(clamp(ch.p+S.luck+(ch.k?(S[ch.k]-50)/250:0),.02,.97)*100)}%</small>`:''}${ch.d?`<small>${ch.d}</small>`:''}${ch.need&&S.m<ch.need?`<small>💸 ${fmt(ch.need)} 필요</small>`:''}</button>`});
+    h+=`</div>`;
+  }
+  h+=`<div class="row"><button class="btn c" id="bSave">💾 저장 내보내기</button><button class="btn c" id="bLoad">📂 저장 불러오기</button><button class="btn c" id="bHome">🏠 처음으로</button></div>`;
+  m.innerHTML=h;
+  m.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{sTap();choose(+b.dataset.i)});
+  const nx=$('#next');if(nx)nx.onclick=()=>{sTap();S.res=null;SNAP=SNAP;if(S.over){S.cur=null;render();return}advance();if(S.over)S.res=null;save();render()};
+  const rw=$('#rew');if(rw)rw.onclick=()=>{S=JSON.parse(SNAP);S.rewound=true;S.runAch.rew=1;S.newAch.push('⏪ 시간여행자');META.ach.rew=META.ach.rew||Date.now();saveMeta();SNAP=null;beep(300,.2);save();render()};
+  $('#bSave').onclick=exportSave;$('#bLoad').onclick=importSave;$('#bHome').onclick=()=>{VIEW='title';render()};
+  window.scrollTo(0,0);
+}
+function endView(){
+  const sc=calc(),en=ending();
+  if(!S.done){S.done=1;META.runs++;META.pts+=Math.floor(sc.total/40)+1;META.best=Math.max(META.best,sc.total);
+    META.ranks.push({name:S.name,score:sc.total,grade:sc.grade,title:en[1],age:S.age,job:S.job?JOBS[S.job].n:'-',net:Math.round(net()),d:new Date().toLocaleDateString('ko-KR')});
+    META.ranks.sort((a,b)=>b.score-a.score);META.ranks=META.ranks.slice(0,20);checkAch();saveMeta();try{localStorage.removeItem('jmk_save')}catch(e){}}
+  sc.grade==='F'||S.over&&S.over!=='natural'?sBad():sGood();
+  const ach=Object.keys(S.runAch).map(id=>ACH.find(a=>a[0]===id)[1]);
+  const share=`🧒 재민이 키우기 | ${S.name} (${S.age}세) | 등급 ${sc.grade} · ${sc.total}점 | ${en[1]} | 직업 ${S.job&&S.job!=='none'?JOBS[S.job].n:'없음'} | 순자산 ${fmt(net())} | 연봉 최고 ${fmt(S.peakS)}`;
+  $('#main').innerHTML=`<div class="card center"><div class="mut">최종 인생 점수</div><div class="grade">${sc.grade}</div><h2>${sc.total}점</h2>
+  <div style="font-size:40px">${en[0]}</div><h2>${en[1]}</h2><p class="mut">${en[2]}</p></div>
+  <div class="card"><b>📊 점수 내역</b>${sc.parts.map(([n,v,mx])=>`<div class="sbar"><span>${n}</span><div class="bar"><i class="${v<0?'sts':''}" style="width:${mx?clamp(v/mx*100,0,100):clamp(Math.abs(v),0,100)}%"></i></div><b>${Math.round(v)}</b></div>`).join('')}
+  <div class="mut" style="margin-top:6px">${S.over&&S.over!=='natural'?'⚠️ 조기 종료 엔딩 (페널티 적용)':'80세까지 완주!'} · 환생 포인트 보유 ${META.pts}</div></div>
+  <div class="card"><b>🏆 이번 인생의 업적 (${ach.length})</b><p class="mut">${ach.join(' · ')||'없음'}</p></div>
+  <div class="card"><b>📖 인생 이야기</b><div class="tl">${S.log.map(l=>`<div><b>${l.age}세</b> ${esc(l.t)} — ${esc(l.p)}${l.ok===true?' ✅':l.ok===false?' ❌':''}<br><span class="mut">${esc(l.m)}</span></div>`).join('')}</div></div>
+  <button class="btn pri" id="again">🔄 다시 키우기 (환생)</button>
+  <div class="row"><button class="btn c" id="shr">📋 결과 복사/공유</button><button class="btn c" id="rk">🏅 랭킹 보기</button></div>`;
+  $('#again').onclick=()=>{S=null;VIEW='create';create()};
+  $('#shr').onclick=()=>{try{navigator.clipboard.writeText(share);toast('복사했어요!')}catch(e){prompt('복사하세요',share)}};
+  $('#rk').onclick=()=>{VIEW='rank';rankView()};
+}
+function rankView(){
+  const rk=META.ranks;
+  $('#main').innerHTML=`<div class="card"><h2>🏅 내 기기 랭킹 TOP ${rk.length}</h2>${rk.length?`<table><tr><th>#</th><th>이름</th><th>점수</th><th>등급</th><th>엔딩</th></tr>${rk.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.name)}</td><td>${r.score}</td><td>${r.grade}</td><td>${esc(r.title)}</td></tr>`).join('')}</table>`:'<p class="mut">아직 기록이 없어요. 한 번 키워보세요!</p>'}
+  <div class="mut" style="margin-top:8px">플레이 ${META.runs}회 · 최고 ${META.best}점 · 업적 ${Object.keys(META.ach).length}/${ACH.length}</div></div>
+  <div class="card"><b>🏆 업적 도감</b>${ACH.map(a=>`<div style="margin:4px 0;opacity:${META.ach[a[0]]?1:.4}">${META.ach[a[0]]?a[1]:'❓ ???'} <span class="mut">${META.ach[a[0]]?a[2]:'조건 비공개'}</span></div>`).join('')}</div>
+  <button class="btn pri" id="back">◀ 돌아가기</button>`;
+  $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
+}
+const FEATURES=['시작 후보 3명 중 선택(스타일별 능력 분배)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 7종(천재, 강골, 행운아 등)','오늘의 운세(날짜별 확률 보정)','난이도 3종(힐링/보통/지옥)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','직업 16종 + 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','결과 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)'];
+function info(){
+  $('#main').innerHTML=`<div class="card"><h2>✨ 추가된 재미 요소 ${FEATURES.length}가지</h2><ol style="padding-left:18px;font-size:14px">${FEATURES.map(f=>`<li>${f}</li>`).join('')}</ol></div><button class="btn pri" id="back">◀ 돌아가기</button>`;
+  $('#back').onclick=()=>{VIEW='title';render()};
+}
+function title(){
+  const sv=lsGet('jmk_save',null),f=fortune();
+  $('#main').innerHTML=`<div class="card center"><div style="font-size:64px">🧒➡️👴</div><h2>재민이 키우기</h2>
+  <p class="mut">7살 재민이의 선택이 80살의 인생을 만든다.<br>직업도, 연봉도, 점수도 모두 당신의 선택!</p>
+  <p>🔮 오늘의 운세: <b>${f[0]}</b> ${f[1]}<br><span class="mut">${f[3]}</span></p></div>
+  <button class="btn pri" id="nw">🎮 새 인생 시작</button>
+  ${sv&&sv.v?`<button class="btn" id="cont">▶ 이어하기 (${esc(sv.name)} · ${sv.age}세)</button>`:''}
+  <div class="row"><button class="btn c" id="rk">🏅 랭킹/업적</button><button class="btn c" id="inf">✨ 재미 요소</button></div>
+  <div class="row"><button class="btn c" id="ld">📂 저장 불러오기</button></div>`;
+  $('#nw').onclick=()=>{VIEW='create';create()};
+  const ct=$('#cont');if(ct)ct.onclick=()=>{S=sv;VIEW='play';SNAP=null;render()};
+  $('#rk').onclick=()=>{VIEW='rank';rankView()};$('#inf').onclick=()=>{VIEW='info';info()};$('#ld').onclick=importSave;
+}
+let CANDS=[],CSEL=0,FOC=[],DF='norm',REB=false,NM='재민',REROLL=2;
+function create(){
+  if(!CANDS.length||CANDS.length!==3)CANDS=[pickCand(),pickCand(),pickCand()];
+  const f=fortune(),pts=META.pts,k=Math.min(10,Math.floor(pts/4));
+  $('#main').innerHTML=`<div class="card"><h2>🧬 재민이 만들기</h2><div class="mut">이름</div><input type="text" id="nm" maxlength="8" value="${esc(NM)}">
+  <p class="mut" style="margin-top:12px">후보를 고르세요. 능력 합계는 모두 비슷하지만 스타일, 집안, 재능이 달라요.</p>
+  ${CANDS.map((c,i)=>`<button class="choice" data-c="${i}" style="${i===CSEL?'border-color:var(--ac)':''}"><b>${c.ae} ${c.arch}</b> ${BG[c.bg].e} ${BG[c.bg].n} · ${TRAITS[c.trait].e} ${TRAITS[c.trait].n}<small>지능 ${c.v[0]} · 체력 ${c.v[1]} · 인성 ${c.v[2]} · 매력 ${c.v[3]} · 인맥 ${c.v[4]}</small><small>${TRAITS[c.trait].d} / ${BG[c.bg].tx}</small></button>`).join('')}
+  <button class="btn c" id="rr">🎲 후보 다시 뽑기 (${REROLL}회 남음)</button>
+  <div class="mut" style="margin-top:8px">집중 육성 (최대 2개, +8)</div><div class="chips">${STATS.map(s=>`<button class="chip" data-f="${s}" style="border:1px solid var(--bd);cursor:pointer;color:${FOC.includes(s)?'var(--ac)':'var(--tx)'}">${FOC.includes(s)?'✔ ':''}${LB[s]}</button>`).join('')}</div>
+  <div class="mut" style="margin-top:8px">난이도</div><div class="chips">${Object.keys(DIFF).map(d=>`<button class="chip" data-d="${d}" style="border:1px solid var(--bd);cursor:pointer;color:${DF===d?'var(--ac)':'var(--tx)'}">${DF===d?'✔ ':''}${DIFF[d].n}</button>`).join('')}</div><div class="mut">${DIFF[DF].d}</div>
+  ${k>0?`<label style="display:block;margin-top:8px"><input type="checkbox" id="rb" ${REB?'checked':''}> 환생 보너스 사용 (포인트 ${pts} → 능력치 전체 +${k}, ${k*4}pt 소모)</label>`:`<div class="mut" style="margin-top:8px">환생 포인트 ${pts} (4pt당 능력치 +1 보너스)</div>`}
+  </div><button class="btn pri" id="go">🚀 인생 시작</button><button class="btn c" id="bk">◀ 돌아가기</button>`;
+  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{NM=$('#nm').value;CSEL=+b.dataset.c;create()});
+  document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{NM=$('#nm').value;const s=b.dataset.f;FOC=FOC.includes(s)?FOC.filter(x=>x!==s):FOC.concat(s).slice(-2);create()});
+  document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{NM=$('#nm').value;DF=b.dataset.d;create()});
+  $('#rr').onclick=()=>{if(REROLL>0){NM=$('#nm').value;REROLL--;CANDS=[pickCand(),pickCand(),pickCand()];create()}};
+  const rb=$('#rb');if(rb)rb.onchange=()=>REB=rb.checked;
+  $('#go').onclick=()=>{NM=($('#nm').value||'재민').trim()||'재민';const rbv=rb?rb.checked:false;
+    newState(CANDS[CSEL],NM,FOC,{diff:DF,fort:f,rebirth:rbv});REROLL=2;CANDS=[];FOC=[];VIEW='play';SNAP=null;save();beep(700,.15);render()};
+  $('#bk').onclick=()=>{VIEW='title';render()};
+}
+/* ===== save io ===== */
+function exportSave(){if(!S)return;const b=new Blob([JSON.stringify({game:'jaemin',S,META})],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='jaemin-save.json';a.click();toast('저장 파일을 내보냈어요')}
+function importSave(){const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(d.game!=='jaemin'||!d.S)throw 0;S=d.S;if(d.META){META=d.META;saveMeta()}VIEW='play';SNAP=null;save();render();toast('불러왔어요!')}catch(e){toast('올바른 저장 파일이 아니에요')}};r.readAsText(f)};i.click()}
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+
+/* ===== boot ===== */
+$('#bSnd').onclick=()=>{sndOn=!sndOn;lsSet('jmk_snd',sndOn);$('#bSnd').textContent=sndOn?'🔊':'🔇';beep()};
+$('#bSnd').textContent=sndOn?'🔊':'🔇';
+$('#bTh').onclick=()=>{const l=document.documentElement.dataset.theme==='light';document.documentElement.dataset.theme=l?'dark':'light';lsSet('jmk_th',l?'dark':'light')};
+document.documentElement.dataset.theme=lsGet('jmk_th','dark');
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(VIEW!=='play'||!S)return;
+  if(e.key>='1'&&e.key<='9'){const b=document.querySelector(`.choice[data-i="${+e.key-1}"]`);if(b&&!b.disabled)b.click()}
+  if(e.key==='Enter'||e.key===' '){const n=$('#next');if(n){e.preventDefault();n.click()}}
+});
+render();
+</script>
+</body>
+</html>
