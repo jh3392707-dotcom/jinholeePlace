@@ -62,6 +62,60 @@ table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:4px 6px;b
 .evt .rw{display:block;margin-top:6px;padding:8px 12px;background:var(--bg);border-radius:10px;font-weight:700;font-size:17px}
 .cert{border:3px dashed var(--ac2);border-radius:16px;padding:16px;margin:10px 0;text-align:center;background:var(--card)}
 .cert .code{font-family:ui-monospace,Menlo,monospace;font-size:22px;letter-spacing:2px;color:var(--ac)}
+
+/* ===== 시스템 요소 연출 ===== */
+body{transition:background .8s}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;transition:opacity 1s;background-size:200% 200%;animation:bgflow 18s ease-in-out infinite}
+body[data-stage=kid]::before{background-image:linear-gradient(135deg,#2b3a7a22,#ffd16622,#6ee7b722)}
+body[data-stage=teen]::before{background-image:linear-gradient(135deg,#4a2b7a33,#ff6b8b22,#7aa2ff22)}
+body[data-stage=young]::before{background-image:linear-gradient(135deg,#0d4a6a33,#6ee7b722,#ffd16622)}
+body[data-stage=mid]::before{background-image:linear-gradient(135deg,#5a3a1a33,#ff8a4a22,#2b3a7a22)}
+body[data-stage=senior]::before{background-image:linear-gradient(135deg,#4a3a5a33,#c08a6a22,#2b3a7a22)}
+body[data-stage=old]::before{background-image:linear-gradient(135deg,#6a4a2a44,#ffb36b33,#4a3a5a22)}
+@keyframes bgflow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#gauge,#tapgame,#replay{position:fixed;inset:0;z-index:50;background:#000b;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadein .2s}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.gbox{width:100%;max-width:460px;background:var(--card);border:3px solid var(--ac);border-radius:20px;padding:22px;text-align:center}
+.gt{font-size:24px;font-weight:800;color:var(--ac);margin-bottom:16px}
+.gbar{position:relative;height:30px;background:var(--bad);border-radius:15px;margin:22px 0 14px;opacity:.95}
+.gbar .gz{position:absolute;left:0;top:0;bottom:0;background:var(--ok);border-radius:15px 0 0 15px;min-width:6px}
+.gbar .gn{position:absolute;top:-9px;left:0;width:6px;height:48px;margin-left:-3px;background:#fff;border-radius:3px;box-shadow:0 0 12px #fff;transition:left 1.25s cubic-bezier(.12,.85,.2,1)}
+.gs{font-size:19px;min-height:30px;margin-top:6px}
+#gauge.win .gbox{animation:pop .5s}#gauge.lose .gbox{animation:shake .5s}
+@keyframes pop{50%{transform:scale(1.08)}}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+.tbar{height:14px;background:var(--card2);border-radius:7px;overflow:hidden;margin:14px 0}.tbar i{display:block;height:100%;width:100%;background:var(--ac)}
+#tapbtn{width:100%;padding:34px 0;transition:transform .05s}
+#confetti{position:fixed;inset:0;z-index:60;pointer-events:none}
+.itemrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 10px}
+.ib{background:var(--card2);border:1px solid var(--ac);color:var(--tx);border-radius:999px;padding:8px 14px;font-size:16px;cursor:pointer;font-family:inherit}
+.ib:hover{background:var(--ac);color:#1b1500}
+.lk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:15px;flex-wrap:wrap}.lk .bar{flex:1;min-width:80px}.lk .bar i{background:linear-gradient(90deg,#6ee7b7,#ffd166);transition:width .6s}
+.flame{font-weight:800;color:#ff8a4a;animation:flame 0.7s ease-in-out infinite alternate;display:inline-block}
+@keyframes flame{from{transform:scale(1) rotate(-2deg);text-shadow:0 0 4px #ff8a4a}to{transform:scale(1.18) rotate(2deg);text-shadow:0 0 14px #ffd166}}
+.combo{display:inline-block;margin:6px 0;padding:6px 14px;border-radius:999px;background:linear-gradient(90deg,#ff8a4a,#ffd166);color:#1b1500;font-weight:900;animation:flame .6s ease-in-out infinite alternate}
+.drop{margin:8px 0;padding:10px 14px;border:2px dashed var(--ac2);border-radius:12px;font-weight:700;animation:pop .6s}
+.nick{display:inline-block;font-size:14px;color:var(--ac);background:var(--card2);border-radius:999px;padding:1px 10px;margin-left:4px;vertical-align:middle}
+.nick.pop{animation:nickpop 1.2s}@keyframes nickpop{0%{transform:scale(.4);opacity:0}50%{transform:scale(1.4)}100%{transform:scale(1);opacity:1}}
+.pill.rk{animation:pop .8s}
+.grade.stamp{animation:stampin .7s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes stampin{0%{transform:scale(4) rotate(-25deg);opacity:0}60%{transform:scale(.9) rotate(-5deg);opacity:1}100%{transform:scale(1) rotate(-3deg)}}
+.chart{width:100%;height:auto;margin-top:8px}
+.chart .ln{stroke-dasharray:1;stroke-dashoffset:1;animation:drawln 2.2s ease forwards}.chart .ln.n{animation-delay:.4s}
+@keyframes drawln{to{stroke-dashoffset:0}}
+.mrow{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:16px}.mrow .no{width:28px;font-weight:800;color:var(--ac)}.mrow .nm{width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow .mb{flex:1;height:12px;background:var(--card2);border-radius:6px;overflow:hidden}.mrow .mb i{display:block;height:100%;width:0;background:var(--ac2);border-radius:6px;animation:grow 1.4s ease forwards}
+.mrow.me .mb i{background:var(--ac)}.mrow.me{font-weight:800}
+@keyframes grow{to{width:var(--w)}}
+.mrow b{width:70px;text-align:right;font-size:15px}
+.rp{width:100%;max-width:460px;max-height:90vh;overflow:hidden}
+.rpi{background:var(--card);border:2px solid var(--bd);border-radius:16px;padding:14px 16px;margin:10px 0;animation:slidein .5s}
+.rpi.w{border-color:var(--ok)}.rpi.l{border-color:var(--bad)}
+.rpi .rpa{display:inline-block;font-size:30px;font-weight:900;color:var(--ac);margin-right:10px}
+.rpi small{display:block;color:var(--mut);margin-top:4px;font-size:14px}
+@keyframes slidein{from{transform:translateY(-30px);opacity:0}to{transform:none;opacity:1}}
+.rpe{text-align:center;color:var(--tx);animation:pop .8s}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 /* 큰 글씨 */
 body{font-size:18px;line-height:1.6}
 #app{max-width:640px}
@@ -826,7 +880,7 @@ function newState(cand,name,focus,opt){
   if(opt.rebirth){const k=Math.min(10,Math.floor(META.pts/4));if(k>0){META.pts-=k*4;saveMeta();STATS.forEach(x=>s[x]=clamp(s[x]+k));s.boost=k}}
   s.luck=opt.fort[2]+DIFF[opt.diff].l+(cand.trait==='lucky'?.05:0)-(cand.trait==='unlucky'?.05:0);
   s.fort=opt.fort[0];
-  s.seen.enter=7;S=s;
+  s.seen.enter=7;S=s;ensure(s);s.hist.push([7,Math.round(net()),60]);updateNick();
   return s;
 }
 const step=()=>S.age<30?1:S.age<50?2:3;
@@ -890,7 +944,10 @@ function failLine(ch,k0,fx){
   let h=0;for(const c of ch.t)h=(h*31+c.charCodeAt(0))>>>0;
   return pool[h%pool.length];
 }
-function riskify(ch){
+/* 선택지별 맞춤 실패 멘트 */
+const FAILMAP={"homework|숙제부터 끝낸다": "숙제부터 펴긴 했는데 책상에 앉자마자 졸음이 폭격했다. 눈 떠보니 새벽, 숙제는 침 자국만 남았다.", "homework|게임 먼저!": "게임 먼저 켰다가 3연패 하고 빡쳐서 한 판 더 하다 밤을 새웠다. 숙제는 그대로, 엄마는 등 뒤에 서 계셨다.", "class|친구를 밀어준다": "친구를 열심히 밀어줬는데 개표 결과 재민이 표가 더 많이 나왔다. 후보도 아닌데 득표 2위라니.", "class|관심 없다": "관심 없다며 구경만 했는데 하필 재민이 이름이 칠판에 적혔다. 출마 안 한 사람 표가 제일 많다는 괴담이 돌았다.", "piggy|저금한다": "저금하러 은행 갔더니 통장 만들다 번호표 대기만 한 시간이다. 돌아오니 동생이 세뱃돈 절반을 빌려 갔다.", "piggy|뽑기 기계에 전부 투입": "뽑기 기계에 5만 원을 갈아 넣었다. 인형은 하나도 못 뽑고 기계만 재민이 이름을 외웠다.", "piggy|친구들에게 쏜다": "친구들에게 쐈더니 다들 맛있게 먹고 계산대에서 각자 폰만 봤다. 5만 원이 순삭, 고맙다는 말은 한 명이 했다.", "bully|선생님께 알린다": "용기 내서 선생님께 알렸는데 \"증거 있니?\" 한마디에 말문이 막혔다. 소문은 오히려 재민이가 고자질쟁이라고 돌았다.", "academy|학원 뺑뺑이": "학원 뺑뺑이를 돌다 버스 한 번 놓쳐서 세 군데 다 지각했다. 성적은 그대로, 다크서클만 열심히 출석했다.", "academy|동네 축구/농구": "동네 농구하러 나갔다가 공이 없어서 30분 기다렸다. 겨우 시작하자마자 비가 쏟아졌고 컵라면도 품절이었다.", "academy|집에서 쉰다": "집에서 쉬려는데 엄마가 \"쉴 시간에 뭐라도 해\" 하며 청소기를 쥐여주셨다. 쉬는 것도 재능인가 보다.", "phone|유튜브 쇼츠 삼매경": "쇼츠 한 편만 보려다 3시간이 흘렀다. 알고리즘이 추천한 건 전부 남의 연애 상담과 곰팡이 청소 영상이었다.", "phone|코딩 앱을 깔아본다": "코딩 앱을 깔고 hello world를 쳤는데 세미콜론 하나 때문에 한 시간을 날렸다. 결국 앱은 삭제됐다.", "phone|SNS 시작": "SNS를 시작했는데 첫 게시물에 좋아요가 1개였다. 심지어 그 1개는 실수로 누른 엄마였다.", "love1|공부에 집중한다": "공부에 집중하려 했지만 노트 구석에 그 애 이름이 자꾸 적혔다. 결국 한 줄도 못 풀고 지우개만 닳았다.", "love1|친구에게 털어놓는다": "친구에게 털어놓았더니 3분 만에 옆 반까지 소문이 났다. 그 애가 복도에서 재민이를 보고 먼저 피했다.", "teen|방황한다": "방황하다 길을 잃어서 진짜로 낯선 동네까지 갔다. 폰 배터리는 5%, 결국 엄마한테 전화해서 픽업당했다.", "teen|부모님과 대화한다": "큰맘 먹고 대화를 시도했는데 말 꺼내자마자 \"그래서 성적은?\"이 돌아왔다. 대화는 30초 만에 종료됐다.", "teen|운동으로 푼다": "운동으로 풀겠다고 무리하게 뛰다 다리에 쥐가 났다. 짜증은 풀리기는커녕 근육통까지 추가됐다.", "cheat|내 힘으로 푼다": "내 힘으로 풀었는데 찍은 번호가 전부 틀렸다. 옆자리 친구는 만점인데, 양심은 점수에 안 올라간다.", "club|밴드부": "밴드부에 들어가 첫 합주를 했는데 박자가 안 맞아서 드럼이 울었다. 재민이는 탬버린 담당으로 강등됐다.", "club|코딩 동아리": "코딩 동아리에서 밤새 짠 코드가 에러 999개로 돌아왔다. 알고 보니 원인은 오타 하나였다.", "club|농구부": "농구부에 들어갔는데 연습 첫날 드리블하다 공이 발에 걸려 자빠졌다. 별명이 \"공 도둑맞은 사람\"이 됐다.", "club|봉사 동아리": "봉사 동아리에 가서 열심히 쓰레기를 주웠더니 그게 쓰레기가 아니라 누가 맡겨둔 짐이었다. 사과만 열 번 했다.", "gamer|자러 간다": "자러 갔는데 눈을 감으니 아까 그 판의 실수만 떠올라 말똥말똥했다. 결국 새벽 5시까지 뒤척였다.", "gamer|한 판만 더!": "한 판만 더 했는데 연패 늪에 빠졌다. 티어는 두 단계 떨어졌고 해는 이미 떴다.", "campus|과팅·동아리·MT": "과팅과 MT를 다 갔는데 과팅에선 이름도 기억 못 해줬고 MT에선 설거지 담당이 됐다. 인맥은 없고 지출만 남았다.", "campus|알바 하며 돈 모으기": "알바를 시작했는데 첫 주에 접시를 깨서 시급이 변상으로 사라졌다. 일하고 오히려 마이너스다.", "campus|휴학하고 세계여행": "세계여행을 떠났는데 공항에서 짐이 다른 나라로 갔다. 여행 첫날부터 슬리퍼와 기념품 가게 티셔츠로 버텼다.", "armyend|상담을 받으며 천천히 마무리한다": "상담을 받으러 갔지만 예약이 꽉 차 있었다. 대기하며 마지막 달이 느릿느릿 흘러갔다.", "promo|일과 삶의 균형": "일과 삶의 균형을 외치며 칼퇴했는데 그날따라 중요한 보고가 터졌다. 승진 명단에서 슬쩍 이름이 흐려졌다.", "offer|지금 회사에 남는다": "회사에 남기로 했는데 얼마 뒤 헤드헌터가 간 회사가 대박이 났다. 안정이 때로는 구경꾼 신세다.", "sidejob|자격증 공부": "자격증 공부에 시간을 갈아 넣었지만 시험장에서 이름 쓰는 칸부터 틀렸다. 시험은 불합격, 잠은 증발했다.", "sidejob|그냥 푹 쉰다": "푹 쉬려고 누웠는데 쉬는 동안 남들은 다 부업으로 뭔가 하고 있다는 사실이 SNS에 떴다. 마음은 하나도 안 쉬었다.", "invest|적금만 한다": "적금만 했는데 물가가 이자를 가볍게 이겼다. 돈은 늘었는데 살 수 있는 건 줄었다.", "invest|주식 소액 투자 (500만)": "500만 원 주식 투자를 했는데 산 날이 고점이었다. 파란불이 매일 켜지고 재민이의 한숨도 상한가다.", "invest|투자는 무서워": "투자가 무서워서 안 했더니 지인이 산 종목은 쭉쭉 올랐다. 안전하긴 한데 배가 아프다.", "house|전세로 안정": "전세로 안정을 택했는데 계약 만기에 보증금을 올려달란다. 안정이 불안정으로 한 달 만에 바뀌었다.", "scam|즉시 끊고 112 확인": "즉시 끊고 112에 전화를 걸었는데 상담원 번호가 통화 중이었다. 그사이 또 온 전화를 받아 버리는 바람에 식은땀만 났다.", "gamble|안 간다": "안 간다고 했는데 지인이 \"의리 없다\"며 단톡방에서 재민이를 저격했다. 어색한 분위기가 몇 달 갔다.", "startup|퇴근 후 사이드로만": "퇴근 후 사이드로만 시작했는데 본업에서 졸다 걸렸다. 부업은 월 3천 원 벌고 본업 평가가 깎였다.", "youtube|시청자로 남는다": "시청자로만 남기로 했는데 알림 설정하다 새벽 4시가 됐다. 정작 본 영상은 광고가 반이었다.", "meet|일이 바빠서 패스": "일이 바빠서 패스했는데 그날 일은 취소됐고 소개팅 상대는 친구와 사귀게 됐다. 바쁜 건 일정이 아니라 눈치였다.", "propose|더 만나본다": "더 만나본다고 했다가 연인이 \"나만 결혼 생각하는 거였네\"라며 눈빛이 식었다. 시간이 필요한 건 재민이만이 아니었다.", "baby|둘이서 행복하게": "둘이서 행복하게 살기로 했는데 주변에서 \"나이 들면 외롭다\"는 조언이 폭우처럼 쏟아졌다. 평화로운 삶, 알림 소음은 상시 가동이다.", "kidschool|학원·유학 전폭 지원 (2000만)": "학원과 유학에 2000만 원을 투자했는데 아이는 시차 적응에 실패하고 성적은 제자리였다. 지갑만 시원하게 비었다.", "kidschool|아이의 선택을 존중한다": "아이의 선택을 존중했더니 아이가 선택한 건 방 문 닫고 게임이었다. 존중은 했는데 존경은 못 받았다.", "divorce|부부 상담을 받는다 (300만)": "300만 원 내고 부부 상담을 받았는데 상담사가 둘이 같은 말만 반복하는 걸 보고 한숨을 쉬었다. 비용만 입금됐다.", "petadopt|봉사만 한다": "봉사만 하기로 했는데 열 마리가 모두 재민이 신발을 물고 뜯었다. 마음은 녹았지만 슬리퍼가 사망했다.", "travel|유럽 3주 여행 (500만)": "유럽 3주 여행에 500만 원을 썼는데 첫날 소매치기에 폰을 잃었다. 인생샷은 기억 속에만 있다.", "travel|국내 캠핑": "국내 캠핑을 갔는데 텐트를 치다 폭우가 쏟아졌다. 불멍은 물멍이 됐고 라면은 불었다.", "travel|돈 아끼자": "돈을 아끼자고 다짐했는데 하필 그달에 세탁기가 고장났다. 아낀 돈이 수리비로 고스란히 증발했다.", "hobby|등산": "등산에 도전했는데 중간쯤에서 이미 다리가 후들거렸다. 정상은 포기하고 산 중턱에서 막걸리만 마셨다.", "hobby|요리": "요리를 해봤는데 된장찌개가 짜서 물을 부었더니 국이 됐다. 계란말이는 이번에도 스크램블이었다.", "hobby|기타 연주": "기타 연주에 도전했는데 가족 앞에서 손가락이 꼬여 첫 코드부터 틀렸다. 박수는 격려 박수였다.", "reunion|불참한다": "불참 통보를 했더니 단톡방에서 내 이야기가 안주가 됐다. 회비는 N분의 1로 정확히 청구됐다.", "mentor|조언을 적극적으로 구한다": "조언을 구했더니 아침 5시 기상 얘기만 세 시간 들었다. 인생의 방향은 모르겠고 귀만 얼얼하다.", "mentor|예의상 인사만": "인사만 꾸벅하고 지나갔는데 알고 보니 선배가 일자리를 소개하려던 참이었다는 소문이 돈다.", "wallet|경찰서에 맡긴다": "지갑을 맡기느라 서류만 한 시간 썼다. 주인은 끝내 나타나지 않았고 사례금은 구경도 못 했다.", "lonely|동호회에 가입한다": "동호회에 갔더니 회원 평균 연령 62세. 첫날부터 총무 자리와 회비 수금이 재민이에게 떨어졌다.", "checkup|바로 치료한다 (800만)": "800만 원을 내고 치료받았는데 의사가 \"경과를 지켜봅시다\"란다. 통장이 먼저 이상 소견이다.", "checkup|운동·식단부터 바꾼다": "샐러드 사흘 먹고 러닝 하루 뛰었더니 근육통으로 쓰러졌다. 결국 치킨이 위로해 줬다.", "disease|수술과 치료 (3000만)": "3000만 원짜리 수술을 받았는데 회복이 더디다. 병원비 청구서를 보고 또 한 번 쓰러질 뻔했다.", "disease|가족과 시간을 보낸다": "가족과 시간을 보내려 했는데 다들 폰만 본다. 치킨 앞에서도 각자 숏츠 시청 중이다.", "midlife|스포츠카 지른다 (3000만)": "스포츠카를 뽑자마자 주차장 턱에 바닥을 긁었다. 엔진 소리보다 할부 소리가 더 크다.", "midlife|새 취미에 올인": "장비만 100만 원어치 샀는데 사흘 만에 흥미가 식었다. 제2의 청춘은 당근마켓으로 떠났다.", "parent|직접 모신다": "직접 모시다 간병에 지친 재민이가 먼저 몸살이 났다. 효도도 체력전이다.", "parent|좋은 요양시설로 모신다 (3000만)": "3000만 원을 들여 모셨는데 부모님이 집에 가고 싶다며 서운해하셨다. 마음만 무겁다.", "parent|형제들에게 맡긴다": "형제들에게 맡겼더니 \"왜 나만 해?\"로 시작해 옛날 일까지 소환됐다. 가족 단톡방 폭파.", "grand|품에 안는다": "손주를 안자마자 울음이 터졌다. 달래다 허리까지 삐끗해서 할아버지가 환자가 됐다.", "memoir|쓴다": "첫 문장에서 3일을 고민하다 \"나는 태어났다\"만 썼다. 다음 문장은 아직 태어나지 않았다.", "memoir|사진첩만 정리한다": "사진첩 정리하다 흑역사를 발굴했다. 세 시간 내내 이불킥만 하고 한 장도 못 정리했다.", "f_jinho|이진호와 친구가 된다 (술 한잔)": "한잔이 새벽 4시까지 이어졌다. 군대 얘기를 하다 계산은 재민이가 했고 숙취는 덤이다.", "f_jinho|바빠서 거절한다": "바쁘다며 거절했는데 그날 일정은 텅 비어 있었다. 집에서 라면만 끓이며 후회했다.", "f_jinho2|기꺼이 돕는다": "기꺼이 돕겠다고 나섰다가 의자 100개를 혼자 날랐다. 인맥은 못 넓히고 허리만 나갔다.", "f_chanho|만나서 밥 먹는다": "밥 먹으러 갔다가 병원 괴담만 듣고 입맛이 뚝 떨어졌다. 밥값은 재민이 몫이었다.", "f_chanho|건강검진 패키지를 소개받는다": "할인가라더니 옵션을 추가하다 보니 정가를 넘었다. 결과지에는 수면 부족만 큼지막하게 적혀 있었다.", "f_chanho2|찬호에게 병원 후원을 부탁받는다 (200만)": "200만 원을 후원했는데 감사패는커녕 후원자 명단에서 이름이 빠졌다. 박수 대신 오타만 남았다.", "f_kyung|도수치료를 받는다 (100만)": "100만 원 내고 도수치료를 받았는데 오히려 더 아프다. 원래 아프다가 낫는 거라는 말만 들었다.", "f_kyung|재활운동 처방을 받는다": "처방받은 스트레칭을 하다가 오히려 어깨를 삐끗했다. 루틴은 이틀 만에 폐기됐다.", "f_kyung2|치킨 시켜놓고 응원만 한다": "응원만 하다 치킨만 신나게 먹었다. 단톡방에서 구경꾼으로 불리고 몸무게만 늘었다.", "f_semin|시승에 따라간다": "시승에서 급가속을 맛보다 멀미가 터졌다. 트랙에 점심을 남기고 왔다.", "f_semin|엔진 이야기를 들으며 공부한다": "엔진 얘기를 한 시간 듣다 졸았다. 눈을 떠 보니 아는 건 터보 하나뿐이었다.", "f_semin|나는 대중교통파": "대중교통을 탔는데 눈앞에서 버스를 놓치고 지하철은 지연됐다. 아낀 돈이 택시비로 날아갔다.", "f_semin2|신차 할부로 지른다 (3000만)": "신차를 계약했는데 할부 이자가 상상 이상이다. 월급이 차에게 먹히는 중이다.", "f_semin2|중고차를 알아봐 달라고 한다 (1000만)": "가성비 좋다던 중고차 에어컨이 첫날부터 안 나온다. 첫 수리비로 가성비가 증발했다.", "f_semin2|자전거가 최고": "자전거로 출근하다 소나기에 체인까지 풀렸다. 환경은 지켰고 옷은 못 지켰다.", "f_all|다 같이 부산 여행 (300만)": "부산에 갔더니 숙소 예약이 꼬였다. 300만 원 쓰고 해운대 모래사장에서 노숙할 뻔했다.", "f_all|조용히 카페에서 수다": "수다가 길어져 커피를 5잔 마셨다. 카페인에 잠은 못 자고 계산서만 눈에 선하다.", "cult|단호하게 거절한다": "단호하게 거절했더니 복 받을 기회를 걷어찬다며 골목 끝까지 따라왔다. 지하철까지 도망쳤다.", "mlm|\"난 됐어\"라고 말한다": "\"난 됐어\" 한마디에 친구가 단톡방 프로필 상태메시지로 저격을 시작했다. 우정이 재고처럼 쌓였다.", "mlm|설명회만 듣고 나온다": "설명회만 듣고 나오려는데 출구를 막고 \"한 번만 더 들어봐\"가 시작됐다. 두 시간이 더 지나갔다.", "busan|따라간다 (이사비 500만)": "이사비 500만 원 쓰고 내려왔는데 연인이 야근 지옥이다. 부산 바다는 혼자 본다.", "busan|장거리 연애를 해본다": "KTX 값에 지쳐 한 달 만에 통장이 비었다. 만나는 건 주말 이틀, 싸우는 건 평일 내내.", "claw|그만두고 간다": "그만두고 돌아서는데 뒤에서 누가 한 번에 뽑았다. 아깝다는 말이 오늘 밤 이불킥으로 확정됐다.", "karaoke|발라드로 감성 충전": "발라드로 감성을 잡다가 고음에서 삑사리가 났다. 점수는 54점, 감성은 바닥이다.", "ufo|영상 찍어 올린다": "영상을 올렸더니 조회수 3회에 댓글은 \"렌즈 얼룩 아님?\" 하나뿐이었다.", "ufo|경찰에 신고한다": "새벽 3시 신고에 \"혹시 술 드셨어요?\"가 돌아왔다. 출동한 경찰관이 깊은 한숨을 쉬었다.", "ufo|소원을 빈다": "소원을 빌다 보니 옥상 문이 잠겨 있었다. 새벽 4시까지 갇혀서 유일한 소원은 문 열림이 됐다.", "fortune|안 믿는다": "안 믿는다며 나왔는데 그날 하필 우산 없이 소나기를 맞았다. 점쟁이 눈빛이 자꾸 떠오른다.", "chicken|치킨은 먹는 것": "치킨을 먹으려 했는데 오늘따라 품절이다. 겨우 시킨 배달은 두 시간 만에 식어서 왔다.", "stray|캣맘/캣대디로 돌본다": "밥을 챙겨 줬더니 길냥이가 10마리로 늘었고 이웃의 항의가 들어왔다. 간식비가 월급을 넘본다.", "gym|홈트로 간다": "홈트하다 아랫집에서 쿵쿵거린다고 항의가 왔다. 푸시업 한 개 하고 소파로 직행했다.", "yj_commute|그냥 견딘다 (책 읽으며 이동)": "책을 펼쳤지만 사람에 밀려 한 페이지도 못 읽었다. 회사에 도착하기도 전에 이미 방전이다.", "yj_commute|서울로 이사한다 (월세 부담)": "서울로 이사했더니 월세가 월급을 삼켰다. 통근 시간은 줄고 라면 횟수만 늘었다.", "yj_flower|친구들과 인생샷을 찍는다": "인생샷을 찍으려다 친구가 꽃밭을 밟아 혼났다. 사진에는 눈 감은 재민이만 남았다.", "yj_flower|연인과 데이트": "데이트 중 연인이 꽃가루 알레르기로 재채기가 폭발했다. 분위기도 같이 날아갔다.", "yj_flower|혼자 산책하며 생각 정리": "혼자 걷다가 커플 사진기사로 20분간 차출됐다. 생각 정리는커녕 팔만 아프다.", "yj_mountain|감악산 출렁다리 구경": "출렁다리 한가운데서 다리가 풀려 꼼짝도 못 했다. 뒤에 줄 선 사람들의 시선이 따갑다.", "yj_mountain|집에서 쉰다": "쉬겠다고 누웠는데 괜히 불안해서 폰만 붙들고 있었다. 하루 종일 쉰 것 같지 않은 피로가 몰려왔다.", "yj_festival|구경하며 막걸리 한 잔": "막걸리를 너무 빨리 들이켜서 얼쑤 대신 꺽 소리가 나왔다. 탈 쓴 아저씨와 눈이 마주쳤고 공연이 잠깐 멈췄다.", "yj_jangheung|분위기 좋은 카페에서 여유": "카페에 갔더니 대기 번호가 47번이었다. 여유는커녕 1시간 서서 창밖만 구경했다.", "yj_jangheung|장흥 계곡에 발 담그기": "계곡 물이 생각보다 깊어서 발만 담근다더니 바지까지 입수했다. 젖은 채로 차에 타니 시트도 같이 젖었다.", "yj_jangheung|송암스페이스센터에서 별 보기": "별 보러 갔는데 구름이 꽉 껴서 본 건 어둠뿐이었다. 우주 대신 모기떼랑 교감하고 왔다.", "yj_newtown|기존 집에서 계속 산다": "그냥 살겠다고 버텼는데 친구는 신축 입주 집들이 사진을 올렸다. 우리 집 곰팡이만 새삼 눈에 들어온다.", "yj_newtown|7호선 연장 소식에 기대한다": "기대하며 시세를 검색하다가 밤을 새웠다. 오른 건 집값이 아니라 다크서클이었다.", "treat|베스킨라빈스 하프갤런 쏜다": "하프갤런을 쐈는데 친구들이 \"어 이거 맛없는 맛 남았네\" 하며 민트초코만 남겼다. 카드값은 맛있는 맛 가격이었다.", "treat|피자 라지 3판을 쏜다": "피자 라지 3판을 쐈는데 정작 재민이 몫은 도우 끝자락 한 조각이었다. 쏜 사람이 제일 배고프다.", "treat|치킨에 맥주까지 풀코스": "풀코스로 쐈다가 친구 한 명이 2차를 외쳤다. 계산대 앞에서 재민이의 웃음이 굳었다.", "treat|아이스크림만 하나씩 사준다": "아이스크림만 사줬더니 친구가 \"이게 한턱이냐\"며 단톡방에 박제했다. 별명이 짠돌이로 확정됐다.", "pepper|저녁 반찬으로 쓴다": "오이고추 된장 무침을 했는데 너무 매워서 온 가족이 물을 들이켰다. 오이고추가 아니라 청양고추였다.", "sausage|같이 웃는다": "같이 웃으려 했는데 입꼬리가 먼저 경련이 났다. 소시지 얼굴 사진이 단톡방 프로필로 지정됐다.", "egg|웃으며 받아들인다": "웃으며 받아들였는데 날달걀 비린내가 머리에서 이틀을 갔다. 샴푸를 세 번 해도 오믈렛 냄새가 난다.", "pension|아픈 척 연기한다": "아픈 척을 했는데 너무 과해서 친구들이 구급차를 불렀다. 연기는 들통나고 재민이는 민망해서 모래에 묻혔다.", "pension|고기 굽는 담당으로 이동": "고기 굽는 담당이 됐는데 불판 앞에서 연기만 마셨다. 다 구워 놓으니 친구들이 먹고 재민이 몫은 탄 껍질뿐이었다.", "cupnoodle|\"이건 내 훈장이다\"라고 선언": "훈장이라고 외쳤는데 친구가 \"그냥 덜 식힌 거 아니냐\"고 했다. 선언만 남고 가슴은 따끔하다.", "chickenfry|알바를 그만둔다": "알바를 그만뒀더니 사장님이 마지막 월급을 끝내 안 줬다. 치킨 냄새만 평생 남았다.", "beom|먼저 사과한다": "먼저 사과했는데 범수가 \"그래 네가 잘못했네\" 하며 기고만장해졌다. 치킨은 재민이가 샀다.", "beom|중재자 친구를 부른다": "중재자 친구를 불렀는데 그 친구가 범수 편을 들었다. 2대 1이 되어 더 크게 졌다.", "fart|옆자리 친구를 쳐다본다": "옆자리 친구를 쳐다봤더니 친구가 더 큰 소리로 \"너 아니야?\" 했다. 온 교실의 시선이 재민이에게 꽂혔다.", "bus_sleep|친구에게 SOS": "친구에게 SOS를 쳤더니 \"나 지금 샤워 중\"이라는 답만 왔다. 재민이는 종점에서 막차 구경만 했다.", "yj_market|호떡과 순대를 사 먹는다": "호떡과 순대를 사 먹었는데 호떡이 너무 뜨거워서 입천장이 홀라당 까졌다. 순대는 맛도 못 봤다.", "delivery|옆집에 돌려준다": "치킨을 옆집에 돌려줬는데 \"저희 거 아닌데요?\" 하신다. 치킨은 점점 식어가고 주인은 영영 안 나타났다.", "delivery|경찰서에 문의한다": "경찰서에 문의했더니 \"치킨 때문에 오셨어요?\" 하는 눈빛을 받았다. 담당 경찰관이 치킨 냄새만 맡다 돌려보냈다.", "lostphone|내 폰에 전화해 본다": "내 폰에 전화했는데 무음이었다. 벨은 안 울리고 통화 연결음만 허무하게 이어졌다.", "scout|정중히 거절한다": "정중히 거절했는데 \"그럼 네가 뭐가 잘났는데\"라는 말이 돌아왔다. 괜히 찝찝해서 밤새 이불킥을 했다.", "wedding|10만 원 + 축사까지 한다": "10만 원에 축사까지 했는데 마이크가 꺼져 있었다. 3분간 입만 뻐끔거리다 박수는 예의상으로 받았다.", "wedding|5만 원만 낸다": "5만 원만 냈는데 신랑 어머니가 장부를 보며 눈썹을 올리셨다. 뷔페 접시는 평소보다 더 무거웠다.", "camping|다 같이 웃으며 다시 친다": "웃으며 다시 치려 했는데 이번엔 폴대가 부러졌다. 결국 텐트 밖에서 컵라면만 한 입 먹고 접었다.", "camping|집에 가서 잔다": "집에 가서 자려 했는데 돌아오는 길에 차가 막혔다. 집에 도착하니 새벽, 편한 침대는 이미 고양이가 차지했다.", "danggeun|안 쓰는 물건을 판다": "안 쓰는 물건을 올렸는데 \"천 원에 안 돼요?\"라는 쪽지만 열 통 왔다. 약속 장소에 나온 사람은 없고 편의점만 두 바퀴 돌았다.", "danggeun|나눔으로 이웃을 돕는다": "나눔을 올렸더니 \"지금 갈게요\" 하던 분이 노쇼했다. 두 시간 기다린 재민이는 편의점 앞의 장식이 됐다.", "diet|치킨은 샐러드라고 우긴다": "치킨을 샐러드라고 우겼더니 체중계가 \"샐러드 아니다\"라고 답했다. 숫자는 정직했다.", "diet|내일부터 한다": "내일부터 한다고 했는데 내일이 되자 \"모레부터\"가 됐다. 결국 월요일은 오지 않았다.", "airfryer|친구들을 초대해 홈파티": "친구들을 초대했는데 에어프라이어 하나로 6인분을 돌리느라 파티가 3교대가 됐다. 재민이는 마지막까지 구경만 했다.", "airfryer|냉동 만두만 돌린다": "냉동 만두만 돌렸는데 바삭하다 못해 숯이 됐다. 에어프라이어 연기가 자욱하고 소화기를 찾아 헤맸다.", "phonebill|와이파이만 쓰기로 결심": "와이파이만 쓰기로 했는데 지하철에서 지도가 안 열려서 길을 잃었다. 알뜰하려다 택시비가 더 나왔다.", "bugs|친구를 소환한다": "친구를 소환했는데 \"나 바퀴 무서워\"라며 재민이 뒤에 숨었다. 치킨은 사 놓고 퇴치는 직접 했다.", "parentday|백화점에서 선물을 산다 (10만)": "10만 원짜리 선물을 샀는데 어머니가 \"이거 얼마 줬어?\" 하시곤 영수증을 요구했다. 환불 위기가 닥쳤다.", "streamfail|웃으며 수습한다": "웃으며 수습하려는데 \"방금 그 말 편집각\"이라는 채팅이 올라왔다. 사건은 이틀 만에 쇼츠로 박제됐다.", "lottodream|복권 대신 저금한다": "복권 대신 저금했는데 하필 이번 주 1등이 우리 동네에서 나왔다. 돼지가 재민이 집 앞에서 돌아서는 게 보였다.", "lottodream|친구에게 자랑한다": "친구에게 자랑했더니 \"그 꿈 내가 어제 꿨는데?\" 하며 로또를 먼저 사러 갔다. 재민이는 부러움만 샀다.", "ghost|엄마를 부른다": "엄마를 불렀는데 \"아직도 안 자니? 내일 학교 가야지\" 하며 등짝 스매싱이 날아왔다. 귀신보다 엄마가 더 무서웠다.", "dance|촬영 담당을 맡는다": "촬영 담당을 맡았는데 녹화 버튼을 안 눌렀다. 친구들이 열 번이나 다시 췄고 재민이는 죄인이 됐다.", "rain|편의점에서 우산을 산다 (1만 원)": "편의점에서 우산을 샀는데 계산하고 나오니 비가 뚝 그쳤다. 만 원짜리 우산이 지팡이가 됐다.", "rain|빗속을 달린다": "빗속을 달리다가 물웅덩이에서 미끄러져 철퍼덕 엎어졌다. 영화 주인공이 아니라 코미디 조연이었다.", "subway|양보한다": "어르신께 양보했는데 \"나 곧 내려\" 하시고 앞 사람이 그 자리에 슬쩍 앉았다. 재민이는 서서 어색하게 웃었다.", "gacha|무과금으로 버틴다": "무과금으로 버텼더니 뽑기에서 3성 잡캐만 12마리 나왔다. 한정 캐릭터는 친구 계정에서나 구경하게 됐다.", "foreigner|번역기를 켠다": "번역기를 켰는데 인터넷이 먹통이었다. 관광객과 서로 손짓발짓하다 엉뚱하게 편의점으로 모셔다드렸다.", "flat_tire|친구 박세민에게 전화한다": "세민이에게 전화했는데 \"나 지금 회의야, 이따 줄게\" 하고 끊겼다. 재민이는 갓길에서 유튜브만 봤다.", "jobretry|알바로 생활비를 번다": "알바로 생활비를 벌려는데 면접마다 \"경력 있으세요?\"라는 질문만 받았다. 편의점 알바마저 경쟁률이 높았다.", "jobretry|집에서 쉬며 재충전": "집에서 쉬며 재충전했는데 일어나니 해가 졌고 충전된 건 배달 앱 포인트뿐이었다. 채용 공고는 마감됐다.", "hemo|친구들에게 웃으며 털어놓는다": "친구들에게 웃으며 털어놨는데 별명이 하루 만에 엉덩이 대장으로 확정됐다. 병원 소개보다 놀림이 더 빨리 왔다.", "fire_sign|이직을 몰래 준비한다": "이직을 몰래 준비하다가 이력서 파일을 회사 프린터로 출력해 버렸다. 복도 수군거림이 한층 더 커졌다."};
+const FIXMAP={"jobpick|📋 공무원 지원": "공무원 시험에 도전했는데 한 문제 차이로 떨어졌다. 그 한 문제는 하필 어제 잠깐 졸 때 지나간 부분이었다.", "jobpick|🏭 중소기업 직원 지원": "중소기업에 지원했는데 면접관이 \"우리 회사 어떻게 알았어요?\"라고 물었다. 대답을 못 하고 입만 뻐끔거렸다.", "jobpick|🍳 요리사 지원": "요리사에 지원해서 실기를 봤는데 계란후라이를 뒤집다 바닥에 떨어뜨렸다. 심사위원이 조용히 메모했다.", "jobpick|🚀 창업가 지원": "창업에 도전했는데 사업계획서를 본 투자자가 고개를 갸웃했다. 아이디어는 번뜩였지만 매출은 여전히 0원이다.", "jobpick|🩺 의사 지원": "의사의 문턱은 높았다. 합격자 명단에서 재민이 이름은 끝내 안 보였고 흰 가운은 입어 보지도 못했다.", "jobpick|⚖️ 변호사 지원": "변호사 시험 문제를 보는 순간 법전이 외계어로 읽혔다. 재민이만의 변론은 시험장에서 침묵으로 끝났다.", "jobpick|🏢 대기업 직원 지원": "대기업에 지원했는데 서류 탈락 문자가 6초 만에 왔다. 읽지도 않은 것 같은 속도였다.", "jobpick|🏅 프로 운동선수 지원": "프로 선수 테스트에 도전했지만 첫 달리기에서 감독이 스톱워치를 두 번 확인했다. 재민이는 관중석으로 이동했다.", "jobpick|💻 개발자 지원": "개발자 코딩 테스트에서 첫 문제부터 무한 루프에 빠졌다. 컴퓨터가 먼저 한숨을 쉬었다.", "jobpick|🎤 연예인 지원": "연예인 오디션에서 노래를 불렀는데 심사위원이 두 소절 만에 벨을 눌렀다. 재민이의 데뷔는 대기실에서 끝났다.", "jobpick|🚒 경찰/소방관 지원": "경찰 체력 시험에서 팔굽혀펴기가 모자랐다. 재민이가 쫓긴 건 범인이 아니라 기준 기록이었다.", "jobpick|🍎 교사 지원": "교사 임용에 도전했는데 면접에서 \"학생이 말 안 들으면요?\"라는 질문에 울컥하며 답했다. 결과는 대기 번호 999번.", "jobpick|🎖️ 직업군인 지원": "직업군인 지원 체력 평가에서 군장 메고 한 바퀴 돌다 먼저 주저앉았다. 군은 아직 재민이를 부르지 않았다.", "jobpick|📹 유튜버 지원": "유튜버로 데뷔했지만 첫 영상 조회수가 3이었다. 그중 하나는 엄마이고 둘은 본인이다.", "cult2|가족과 상담하며 탈퇴한다": "탈퇴 의사를 밝히자 모임 사람들이 총출동해 눈물로 붙잡았다. 가족 상담은 끝났는데 마음이 흔들린다.", "ghost|손전등 들고 확인한다": "손전등을 들고 확인하러 갔는데 배터리가 나가서 어둠 속에 혼자 남았다. 천장의 탁탁탁은 더 선명해졌다.", "gacha|천장까지 달린다 (30만 원)": "천장 직전까지 달렸는데 통장이 먼저 바닥을 쳤다. 30만 원이 사라졌고 캐릭터는 여전히 안 보인다.", "noise|정중히 쪽지를 붙인다": "정중히 쪽지를 붙였더니 답장으로 \"죄송\"이 붙었다. 그날 밤 쿵쿵 소리는 오히려 더 커졌다.", "hemo|병원(항문외과)에 간다 (30만 원)": "접수 창구 앞에서 부끄러워 그냥 도망쳤다. 병원 문 앞까지만 갔고 증상은 그대로다."};
+function riskify(ch,eid){
   if(ch.p!=null||ch.fn||ch.noRisk||!ch.fx)return ch;
   const fx=ch.fx;for(const k of SKIPK)if(k in fx)return ch;
   let ben=0,k0=null,best=0;
@@ -908,11 +965,11 @@ function riskify(ch){
     else if(k==='inv'||k==='risk'||k==='f'||k==='smul'||k==='mmul'||k==='invmul'||k==='s'){if(k==='inv'||k==='risk')lose[k]=fx[k]}}
   if(lose.sts==null)lose.sts=2;
   let h=0;for(const c of ch.t)h=(h*31+c.charCodeAt(0))>>>0;
-  const out=Object.assign({},ch,{p:Math.max(.4,Math.min(.78,.8-ben*.012)),win:[fx,ch.m],lose:[lose,failLine(ch,k0,fx)]});
+  const out=Object.assign({},ch,{p:Math.max(.4,Math.min(.78,.8-ben*.012)),win:[fx,ch.m],lose:[lose,(FAILMAP[eid+'|'+ch.t]||failLine(ch,k0,fx))]});
   if(k0)out.k=k0;delete out.fx;delete out.m;
   return out;
 }
-function getChoices(e){const raw=typeof e.choices==='function'?e.choices(S):e.choices;return NORISK.has(e.id)?raw:raw.map(riskify)}
+function getChoices(e){const raw=typeof e.choices==='function'?e.choices(S):e.choices;const arr=NORISK.has(e.id)?raw:raw.map(c=>riskify(c,e.id));return arr.map(c=>{const f=FIXMAP[e.id+'|'+c.t];return f&&c.p!=null&&c.lose?Object.assign({},c,{lose:[c.lose[0],f]}):c})}
 function getText(e){return typeof e.text==='function'?e.text(S):e.text}
 
 /* ===== time ===== */
@@ -974,7 +1031,10 @@ function chooseEvent(){
 function advance(){
   if(S.over){S.cur=null;return}
   if(S.queue.length){S.cur=S.queue.shift();onEnter();return}
+  ensure(S);
   const n=step();S.age+=n;S.flags.burnoutNow=0;tick(n);checkAch();checkEnd();
+  S.hist.push([S.age,Math.round(net()),Math.round(S.hap)]);
+  if(!S.over&&Math.random()<.08){S.newDrop=dropItem(1)}
   if(S.over){S.cur=null;return}
   const bj=bustRoll(n);
   S.cur=bj||chooseEvent();S.seen[S.cur]=S.age;onEnter();
@@ -1021,9 +1081,125 @@ function onEnter(){const e=EV[S.cur];if(e&&e.pre&&!S.flags['p_'+S.cur]){S.flags[
 /* ===== achievements ===== */
 function checkAch(){ACH.forEach(([id,n,d,f])=>{if(!S.runAch[id]){try{if(f()){S.runAch[id]=1;S.newAch.push(n);if(!META.ach[id]){META.ach[id]=Date.now()}}}catch(e){}}});saveMeta()}
 
+/* ===== 시스템 요소 10종 ===== */
+let FAST=false,nickPop=false;
+const reduced=()=>{try{return FAST||matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return FAST}};
+/* 3) 부적/아이템 */
+const ITEMS={charm:{e:'🧿',n:'행운의 부적',d:'다음 도전 성공률 +20%'},ticket:{e:'🎟️',n:'되감기 티켓',d:'과거로 돌아가기 1회 추가'},tonic:{e:'💊',n:'영양제',d:'스트레스 -20, 행복 +5'}};
+function dropItem(chance){if(Math.random()>=chance)return null;const k=pick(['charm','charm','tonic','ticket']);S.items[k]=(S.items[k]||0)+1;return k}
+/* 7) 동창 비교 */
+const MATE_N=['한도윤','오서연','강지훈','윤하은','임시우'];
+const MATE_J=['대기업','공무원','개발자','자영업','교사','간호사','프리랜서','의사'];
+function genMates(){return MATE_N.map(n=>({n,j:pick(MATE_J),sl:ri(100,2400),off:ri(-1500,1500),ph:R(.3,.9)}))}
+const mateNet=(m,a)=>a<22?0:Math.round((a-22)*m.sl+m.off+Math.sin(a*m.ph)*900);
+function classRank(){const me=net();return 1+S.mates.filter(m=>mateNet(m,S.age)>me).length}
+/* 상태 보정(이전 저장 호환) */
+function ensure(s){s.items=s.items||{charm:0,ticket:0,tonic:0};['pity','combo','maxCombo','tapBonus','charmOn'].forEach(k=>{if(s[k]==null)s[k]=0});if(!s.hist)s.hist=[];if(!s.mates)s.mates=genMates();if(s.nick==null)s.nick='';return s}
+/* 8) 실시간 별명 */
+function nickName(){
+  const n=net(),j=S.job&&S.job!=='none'?JOBS[S.job]:null;
+  if(S.over==='bankrupt')return '파산의 아이콘 재민';
+  if(n<-8000)return '빚쟁이 재민';
+  if(S.flags.lentLost)return '호구 재민';
+  if(S.flags.detained)return '영창 다녀온 재민';
+  if(S.flags.cult)return '길 잃은 재민';
+  if(S.flags.mlm)return '재고 부자 재민';
+  if(S.flags.gamble)return '타짜 재민';
+  if(S.flags.busted&&!j)return '해고 경험자 재민';
+  if(S.hap>=88)return '행복 부자 재민';
+  if(S.int>=88)return '천재 재민';
+  if(S.str>=85)return '근육 재민';
+  if(S.cha>=85)return '인기쟁이 재민';
+  if(S.soc<=20&&S.age>=20)return '아싸 재민';
+  if(S.age>=25&&!j&&!S.flags.retired)return '백수 재민';
+  if(j)return `${j.n} 재민`;
+  if(S.age<13)return '꼬마 재민';
+  if(S.age<19)return '학생 재민';
+  return '평범한 재민';
+}
+function updateNick(){const nn=nickName();if(nn!==S.nick){if(S.nick)S.newNick=nn;S.nick=nn}}
+/* 10) 시기별 배경 */
+function applyStage(){if(!S)return;const a=S.age;document.body.dataset.stage=a<13?'kid':a<19?'teen':a<30?'young':a<50?'mid':a<65?'senior':'old'}
+/* 5) 컨페티 */
+function confetti(n){
+  if(reduced())return;
+  try{
+    const c=document.createElement('canvas');c.id='confetti';c.width=innerWidth;c.height=innerHeight;document.body.appendChild(c);
+    const x=c.getContext('2d'),cols=['#ffd166','#6ee7b7','#ff6b8b','#7aa2ff','#ffffff'];
+    const P=Array.from({length:n||120},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.3,vx:R(-2,2),vy:R(2,6),s:R(6,12),r:R(0,6.28),vr:R(-.2,.2),c:pick(cols)}));
+    let t=0;(function f(){t++;x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.06;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(t<140)requestAnimationFrame(f);else c.remove()})();
+  }catch(e){}
+}
+/* 1) 운명의 게이지 연출: 초록 구간(성공 확률)에 바늘이 멈추면 성공 */
+function gaugeAnim(p,r,ok,cb){
+  if(reduced()){cb();return}
+  const o=document.createElement('div');o.id='gauge';
+  o.innerHTML=`<div class="gbox"><div class="gt">🎲 운명의 게이지</div><div class="gbar"><i class="gz" style="width:${Math.max(.8,p*100)}%"></i><b class="gn"></b></div><div class="gs">성공 구간 ${Math.max(1,Math.round(p*100))}% · 바늘이 초록 구간에 멈추면 성공!</div></div>`;
+  document.body.appendChild(o);
+  const n=o.querySelector('.gn');void n.offsetWidth;
+  requestAnimationFrame(()=>{n.style.left=(r*100)+'%'});
+  let k=0;const tk=setInterval(()=>{beep(300+k*40,.03);if(++k>9)clearInterval(tk)},110);
+  setTimeout(()=>{const g=o.querySelector('.gs');if(g)g.innerHTML=ok?'<b style="color:var(--ok);font-size:26px">✅ 성공!!</b>':'<b style="color:var(--bad);font-size:26px">❌ 실패...</b>';o.classList.add(ok?'win':'lose')},1350);
+  setTimeout(()=>{o.remove();cb()},1950);
+}
+/* 9) 연타 미니게임: 4초 동안 연타해서 성공률 최대 +15% */
+function tapGame(){
+  const key=S.cur+'@'+S.age;
+  const o=document.createElement('div');o.id='tapgame';
+  o.innerHTML=`<div class="gbox"><div class="gt">🔥 연타 챌린지!</div><div class="mut">첫 탭부터 4초! 연타할수록 성공률이 올라요 (최대 +15%)</div><button id="tapbtn" class="btn pri">TAP!</button><div class="tbar"><i id="tbar"></i></div><div id="tcnt" class="gs">0회</div></div>`;
+  document.body.appendChild(o);
+  let taps=0,started=false,done=false;
+  const btn=o.querySelector('#tapbtn');
+  const finish=()=>{done=true;const b=Math.min(.15,taps*.005);S.tapBonus=b;S.tapKey=key;o.querySelector('#tcnt').innerHTML=`<b>${taps}회! 성공률 +${Math.round(b*100)}%</b>`;setTimeout(()=>{o.remove();save();render()},900)};
+  btn.onclick=()=>{
+    if(done)return;
+    if(!started){started=true;const bar=o.querySelector('#tbar');bar.style.transition='width 4s linear';requestAnimationFrame(()=>{bar.style.width='0%'});setTimeout(finish,4000)}
+    taps++;o.querySelector('#tcnt').textContent=taps+'회';btn.style.transform='scale(.94)';setTimeout(()=>{btn.style.transform=''},60);beep(500+Math.min(taps,40)*8,.02);
+  };
+}
+/* 6) 인생 그래프(애니메이션으로 그려짐) */
+function chartSVG(h){
+  if(!h||h.length<2)return '';
+  const W=520,H=170,pl=8,pr=8,pt=10,pb=22;
+  const x0=h[0][0],x1=h[h.length-1][0]||x0+1;
+  const mx=Math.max(1000,...h.map(x=>Math.abs(x[1])));
+  const X=a=>pl+(a-x0)/((x1-x0)||1)*(W-pl-pr);
+  const Yn=v=>pt+(H-pt-pb)*(1-(v+mx)/(2*mx));
+  const Yh=v=>pt+(H-pt-pb)*(1-v/100);
+  const pn=h.map((x,i)=>(i?'L':'M')+X(x[0]).toFixed(1)+' '+Yn(x[1]).toFixed(1)).join(' ');
+  const ph=h.map((x,i)=>(i?'L':'M')+X(x[0]).toFixed(1)+' '+Yh(x[2]).toFixed(1)).join(' ');
+  const zero=Yn(0).toFixed(1);
+  const ticks=[x0,Math.round((x0+x1)/2),x1].map(a=>`<text x="${X(a).toFixed(1)}" y="${H-6}" fill="currentColor" opacity=".6" font-size="13" text-anchor="middle">${a}세</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart"><line x1="${pl}" x2="${W-pr}" y1="${zero}" y2="${zero}" stroke="currentColor" opacity=".25" stroke-dasharray="4 4"/><path d="${ph}" class="ln h" fill="none" stroke="var(--ac2)" stroke-width="3" pathLength="1"/><path d="${pn}" class="ln n" fill="none" stroke="var(--ac)" stroke-width="3" pathLength="1"/>${ticks}</svg><div class="mut" style="font-size:14px"><span style="color:var(--ac)">━</span> 재산 &nbsp; <span style="color:var(--ac2)">━</span> 행복 &nbsp; (0선 아래는 빚)</div>`;
+}
+/* 4) 점수 카운트업 */
+function countUp(el,to,ms){if(!el)return;if(reduced()){el.textContent=to+'점';return}const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/(ms||1300));el.textContent=Math.round(to*(1-Math.pow(1-k,3)))+'점';if(k<1)requestAnimationFrame(f)})(t0)}
+/* 2) 행운 게이지(천장) UI */
+function gaugeRow(){const pt=S.pity||0;return `<div class="lk"><span>🍀 행운 게이지</span><div class="bar"><i style="width:${Math.min(100,pt*12.5)}%"></i></div><b>${pt>=8?'MAX +25%':'+'+Math.min(25,pt*3)+'%'}</b>${(S.combo||0)>=2?`<span class="flame">🔥 ${S.combo}콤보</span>`:''}</div>`}
+/* 10) 인생 하이라이트 리플레이 */
+function replay(){
+  if(!S||!S.log.length)return;
+  const o=document.createElement('div');o.id='replay';
+  o.innerHTML=`<div class="rp"><button class="btn c" id="rpx" style="width:auto;display:inline-block;float:right;padding:8px 14px">✖ 닫기</button><div class="mut">🎞️ 인생 하이라이트 리플레이</div><div id="rpc"></div></div>`;
+  document.body.appendChild(o);
+  let i=0,tm=null;const c=o.querySelector('#rpc'),L=S.log;
+  const close=()=>{clearInterval(tm);o.remove()};o.querySelector('#rpx').onclick=close;
+  const step=()=>{
+    if(i>=L.length){c.innerHTML=`<div class="rpe"><div style="font-size:60px">🎬</div><h2>끝! ${S.age}세 · ${esc(S.nick||'재민')}</h2></div>`;clearInterval(tm);return}
+    const l=L[i++],card=document.createElement('div');card.className='rpi '+(l.ok===true?'w':l.ok===false?'l':'');
+    card.innerHTML=`<span class="rpa">${l.age}세</span><b>${esc(l.t)}</b><div>${esc(l.p)} ${l.ok===true?'✅':l.ok===false?'❌':''}</div><small>${esc(l.m)}</small>`;
+    c.prepend(card);while(c.children.length>4)c.lastChild.remove();
+  };
+  step();tm=setInterval(step,reduced()?1:850);
+}
 /* ===== 성공확률: 전체 25% 하향 + 관련 능력치가 낮을수록 더 불리 ===== */
 /* 좋은 선택지는 극악 확률(약 15%): 기본 확률을 크게 깎고, 관련 능력치가 높으면 조금 유리 */
-function prob(ch){if(ch.fixp!=null)return clamp(ch.fixp+(ch.k?(S[ch.k]-50)/600:0),.05,.95);return clamp(ch.p*.34+S.luck*.5+(ch.k?(S[ch.k]-50)/400:0),Math.min(.02,ch.p*.5),.2)}
+function prob(ch){
+  if(ch.fixp!=null)return clamp(ch.fixp+(ch.k?(S[ch.k]-50)/600:0),.05,.95);
+  let p=clamp(ch.p*.34+S.luck*.5+(ch.k?(S[ch.k]-50)/400:0),Math.min(.02,ch.p*.5),.2);
+  if(ch.p>=.1)p=Math.min(.6,p+Math.min(.25,(S.pity||0)*.03)+(S.charmOn?.2:0)+(S.tapBonus||0));
+  return p;
+}
 /* ===== 결과 해설 한마디 (자극적·웃기게) ===== */
 const CMT={
  win:['오늘만큼은 운이 재민이 편이다 😎','이게 되네?! 15%의 기적!','해설진 기립! "저게 사람입니까?"','주변 사람들: "어? 쟤 뭐지?"','인생은 가끔 이렇게 한 방이 터진다.','신이 졸다가 실수로 재민이 손을 들어 줬다.','확률 앞에서 당당했던 재민, 승리!'],
@@ -1048,12 +1224,14 @@ function pickCmt(ok,d){
 }
 /* ===== choose ===== */
 function choose(i){
+  if(!S.cur||!EV[S.cur])return;
   const e=EV[S.cur];const chs=getChoices(e);const ch=chs[i];if(!ch||ch.dis)return;
   if(ch.need&&S.m<ch.need)return;
   SNAP=JSON.stringify(S);
   const before={};['int','str','chr','cha','soc','hap','sts','m','s','inv'].forEach(k=>before[k]=S[k]);
   let out,ok=null;
-  if(ch.p!=null){const p=prob(ch);ok=Math.random()<p;out=ok?ch.win:ch.lose;out=[out[0],out[1],p]}
+  let gp=null,gr=null;
+  if(ch.p!=null){const p=prob(ch);const r=Math.random();ok=r<p;gp=p;gr=r;out=ok?ch.win:ch.lose;out=[out[0],out[1],p]}
   else if(ch.fn){out=ch.fn(S)}
   else out=[ch.fx,ch.m];
   const fx=Object.assign({},out[0]);
@@ -1062,9 +1240,19 @@ function choose(i){
   const d=[];for(const k in before){const dv=Math.round(S[k]-before[k]);if(dv!==0)d.push([k,dv])}
   S.log.push({age:S.age,t:e.title.replace(/^[^\s]+\s/,''),p:ch.t.replace(/[^\p{L}\p{N}\s\-%()+,.!?~]/gu,'').trim()||ch.t,m:out[1],ok});
   S.res={d,m:out[1]||'',ok,p:out[2],t:e.title,pk:ch.t,cmt:pickCmt(ok,d)};
-  S.cur=null;checkAch();checkEnd();
+  ensure(S);
+  if(ch.p!=null){
+    if(ok){S.combo++;S.maxCombo=Math.max(S.maxCombo,S.combo);S.pity=0}else{S.combo=0;S.pity=Math.min(10,S.pity+1)}
+    S.charmOn=0;S.tapBonus=0;
+    S.res.combo=S.combo;S.res.pity=S.pity;
+    const dr=dropItem(ok?(S.combo>=3?.5:.22):.1);if(dr)S.res.drop=dr;
+    S.res.big=!!(ok&&(S.combo>=3||gp<.1));
+  }
+  S.cur=null;checkAch();checkEnd();updateNick();
   ok===false?sBad():sGood();
-  save();render();
+  save();
+  const done=()=>{render();if(S&&S.res&&S.res.big)confetti(150)};
+  if(gp!=null)gaugeAnim(gp,gr,ok,done);else done();
 }
 
 /* ===== score ===== */
@@ -1075,9 +1263,9 @@ function calc(){
   const ach=Math.min(100,Object.keys(S.runAch).length*5);
   const stp=-S.sts*.25;
   let pen=S.over==='bankrupt'?-80:S.over==='health'?-70:S.over==='karoshi'?-90:0;
-  const parts=[['재산',wealth,250],['연봉',inc,100],['행복',hap,150],['능력',abil,100],['가족',fam,110],['업적',ach,100],['스트레스',stp,0],['엔딩',pen,0]];
+  const parts=[['재산',wealth,250],['연봉',inc,100],['행복',hap,150],['능력',abil,100],['가족',fam,110],['업적',ach,100],['콤보',Math.min(60,(S.maxCombo||0)*10),60],['스트레스',stp,0],['엔딩',pen,0]];
   const total=Math.round(parts.reduce((p,x)=>p+x[1],0));
-  const grade=total>=215?'A':total>=128?'B':'C'; /* 목표 비율 A:B:C = 1:2:7 (자동 플레이 500판 기준 보정) */
+  const grade=total>=280?'A':total>=172?'B':'C'; /* 목표 비율 A:B:C = 1:2:7 (자동 플레이 500판 기준 보정) */
   return {total,grade,parts};
 }
 function ending(){
@@ -1131,10 +1319,10 @@ function header(){
   const j=S.job?JOBS[S.job]:null;
   const bg=BG[S.bg],tr=TRAITS[S.trait];
   return `<div class="card"><div class="hero">${avatar()}
-  <div><b>${esc(S.name)} · ${S.age}세</b><div class="mut">${j?`${j.e} ${j.n} · ${j.ranks[S.rank]||''}`:'학생'} ${S.married?'· 💍':''}${S.kids?' · 👶'+S.kids:''}${S.pet?' · 🐾':''}</div>
+  <div><b>${esc(S.name)} · ${S.age}세</b> <span class="nick${nickPop?' pop':''}">🏷️ ${esc(S.nick||'')}</span><div class="mut">${j?`${j.e} ${j.n} · ${j.ranks[S.rank]||''}`:'학생'} ${S.married?'· 💍':''}${S.kids?' · 👶'+S.kids:''}${S.pet?' · 🐾':''}</div>
   <div style="margin-top:4px"><span class="tag">${bg.e} ${bg.n}</span><span class="tag">${tr.e} ${tr.n}</span><span class="tag">🔮 ${S.fort}</span><span class="tag">🔥 하드</span>${S.flags.deokhyun?`<span class="tag">🏫 덕현고(1회)</span>`:''}${S.flags.seojeong?`<span class="tag">🎓 서정대 식품영양학과</span>`:''}</div></div></div>
   <div class="stats">${STATS.concat(['hap','sts']).map(statBar).join('')}</div>
-  <div class="money"><span class="pill">💰 재산 ${fmt(S.m)}</span>${S.inv>0?`<span class="pill">📈 투자 ${fmt(S.inv)}</span>`:''}<span class="pill">💼 연봉 ${fmt(S.s)}</span><span class="pill">🎓 ${EDU[S.edu]}</span></div></div>`;
+  <div class="money"><span class="pill">💰 재산 ${fmt(S.m)}</span>${S.inv>0?`<span class="pill">📈 투자 ${fmt(S.inv)}</span>`:''}<span class="pill">💼 연봉 ${fmt(S.s)}</span><span class="pill">🎓 ${EDU[S.edu]}</span>${S.age>=25&&S.mates?`<span class="pill rk">🏫 동창 ${classRank()}/6위</span>`:''}</div>${gaugeRow()}</div>`;
 }
 function render(){
   const m=$('#main');
@@ -1142,19 +1330,29 @@ function render(){
   if(VIEW==='info'){return info()}
   if(VIEW==='rank'){return rankView()}
   if(S.over&&!S.cur&&!S.res){return endView()}
+  ensure(S);updateNick();applyStage();
+  nickPop=false;if(S.newNick){nickPop=true;const nn=S.newNick;S.newNick=null;setTimeout(()=>toast('🏷️ 새 별명: '+nn),400)}
+  if(S.newDrop){const k=S.newDrop;S.newDrop=null;setTimeout(()=>toast('🎁 아이템 획득: '+ITEMS[k].e+' '+ITEMS[k].n),300)}
   let h=header();
   if(S.newAch.length){h+=`<div class="card" style="border-color:var(--ac)">🏆 업적 달성: ${S.newAch.join(', ')}</div>`;S.newAch=[]}
   if(S.res){
     const r=S.res;
     h+=`<div class="card ev"><h2>${r.t}</h2><p><span class="tag">${esc(r.pk)}</span></p><p>${r.ok===true?'✅ 성공! ':r.ok===false?'❌ 실패... ':''}${esc(r.m)}</p>
     ${r.p!=null?`<div class="mut">성공 확률 ${Math.round(r.p*100)}%</div>`:''}
+    ${r.combo>=2&&r.ok?`<div class="combo">🔥 ${r.combo}연속 성공!</div>`:''}
+    ${r.drop?`<div class="drop">🎁 아이템 획득: ${ITEMS[r.drop].e} ${ITEMS[r.drop].n} — ${ITEMS[r.drop].d}</div>`:''}
+    ${r.ok===false&&r.pity>=1?`<div class="mut">🍀 행운 게이지 ${r.pity}/8 · 다음 도전 성공률 +${Math.min(25,r.pity*3)}%</div>`:''}
     ${r.cmt?`<div class="cmt">💬 ${esc(r.cmt)}</div>`:''}
     <div class="chips">${r.d.map(([k,v])=>{const good=k==='sts'?v<0:v>0;return `<span class="chip ${good?'u':'d'}">${LB[k]} ${v>0?'+':''}${k==='m'||k==='s'||k==='inv'?fmt(v):v}</span>`}).join('')}</div>
     <button class="btn pri" id="next">${S.over?'🏁 인생 결과 보기':S.queue.length?'계속 ▶':'다음 해로 ▶'}</button>
-    ${!S.rewound&&SNAP?`<button class="btn c" id="rew">⏪ 과거로 돌아가기 (1회)</button>`:''}</div>`;
+    ${SNAP&&(!S.rewound||(S.items&&S.items.ticket>0))?`<button class="btn c" id="rew">⏪ 과거로 돌아가기 (${!S.rewound?'무료 1회':'🎟️ 티켓 사용'})</button>`:''}</div>`;
   }else if(S.cur){
     const e=EV[S.cur],chs=getChoices(e);
     h+=`<div class="card ev"><h2>${e.title}</h2><p>${esc(getText(e))}</p>`;
+    if(chs.some(c=>c.p!=null)){
+      const it=S.items;
+      h+=`<div class="itemrow">${['charm','tonic'].map(k=>it[k]>0?`<button class="ib" data-it="${k}" title="${ITEMS[k].d}">${ITEMS[k].e} ${ITEMS[k].n} ×${it[k]}</button>`:'').join('')}${S.charmOn?'<span class="tag">🧿 적용 중 +20%</span>':''}${S.tapBonus?`<span class="tag">🔥 연타 +${Math.round(S.tapBonus*100)}%</span>`:(S.tapKey===S.cur+'@'+S.age?'':'<button class="ib" id="tapb">🔥 연타로 확률↑</button>')}${it.ticket?`<span class="tag">🎟️ 되감기 티켓 ×${it.ticket}</span>`:''}</div>`;
+    }
     chs.forEach((ch,i)=>{const dis=ch.dis||(ch.need&&S.m<ch.need);
       h+=`<button class="choice" data-i="${i}" ${dis?'disabled':''}>${i+1}. ${ch.t}${ch.p!=null?` <small>🎲 도전 · 성공률 약 ${Math.round(prob(ch)*100)}%</small>`:''}${ch.d?`<small>${ch.d}</small>`:''}${ch.need&&S.m<ch.need?`<small>💸 ${fmt(ch.need)} 필요</small>`:''}</button>`});
     h+=`</div>`;
@@ -1163,7 +1361,9 @@ function render(){
   m.innerHTML=h;
   m.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{sTap();choose(+b.dataset.i)});
   const nx=$('#next');if(nx)nx.onclick=()=>{sTap();S.res=null;SNAP=SNAP;if(S.over){S.cur=null;render();return}advance();if(S.over)S.res=null;save();render()};
-  const rw=$('#rew');if(rw)rw.onclick=()=>{S=JSON.parse(SNAP);S.rewound=true;S.runAch.rew=1;S.newAch.push('⏪ 시간여행자');META.ach.rew=META.ach.rew||Date.now();saveMeta();SNAP=null;beep(300,.2);save();render()};
+  m.querySelectorAll('.ib[data-it]').forEach(b=>b.onclick=()=>{const k=b.dataset.it;ensure(S);if(!(S.items[k]>0))return;if(k==='charm'){if(S.charmOn)return;S.items.charm--;S.charmOn=1;toast('🧿 행운의 부적 발동! 다음 도전 +20%')}else if(k==='tonic'){S.items.tonic--;apply({sts:-20,hap:5});toast('💊 영양제 복용! 스트레스 -20')}beep(700,.1);save();render()});
+  const tb=$('#tapb');if(tb)tb.onclick=()=>tapGame();
+  const rw=$('#rew');if(rw)rw.onclick=()=>{S=JSON.parse(SNAP);ensure(S);if(S.rewound&&S.items.ticket>0)S.items.ticket--;S.rewound=true;S.runAch.rew=1;S.newAch.push('⏪ 시간여행자');META.ach.rew=META.ach.rew||Date.now();saveMeta();SNAP=null;beep(300,.2);save();render()};
   $('#bSave').onclick=exportSave;$('#bLoad').onclick=importSave;$('#bHome').onclick=()=>{VIEW='title';render()};
   window.scrollTo(0,0);
 }
@@ -1175,18 +1375,31 @@ function endView(){
   sc.grade==='F'||S.over&&S.over!=='natural'?sBad():sGood();
   const ach=Object.keys(S.runAch).map(id=>ACH.find(a=>a[0]===id)[1]);
   const share=`🧒 재민이 키우기 | ${S.name} (${S.age}세) | 등급 ${sc.grade} · ${sc.total}점 | ${en[1]} | ${sc.grade==='A'?'🎁 A인증(열외+하프갤런) '+stampCode(S.name,sc.total,S.age,sc.grade):sc.grade==='B'?'🎁 B인증(열외) '+stampCode(S.name,sc.total,S.age,sc.grade):'이벤트 도전 중'} | 직업 ${S.job&&S.job!=='none'?JOBS[S.job].n:'없음'} | 순자산 ${fmt(net())} | 연봉 최고 ${fmt(S.peakS)}`;
-  $('#main').innerHTML=`<div class="card center"><div class="big-av">${avatar(210)}</div><div class="mut">최종 인생 점수</div><div class="grade">${sc.grade}</div><h2>${sc.total}점</h2>
+  $('#main').innerHTML=`<div class="card center"><div class="big-av">${avatar(210)}</div><div class="mut">최종 인생 점수</div><div class="grade stamp">${sc.grade}</div><h2 id="scoreNum">0점</h2><div class="nick" style="margin:0 0 6px">🏷️ ${esc(S.nick||'')}</div>
   <div style="font-size:40px">${en[0]}</div><h2>${en[1]}</h2><p class="mut">${en[2]}</p></div>
   ${evtCard(sc,en)}
+  <div class="card"><b>📈 내 인생 그래프</b>${chartSVG(S.hist)}</div>
+  ${mateCard()}
   <div class="card"><b>📊 점수 내역</b>${sc.parts.map(([n,v,mx])=>`<div class="sbar"><span>${n}</span><div class="bar"><i class="${v<0?'sts':''}" style="width:${mx?clamp(v/mx*100,0,100):clamp(Math.abs(v),0,100)}%"></i></div><b>${Math.round(v)}</b></div>`).join('')}
   <div class="mut" style="margin-top:6px">${S.over&&S.over!=='natural'?'⚠️ 조기 종료 엔딩 (페널티 적용)':'80세까지 완주!'} · 환생 포인트 보유 ${META.pts}</div></div>
   <div class="card"><b>🏆 이번 인생의 업적 (${ach.length})</b><p class="mut">${ach.join(' · ')||'없음'}</p></div>
   <div class="card"><b>📖 인생 이야기</b><div class="tl">${S.log.map(l=>`<div><b>${l.age}세</b> ${esc(l.t)} — ${esc(l.p)}${l.ok===true?' ✅':l.ok===false?' ❌':''}<br><span class="mut">${esc(l.m)}</span></div>`).join('')}</div></div>
   <button class="btn pri" id="again">🔄 다시 키우기 (환생)</button>
+  <button class="btn c" id="rpl">🎞️ 인생 하이라이트 리플레이</button>
   <div class="row"><button class="btn c" id="shr">📋 결과 복사/공유</button><button class="btn c" id="rk">🏅 랭킹 보기</button></div>`;
+  $('#rpl').onclick=replay;
+  countUp($('#scoreNum'),sc.total,1300);
+  if(sc.grade==='A'||sc.grade==='B')setTimeout(()=>confetti(sc.grade==='A'?220:140),500);
   $('#again').onclick=()=>{S=null;VIEW='create';create()};
   $('#shr').onclick=()=>{try{navigator.clipboard.writeText(share);toast('복사했어요!')}catch(e){prompt('복사하세요',share)}};
   $('#rk').onclick=()=>{VIEW='rank';rankView()};
+}
+function mateCard(){
+  if(!S.mates)return '';
+  const rows=[{n:S.name,v:net(),me:1,j:S.job&&S.job!=='none'?JOBS[S.job].n:'백수'}].concat(S.mates.map(m=>({n:m.n,v:mateNet(m,S.age),j:m.j}))).sort((a,b)=>b.v-a.v);
+  const mx=Math.max(1000,...rows.map(r=>Math.abs(r.v)));
+  const rk=rows.findIndex(r=>r.me)+1;
+  return `<div class="card"><b>🏫 동창회 순위 (재산 기준) — 재민 ${rk}위</b>${rows.map((r,i)=>`<div class="mrow${r.me?' me':''}"><span class="no">${i+1}</span><span class="nm">${esc(r.n)}</span><div class="mb"><i style="--w:${Math.max(2,Math.round(Math.max(0,r.v)/mx*100))}%"></i></div><b>${fmt(r.v)}</b></div>`).join('')}<div class="mut" style="margin-top:6px">동창들은 ${S.age}세 기준 가상 인물이에요</div></div>`;
 }
 /* 오픈 이벤트 인증 카드: 이름·점수·날짜로 만든 도장 코드(화면 캡처용) */
 function stampCode(name,score,age,grade){
@@ -1215,12 +1428,13 @@ function rankView(){
   <button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
 }
-const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 A/B/C(목표 비율 1:2:7) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
+const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 A/B/C(목표 비율 1:2:7) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','시스템① 운명의 게이지: 도전할 때마다 바늘이 움직여 성공/실패가 갈리는 연출','시스템② 행운 게이지(천장): 실패가 쌓일수록 다음 도전 성공률 최대 +25%','시스템③ 아이템: 행운의 부적·영양제·되감기 티켓 (이벤트에서 획득, 도전 전에 사용)','시스템④ 연속 성공 콤보: 불꽃 애니메이션 + 최고 콤보 점수 보너스','시스템⑤ 컨페티·도장 쾅·점수 카운트업 연출(대성공·A/B 인증)','시스템⑥ 인생 그래프: 재산·행복 추이가 애니메이션으로 그려짐','시스템⑦ 동창회 순위: 가상 동창 5명과 재산 비교, 실시간 순위·결과 막대 그래프','시스템⑧ 실시간 별명: 상태에 따라 별명이 바뀌고 팝업(백수 재민, 호구 재민, 천재 재민 등)','시스템⑨ 연타 미니게임: 4초 연타로 성공률 최대 +15%','시스템⑩ 시기별 배경 연출 + 인생 하이라이트 리플레이(타임라인 애니메이션 재생)','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
 function info(){
   $('#main').innerHTML=`<div class="card"><h2>✨ 추가된 재미 요소 ${FEATURES.length}가지</h2><ol style="padding-left:18px;font-size:14px">${FEATURES.map(f=>`<li>${f}</li>`).join('')}</ol></div><button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW='title';render()};
 }
 function title(){
+  document.body.removeAttribute('data-stage');
   const sv=lsGet('jmk_save',null),f=fortune();
   $('#main').innerHTML=`<div class="card center"><div style="display:flex;justify-content:center;gap:14px;align-items:center;margin-top:10px"><img src="${PH.main}" alt="재민" width="96" height="96" style="border-radius:18px;border:3px solid var(--ac)"><span style="font-size:34px">➡️</span><img src="${PH.joy}" alt="재민" width="96" height="96" style="border-radius:18px;border:3px solid var(--ac2)"></div><h2>재민이 키우기</h2>
   <p class="mut">📍 대한민국 경기도 양주시 · 7살 재민이의 선택이 80살의 인생을 만든다.<br>직업도, 연봉도, 점수도 모두 당신의 선택!</p>
@@ -1235,7 +1449,7 @@ function title(){
   <div class="row"><button class="btn c" id="rk">🏅 랭킹/업적</button><button class="btn c" id="inf">✨ 재미 요소</button></div>
   <div class="row"><button class="btn c" id="ld">📂 저장 불러오기</button></div>`;
   $('#nw').onclick=()=>{VIEW='create';create()};
-  const ct=$('#cont');if(ct)ct.onclick=()=>{S=sv;S.diff='hell';VIEW='play';SNAP=null;render()};
+  const ct=$('#cont');if(ct)ct.onclick=()=>{S=sv;ensure(S);S.diff='hell';VIEW='play';SNAP=null;render()};
   $('#rk').onclick=()=>{VIEW='rank';rankView()};$('#inf').onclick=()=>{VIEW='info';info()};$('#ld').onclick=importSave;
 }
 let CANDS=[],CSEL=0,FOC=[],DF='hell',REB=false,NM='재민',REROLL=2;
