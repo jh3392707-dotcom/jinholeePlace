@@ -355,7 +355,7 @@ const k=Object.keys(j.req)[0]||'soc';
 const pr=j.kind==='var'?.27:.55;
 return Object.assign(g(`${j.e} ${j.n} 지원`,pr,[{job:id,q:'negot'},`${j.n} 최종 합격! 새 출발이다.`],[{job:'none',hap:-6,sts:6,f:['jobless']},'서류와 면접에서 줄줄이 탈락... 취업문은 바늘구멍이다. 일단 백수가 되었다.'],{k}),{d,dis:miss.length>0})}).sort((a,b)=>(a.dis?1:0)-(b.dis?1:0))});
 ev('graduate',23,23,'🎓 졸업과 취업 준비','사회로 나갈 시간. 이제 직업을 정해야 한다.',[c('취업 시장으로!',{q:'jobpick'},'')],{at:23,c:S=>!S.job});
-Q('negot','💰 연봉 협상',S=>`${JOBS[S.job].n} 합격! 제시 연봉은 ${fmt(S.s)}.\n연봉을 어떻게 할까?`,[
+Q('negot','💰 연봉 협상',S=>`${S.job&&JOBS[S.job]?JOBS[S.job].n:'새 직장'} 합격! 제시 연봉은 ${fmt(S.s)}.\n연봉을 어떻게 할까?`,[
 c('제시 연봉에 사인',{},'안정적으로 입사했다.'),
 g('10% 더 달라고 한다',.55,[{smul:1.1,soc:1},'"음, 재민 씨 마음에 드네요." 협상 성공!'],[{smul:.97,hap:-3},'조금 괘씸했나 보다...'],{k:'cha'}),
 g('배짱 +30% 요구',.25,[{smul:1.3,hap:6,cha:2},'인사팀이 두 손 들었다. 대박!'],[{smul:.92,hap:-6,sts:4},'면접관 표정이 싸늘하다. 연봉이 깎였다.'],{k:'int'})]);
@@ -977,6 +977,7 @@ g('상사/관계자에게 면담을 요청한다',.4,[{nofire:1,soc:3,hap:3,sts:
 c('이직을 몰래 준비한다',{int:2,sts:6,soc:1,m:-20},'몰래 이력서를 고치며 대비한다. 불안한 마음은 여전하다.'),
 c('모르는 척 버틴다',{sts:8,hap:-4},'아무 일 없겠지... 속으로 되뇌며 출근한다.')],{pre:S=>{S.flags.fr=pick(FIRE_R[fireGroup(S.job)])}});
 function bustText(id){
+  if(!id||!JOBS[id])return '일하던 곳에서 갑자기 일이 끊겼다.';
   const n=JOBS[id].n;
   if(SELF.includes(id))return `${n} 일이 갑자기 기울었다. 매출이 폭락하고 임대료와 대출 이자가 쌓여간다. 통장이 빠르게 비어간다.`;
   if(ENT.includes(id))return `${n} 인생에 슬럼프가 왔다. 인기가 식고 일이 끊겼다. 소속사/구단과의 계약도 불투명하다.`;
