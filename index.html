@@ -47,6 +47,7 @@ input[type=text]{width:100%;padding:10px;border-radius:10px;border:1px solid var
 table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:4px 6px;border-bottom:1px solid var(--bd);text-align:left}
 .sbar{display:flex;align-items:center;gap:8px;font-size:12px;margin:3px 0}.sbar span{width:62px}.sbar .bar{flex:1}.sbar b{width:44px;text-align:right}
 /* 사진 아바타 */
+#logo{width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:2px solid var(--ac)}
 .avp{position:relative;flex:none;border-radius:20px;border:4px solid var(--jc,#ffd166);box-shadow:0 0 0 2px var(--card),0 6px 18px #0005;margin-top:14px}
 .avp img{display:block;width:100%;height:100%;object-fit:cover;border-radius:16px;animation:bob 2.4s ease-in-out infinite}
 .avp.old img{filter:grayscale(.55) contrast(.92) brightness(1.06) sepia(.15)}
@@ -76,7 +77,7 @@ input[type=text]{font-size:18px}
 </head>
 <body>
 <div id="app">
-<header><h1>🧒 재민이 키우기</h1><div class="tools"><button id="bSnd" title="효과음">🔊</button><button id="bTh" title="테마">🌓</button></div></header>
+<header><h1><img id="logo" alt="재민" width="30" height="30"> 재민이 키우기</h1><div class="tools"><button id="bSnd" title="효과음">🔊</button><button id="bTh" title="테마">🌓</button></div></header>
 <main id="main"></main>
 </div>
 <script>
@@ -1063,7 +1064,7 @@ function ending(){
 const JV={doctor:{c:'#4fc3f7',hat:'⚕️',prop:'🥼'},lawyer:{c:'#b39ddb',hat:'🎩',prop:'⚖️'},dev:{c:'#69f0ae',hat:'🎧',prop:'💻'},big:{c:'#90a4ae',hat:'',prop:'💼'},civil:{c:'#81c784',hat:'',prop:'📋'},teacher:{c:'#ffb74d',hat:'🎓',prop:'🍎'},sme:{c:'#a1887f',hat:'⛑️',prop:'🏭'},police:{c:'#5c6bc0',hat:'🧢',prop:'🚔'},chef:{c:'#ffd54f',hat:'',prop:'🍳'},farmer:{c:'#aed581',hat:'👒',prop:'🌾'},writer:{c:'#f48fb1',hat:'',prop:'✏️'},tuber:{c:'#ef5350',hat:'🎧',prop:'📹'},star:{c:'#ffee58',hat:'🌟',prop:'🎤'},athlete:{c:'#ff7043',hat:'',prop:'🏅'},ceo:{c:'#26c6da',hat:'',prop:'🚀'},mp:{c:'#7e57c2',hat:'',prop:'🏛️'},soldier:{c:'#6d8b4a',hat:'🪖',prop:'🎖️'},pharmacist:{c:'#4db6ac',hat:'',prop:'💊'},nurse:{c:'#f48fb1',hat:'',prop:'💉'},pt:{c:'#4dd0e1',hat:'',prop:'🦴'},coordinator:{c:'#9fa8da',hat:'',prop:'🏥'},carrnd:{c:'#78909c',hat:'👷',prop:'🚗'},architect:{c:'#a1887f',hat:'👷',prop:'📐'},accountant:{c:'#9ccc65',hat:'',prop:'🧮'},banker:{c:'#5c6bc0',hat:'',prop:'🏦'},professor:{c:'#8d6e63',hat:'🎓',prop:'📖'},scientist:{c:'#26a69a',hat:'🥽',prop:'🔬'},analyst:{c:'#42a5f5',hat:'',prop:'📊'},gamedev:{c:'#ab47bc',hat:'🎧',prop:'🎮'},ai:{c:'#00e5ff',hat:'🤖',prop:'💻'},designer:{c:'#ec407a',hat:'',prop:'🎨'},anchor:{c:'#ef5350',hat:'',prop:'🎙️'},reporter:{c:'#bdbdbd',hat:'',prop:'📰'},judge:{c:'#455a64',hat:'',prop:'🔨'},diplomat:{c:'#7986cb',hat:'',prop:'🌐'},pilot:{c:'#29b6f6',hat:'🧢',prop:'✈️'},crew:{c:'#ff8a65',hat:'🎩',prop:'🛫'},taxi:{c:'#ffee58',hat:'',prop:'🚕'},courier:{c:'#ffa726',hat:'🧢',prop:'📦'},builder:{c:'#ffb300',hat:'👷',prop:'🧱'},electrician:{c:'#fdd835',hat:'⛑️',prop:'⚡'},sailor:{c:'#0288d1',hat:'⚓',prop:'🐟'},translator:{c:'#66bb6a',hat:'',prop:'🌍'},tutor:{c:'#ffca28',hat:'',prop:'📚'},kinder:{c:'#ff80ab',hat:'',prop:'🧸'},social:{c:'#ffab91',hat:'',prop:'🤝'},monk:{c:'#a5d6a7',hat:'',prop:'🙏'},proplayer:{c:'#7c4dff',hat:'🎧',prop:'🕹️'},singer:{c:'#ff4081',hat:'',prop:'🎸'},actor:{c:'#ffd740',hat:'',prop:'🎬'},comedian:{c:'#ff6e40',hat:'🤡',prop:'🎭'},photographer:{c:'#90a4ae',hat:'',prop:'📷'},realtor:{c:'#8bc34a',hat:'',prop:'🏘️'},insurance:{c:'#4fc3f7',hat:'',prop:'🛡️'},trainer:{c:'#ff5252',hat:'',prop:'🏋️'},hair:{c:'#f06292',hat:'',prop:'✂️'},cafe:{c:'#a1887f',hat:'',prop:'☕'},shop:{c:'#4caf50',hat:'',prop:'🏪'},none:{c:'#bdbdbd',hat:'',prop:'🛋️'}};
 /* 상황에 맞는 재민이 사진 고르기: 망함 > 지침 > 직업 > 기분 > 매력 > 기본 */
 function photoKey(){
-  if(S.hap<30||net()<0)return 'mess';
+  if(S.hap<22||net()<-6000)return 'mess';
   if(S.sts>=75)return 'tired';
   if(S.job==='athlete'||S.job==='police'||S.str>=75)return 'hike';
   if(S.hap>=78)return 'joy';
@@ -1073,7 +1074,6 @@ function photoKey(){
 }
 function avatar(size){
   size=size||104;const a=S.age;
-  if(a<13)return `<div class="av">🧒</div>`;
   const jv=S.job&&JV[S.job]?JV[S.job]:null;
   const col=jv?jv.c:'#ffd166';
   let hat=jv?jv.hat:(a>=19?'🎓':''),prop=jv&&S.job!=='none'?jv.prop:(S.flags.retired?'🏖️':jv?jv.prop:'🎒');
@@ -1149,7 +1149,7 @@ function rankView(){
   <button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
 }
-const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 A/B/C(목표 비율 1:2:7) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진 아바타(직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화)','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
+const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 A/B/C(목표 비율 1:2:7) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
 function info(){
   $('#main').innerHTML=`<div class="card"><h2>✨ 추가된 재미 요소 ${FEATURES.length}가지</h2><ol style="padding-left:18px;font-size:14px">${FEATURES.map(f=>`<li>${f}</li>`).join('')}</ol></div><button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW='title';render()};
@@ -1171,7 +1171,7 @@ let CANDS=[],CSEL=0,FOC=[],DF='hell',REB=false,NM='재민',REROLL=2;
 function create(){
   if(!CANDS.length||CANDS.length!==3)CANDS=[pickCand(),pickCand(),pickCand()];
   const f=fortune(),pts=META.pts,k=Math.min(10,Math.floor(pts/4));
-  $('#main').innerHTML=`<div class="card"><h2>🧬 재민이 만들기</h2><div class="mut">이름</div><input type="text" id="nm" maxlength="8" value="${esc(NM)}">
+  $('#main').innerHTML=`<div class="card"><div style="display:flex;justify-content:center;margin-bottom:8px"><img src="${PH.face}" alt="재민" width="110" height="110" style="border-radius:20px;border:4px solid var(--ac);object-fit:cover"></div><h2>🧬 재민이 만들기</h2><div class="mut">이름</div><input type="text" id="nm" maxlength="8" value="${esc(NM)}">
   <p class="mut" style="margin-top:12px">후보를 고르세요. 대부분 불리한 출발(인기 없는 성향·불우한 환경)이고, 좋은 출발은 드물어요. 이 불리함을 뒤집는 게 목표!</p>
   ${CANDS.map((c,i)=>`<button class="choice" data-c="${i}" style="${i===CSEL?'border-color:var(--ac)':''}"><b>${c.ae} ${c.arch}</b> <span class="tag" style="color:${c.good?'var(--ok)':'var(--bad)'}">${c.good?'✨ 좋은 출발':'😢 불리한 출발'}</span> ${BG[c.bg].e} ${BG[c.bg].n} · ${TRAITS[c.trait].e} ${TRAITS[c.trait].n}<small>지능 ${c.v[0]} · 체력 ${c.v[1]} · 인성 ${c.v[2]} · 매력 ${c.v[3]} · 인맥 ${c.v[4]}</small><small>${TRAITS[c.trait].d} / ${BG[c.bg].tx}</small></button>`).join('')}
   <button class="btn c" id="rr">🎲 후보 다시 뽑기 (${REROLL}회 남음)</button>
@@ -1204,6 +1204,7 @@ document.addEventListener('keydown',e=>{
   if(e.key>='1'&&e.key<='9'){const b=document.querySelector(`.choice[data-i="${+e.key-1}"]`);if(b&&!b.disabled)b.click()}
   if(e.key==='Enter'||e.key===' '){const n=$('#next');if(n){e.preventDefault();n.click()}}
 });
+try{$('#logo').src=PH.joy}catch(e){}
 render();
 </script>
 </body>
