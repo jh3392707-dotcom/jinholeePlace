@@ -2106,9 +2106,12 @@ function chooseEvent(){
   const pool=eligible().filter(e=>!(sk&&isMiniEv(e.id)));
   if(!pool.length||Math.random()<.08)return 'quiet';
   const tot=pool.reduce((p,e)=>p+e.w,0);let r=Math.random()*tot;
-  for(const e of pool){r-=e.w;if(r<=0)return e.id}
-  return pool[0].id;
+  let pk=pool[0].id;for(const e of pool){r-=e.w;if(r<=0){pk=e.id;break}}
+  /* 플레이 시간 단축: 제작자가 제시하지 않은 '채움용' 일상 이벤트만 35% 확률로 '평범한 한 해'로 대체 (제시하신 이벤트·미니게임·핵심 인생 이벤트는 대상 아님) */
+  if(SKIPPABLE.has(pk)&&Math.random()<.35)return 'quiet';
+  return pk;
 }
+const SKIPPABLE=new Set(['claw','karaoke','ufo','fortune','stray','elevator','gym','yj_commute','yj_flower','yj_mountain','yj_festival','yj_jangheung','yj_newtown','treat','bus_sleep','yj_market','delivery','lostphone','scout','wedding','camping','danggeun','diet','airfryer','phonebill','bugs','parentday','streamfail','lottodream','ghost','dance','oversleep','rain','subway','gacha','noise','foreigner','seat_belt','flat_tire','travel','hobby','reunion','wallet','crush_stare','pt_conv','pt_cafe','pt_cargo','pt_tutor','pt_rider','f_jinho2','f_chanho2','f_kyung2','f_semin2','f_all']);
 function advance(){
   if(S.over){S.cur=null;return}
   if(S.queue.length&&!(S.lastMini&&isMiniEv(S.queue[0]))){S.cur=S.queue.shift();onEnter();return}
