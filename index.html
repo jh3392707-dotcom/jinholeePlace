@@ -1752,7 +1752,7 @@ ev('ch_heeyeon',23,36,'💘 찬호 페레로로쉐 고백을 성공하자!','찬
 {t:'🙈 "나는 구경만 할게" 하고 물러선다',fx:{},m:'',mini:10,force:'뒤로 물러서려는 재민이를 찬호가 붙잡았다. "재민아, 네 손이 안정적이잖아. 제발!" 어느새 재민이의 손에 페레로로쉐가 쥐어졌다. 희연이 저쪽에서 다가오고 있다. 빨리 탑을 쌓아야 한다!',fn:S=>{
   if(DODGE.win)return [{soc:3,hap:9,chr:2,f:['ch_lover','ferrero_ok']},'물러서려던 재민이의 손에서 페레로로쉐 탑이 기적처럼 완성됐다! 찬호가 그 탑을 희연에게 건네며 고백했고 희연은 웃으며 "좋아"라고 답했다. 찬호는 "재민이 덕이다"라며 감동의 치킨을 쐈다.'];
   return [{hap:-2,sts:3,soc:-1},'억지로 쌓던 페레로로쉐 탑이 희연 앞에서 와르르 무너졌다. 찬호는 얼어붙었고 희연은 "...초콜릿 줍는 거 도와줄까?" 하고 웃었다. 고백은 타이밍을 놓쳤다. 남은 페레로로쉐는 재민이와 찬호가 나눠 먹었다.']}}
-],{once:1,w:25,sur:1});
+],{once:1,w:120,sur:1});
 /* --- 학교에서 한승연과 한판 (말싸움) --- */
 ev('seunghyun_fight',13,18,'🏫 복도에서 마주친 한승연','학교 복도에서 한승연과 마주쳤다. 한승연은 반에서 똑 부러지기로 소문난 친구다. 며칠 전 재민이가 한승연의 필기 노트를 빌렸는데, 반납할 때 노트 귀퉁이에 라면 국물 자국이 남아 있었다. 한승연이 노트를 펼치며 차분하게 말했다. "재민아, 이게 뭐야?" 목소리는 조용한데 눈이 번쩍인다. 복도에 구경꾼들이 모이기 시작했다. 찬호는 벌써 중계 준비를 마쳤다.',[
 g('정중하게 사과한다',.3,[{chr:3,soc:2,hap:3},'"미안해, 승현아. 내가 라면을 먹으면서 봤어." 솔직한 사과에 승현이 의외로 쿨하게 "...알았어. 다음부터 조심해"라고 했다. 승현은 노트 귀퉁이를 접어 국물 자국을 가렸다. 구경꾼들이 흩어졌고 재민이는 숨을 내쉬었다.'],[{hap:-3,sts:3},'"미안해, 승현아." 사과했는데 승현의 한마디가 비수처럼 꽂혔다. "사과는 고마운데, 이번이 세 번째야." 날짜와 시간까지 정확하게 읊는 승현 앞에서 재민이는 할 말을 잃었다.'],{k:'chr'}),
@@ -2835,12 +2835,18 @@ const MGAMES=[
  {id:'ggul',e:'🍲',n:'미역국에 꿀떡 풍덩 막기',d:'찬호의 꿀떡을 막아라',run:(d)=>startDodge(d,MINI2)},
  {id:'dodge',e:'🥒',n:'찬호의 물건 던지기',d:'오이고추·비치발리볼·소시지 피하기',run:(d)=>startDodge(d,MINI1)},
  {id:'egg',e:'🥚',n:'날달걀 피하기',d:'맞으면 맛있게 먹는다',run:(d)=>startDodge(d,MINI3)},
- {id:'fart',e:'💨',n:'수업 중 몰래 방구',d:'선생님이 뒤돌면 멈춰!',run:(d)=>startFart(d)}
+ {id:'fart',e:'💨',n:'수업 중 몰래 방구',d:'선생님이 뒤돌면 멈춰!',run:(d)=>startFart(d)},
+ {id:'ring',e:'💍',n:'찬호의 반지를 훔쳐라',d:'드래그 미로',run:(d)=>startRing(d)},
+ {id:'subway',e:'🚇',n:'일본 지하철 탑승',d:'점프 러너',run:(d)=>startSubway(d)},
+ {id:'sa',e:'🔫',n:'서든어택 클랜전',d:'사격장',run:(d)=>startSA(d)},
+ {id:'pk',e:'⚽',n:'피파 승부차기',d:'타이밍 바',run:(d)=>startPK(d)},
+ {id:'escape',e:'🏃',n:'계산 안 하고 도망치기',d:'칼 리듬',run:(d)=>startEscape(d)},
+ {id:'stack',e:'🍫',n:'페레로로쉐 탑 쌓기',d:'타이밍 쌓기',run:(d)=>startStack(d)}
 ];
 function playMinigame(m){
   const keep=S,keepV=VIEW;
   try{newState(pickCand(),NM||'재민',[],{diff:'hell',fort:fortune(),rebirth:false});S.age=m.id==='fart'?17:m.id==='ggul'?15:m.id==='egg'?37:30}catch(e){S=keep;return}
-  m.run(()=>{const sc=DODGE.hits,t=DODGE.sec;S=keep;VIEW=keepV;toast(m.id==='fart'?`게이지 ${t}% · 들킨 횟수 ${sc}번`:`${m.n}: ${sc}번 맞음 · ${t}초`);setBgm('title');if(keepV==='title')title()});
+  m.run(()=>{const sc=DODGE.hits,t=DODGE.sec;S=keep;VIEW=keepV;toast(m.id==='fart'?`게이지 ${t}% · 들킨 횟수 ${sc}번`:['ggul','dodge','egg'].includes(m.id)?`${m.n}: ${sc}번 맞음 · ${t}초`:`${m.n}: ${DODGE.win?'성공 🎉':'실패'} · 실수 ${sc}번`);setBgm('title');if(keepV==='title')title()});
 }
 function openMinigames(){
   const o=document.createElement('div');o.id='mgm';
@@ -3527,12 +3533,14 @@ function title(){
   <div class="tl-strip lg-strip"><div class="tl-in">${strip+strip}</div></div>
   <div class="card center"><p style="margin:2px 0">🔮 오늘의 운세: <b>${f[0]}</b> ${f[1]}<br><span class="mut">${f[3]}</span></p>
   <p class="mut" style="margin:6px 0 0">직업도, 연봉도, 점수도 모두 당신의 선택!</p></div>
-  <div class="evt"><h3>🎉 재민이 게임 오픈 이벤트!</h3>
+  <div class="evt" style="border-color:#c0392b"><h3>🧪 미니게임 테스트 (임시)</h3><p>10종 미니게임을 바로 해볼 수 있어요</p><button class="btn pri" id="mgtest">🎮 미니게임 열기</button></div>
+    <div class="evt"><h3>🎉 재민이 게임 오픈 이벤트!</h3>
    <p>최종 등급을 <b>인증</b>하면 선물이 팡팡!</p>
    <span class="rw">🏆 S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 🍦</span>
    <span class="rw">🅱️ B등급 인증 → 혹한기 훈련 열외</span>
    <p class="mut">결과 화면의 인증 카드를 캡처해서 재민이에게 보여 주세요.</p></div>`;
   $('#nw').onclick=()=>{VIEW='create';create()};
+  {const mt=$('#mgtest');if(mt)mt.onclick=()=>{sfx('tap');openMinigames()}}
   const ct=$('#cont');if(ct)ct.onclick=()=>{S=sv;ensure(S);S.diff='hell';VIEW='play';SNAP=null;render()};
   $('#rk').onclick=()=>{VIEW='rank';rankView()};$('#achb').onclick=()=>{VIEW='ach';achView()};$('#ld').onclick=importSave;
 }
