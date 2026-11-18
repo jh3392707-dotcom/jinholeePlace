@@ -2699,7 +2699,7 @@ function startStack(done){
     blocks.push(nb);sh.life((blocks.length-1)+' / '+NEED);
     if(blocks.length-1>=NEED){cur=null;setTimeout(()=>end(true),500);return}mk()};
   cv.addEventListener('pointerdown',drop);const kd=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();drop()}};addEventListener('keydown',kd);
-  const end=win=>{if(over)return;over=true;run=false;cancelAnimationFrame(raf);removeEventListener('keydown',kd);sh.finish(win,win?'🎉 고백 성공!':'💥 탑이 무너졌다...',`쌓은 초콜릿 <b>${blocks.length-1}/${NEED}</b>개 · 퍼펙트 <b>${perfect}</b>번`,NEED-(blocks.length-1),blocks.length-1)};
+  const end=win=>{if(over)return;over=true;run=false;cancelAnimationFrame(raf);removeEventListener('keydown',kd);sh.finish(win,win?'🎉 고백 성공!':'💥 탑이 무너졌다...',`쌓은 초콜릿 <b>${blocks.length-1}/${NEED}</b>개 · 퍼펙트 <b>${perfect}</b>번`,win?(perfect>=6?0:perfect>=3?1:2):NEED-(blocks.length-1),blocks.length-1)};
   function start(){run=true;last=performance.now();mk();raf=requestAnimationFrame(loop)}
   function loop(now){
     if(!run)return;raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;sayT=Math.max(0,sayT-dt);
@@ -3035,6 +3035,11 @@ function choose(i){
   else if(ch.fn){out=ch.fn(S)}
   else out=[ch.fx,ch.m];
   const fx=Object.assign({},out[0]);
+  /* 미니게임 성적별 보상: 실수 0번 🥇 퍼펙트 ×1.7 / 1번 🥈 훌륭 ×1.3 / 그 외 🥉 클리어 ×1 (이기면 받는 플러스 효과에 곱함) */
+  let tier=null;
+  if(ch.mini>=4&&!FAST&&DODGE.win){const h=DODGE.hits||0;tier=h===0?{n:'🥇 퍼펙트',m:1.7}:h<=1?{n:'🥈 훌륭',m:1.3}:{n:'🥉 클리어',m:1};
+    if(tier.m>1)for(const k of ['int','str','chr','cha','soc','hap','m','s','inv'])if(typeof fx[k]==='number'&&fx[k]>0)fx[k]=Math.round(fx[k]*tier.m);
+    out=[fx,(out[1]||'')+`\n\n${tier.n}${tier.m>1?' 클리어! 보상 ×'+tier.m:' (기본 보상)'}`].concat(out.slice(2))}
   if(S.diff==='hell'&&fx.m<0)fx.m=Math.round(fx.m*1.3);
   apply(fx);
   const d=[];for(const k in before){const dv=Math.round(S[k]-before[k]);if(dv!==0)d.push([k,dv])}
