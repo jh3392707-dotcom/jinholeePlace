@@ -2100,7 +2100,7 @@ function chooseEvent(){
   const sk=!!S.lastMini;
   for(const e of EVL){if(e.at!=null&&S.age>=e.at&&!S.seen[e.id]&&S.age<=e.b+(e.id==='retire'?0:3)){if(sk&&isMiniEv(e.id))continue;S.seen[e.id]=S.age;if(e.c&&!e.c(S))continue;return e.id}}
   /* 반드시 겪는 이벤트: 고정 나이에 못 나왔으면 이후 첫 기회에 반드시 */
-  for(const id of ['ring_heist','ch_heeyeon'])if(S.age>=26&&S.age<=45&&!S.seen[id]&&EV[id]&&!sk){S.seen[id]=S.age;return id}
+  for(const id of ['ring_heist','ch_heeyeon','fifa_pc'])if(S.age>=(id==='fifa_pc'?24:26)&&S.age<=45&&!S.seen[id]&&EV[id]&&!sk){S.seen[id]=S.age;return id}
   /* 찬호의 가게: 첫 호출 뒤에는 매년(1주 느낌으로) 꾸준히 불려 나감, 최대 10번 */
   if((S.flags.shopN||0)>0&&(S.flags.shopN||0)<2&&S.age>=(S.flags.shopNext||0)+2&&S.age<=62&&S.cur!=='ch_shop'&&!sk&&!S.seen['ch_shop@'+S.age]){S.seen['ch_shop@'+S.age]=1;return 'ch_shop'}
   const pool=eligible().filter(e=>!(sk&&isMiniEv(e.id)));
