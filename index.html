@@ -677,6 +677,16 @@ const SFX={
   fanC:()=>{[440,392,440].forEach((f,i)=>tone(f,.3,'triangle',.08,i*.25))},
   sadD:()=>{[392,349,330,262].forEach((f,i)=>tone(f,.5,'sine',.1,i*.4));tone(130,1.4,'sine',.1,1.4,100)},
   levelup:()=>{[523,659,784,1046,1318,1568].forEach((f,i)=>tone(f,.28,'triangle',.1,i*.07));tone(1046,.9,'sine',.08,.5);noise(.6,.05,.1,'highpass',6000,9000)},
+  gun:()=>{noise(.12,.35,0,'highpass',1200,4000);tone(160,.12,'square',.18,0,50);noise(.25,.1,.03,'lowpass',900,200)},
+  reload:()=>{tone(900,.05,'square',.08,0);tone(500,.07,'square',.08,.18);tone(1100,.05,'square',.07,.5)},
+  hurt:()=>{tone(180,.25,'sawtooth',.2,0,60);noise(.2,.15,0,'lowpass',700,150)},
+  whistle:()=>{tone(2300,.28,'sine',.12,0,2100);tone(2310,.28,'sine',.06,0)},
+  kick:()=>{tone(120,.12,'sine',.35,0,60);noise(.08,.25,0,'lowpass',1800,300)},
+  goalc:()=>{[523,659,784,1046,1318].forEach((f,i)=>tone(f,.25,'triangle',.11,i*.07));noise(1.4,.12,.1,'bandpass',1800,2600)},
+  saved:()=>{tone(110,.3,'sine',.3,0,50);noise(.15,.2,0,'lowpass',1200,200);tone(300,.4,'sawtooth',.08,.15,150)},
+  stepf:()=>{noise(.05,.1,0,'lowpass',400,150)},
+  tbell:()=>{for(let i=0;i<4;i++){tone(1568,.12,'sine',.1,i*.16);tone(1175,.12,'sine',.08,i*.16)}},
+  trainr:()=>{noise(.9,.12,0,'lowpass',280,120);tone(60,.9,'sawtooth',.1,0,48)},
   chalk:()=>{for(let i=0;i<5;i++)noise(.06,.09,i*.07,'highpass',3500+i*400,6000)},
   turn:()=>{noise(.22,.14,0,'bandpass',500,2200);tone(180,.18,'triangle',.1,0,90)},
   gasp:()=>{noise(.25,.1,0,'bandpass',1500,500);tone(520,.12,'sine',.05,0,300)},
@@ -969,7 +979,13 @@ const ACH=[
 ['gradeB','🥉 B등급','최종 등급 B 이상을 받았다',()=>['S','A','B'].includes(S.endGrade)],
 ['gradeD','🙃 D등급 인증','D등급도 인생이다',()=>S.endGrade==='D'],
 ['runs3','🔁 세 번째 인생','3번 이상 플레이했다',()=>META.runs>=3],
-['runs10','♾️ 환생 중독','10번 이상 플레이했다',()=>META.runs>=10]
+['runs10','♾️ 환생 중독','10번 이상 플레이했다',()=>META.runs>=10],
+['ringthief','💍 반지 도둑','찬호의 반지를 훔치는 데 성공했다',()=>S.flags.ring_stolen],
+['subwayok','🚇 지하철 탑승 성공','일본 지하철 낙오에서 열차에 올라탔다',()=>S.flags.subway_ok],
+['saclan','🔫 서든어택 에이스','클랜전 사격에서 승리했다',()=>S.flags.clan_ace],
+['pkwin','⚽ 승부차기 영웅','승부차기에서 승리했다',()=>S.flags.fifa_win],
+['escape','🏃 먹튀 달인','찬호 가게에서 계산 안 하고 도망쳤다',()=>S.flags.shop_escape],
+['escape3','🕵️ 전설의 먹튀','찬호 가게에서 3번 도망쳤다',()=>(S.flags.shopEsc||0)>=3]
 ];
 
 /* ===== event helpers ===== */
@@ -1050,11 +1066,13 @@ ch.unshift(Object.assign(g('🎓 서정대학교 식품영양학과 지원 (양�
 ch.push(c('대학 대신 바로 사회로',{edu:0,m:600,soc:2,hap:1},'일찍 돈을 벌기로 했다.'));
 return ch},{});
 /* --- 돌발: 일본 14박 15일 여행, 지하철 낙오 → 진호의 분노 --- */
-ev('japan_lost',27,27,'🚇 일본 여행 중, 혼자 못 탔다','친구들과 일본 14박 15일 여행 중. 도쿄 지하철 환승 구간에서 재민이는 여자친구와 카톡을 하느라 고개를 숙이고 걷고 있었다. 정신을 차려 보니 진호, 찬호, 경연, 세민, 범수는 이미 열차에 탔고, 재민이만 승강장에 남았다. 문이 닫히는 소리. 창문 너머로 친구들이 입을 벌린 채 손을 흔든다. 열차는 출발했다. 폰 배터리는 12%다.',[
-g('📍 구글맵으로 다음 역에서 합류한다',.3,[{hap:3,soc:2,int:2,q:'jinho_angry'},'지도 앱을 켜고 다음 열차를 탔더니 다음 역 승강장에서 친구들과 극적으로 만났다. 5명이 박수를 쳤다. 여자친구에게는 "나 방금 영화 찍었다"라고 카톡을 보냈다.'],[{hap:-6,sts:7,m:-3,q:'jinho_angry'},'반대 방향 열차를 탔다. 어느새 낯선 동네의 종점. 라인은 다섯 번이나 바꿔 탔고 친구들은 두 시간 뒤에 호텔에서 재회했다. 배터리는 0%였다.']),
-g('📞 진호에게 전화한다',.35,[{hap:2,soc:2,q:'jinho_angry'},'진호가 "거기 가만히 있어!"라고 외치더니 다음 역에서 내려 되돌아와 주었다. 군인다운 합류 작전이었다. 재민이는 감동했고 진호는 얼굴이 굳어 있었다.'],[{hap:-5,sts:6,soc:-1,q:'jinho_angry'},'전화가 안 터지는 구간이었다. 신호가 돌아왔을 땐 이미 친구들과 세 정거장 차이. 진호의 메시지가 70개 쌓여 있었다. 전부 "어디야"였다.']),
-g('🙋 역무원에게 일본어로 도움을 구한다',.2,[{hap:4,cha:2,int:2,q:'jinho_angry'},'손짓 발짓과 번역 앱으로 역무원과 소통했다. 친절한 역무원이 다음 열차 안내까지 해 주었다. 재민이는 어느새 일본어 한 줄을 배웠다. "스미마셍."'],[{hap:-4,sts:5,m:-2,q:'jinho_angry'},'"스미마셍, 하다 돌아가는 길을 모르겠습니다"를 반복하다 경찰서까지 안내받았다. 가이드 격인 찬호가 한참 뒤 데리러 왔다. 창피함은 재민이의 몫이었다.']),
-c('💬 여자친구에게 하소연 카톡을 보낸다',{hap:2,sts:3,soc:-2,q:'jinho_angry'},'"나 지금 지하철에서 낙오됐어ㅠㅠ" 여자친구는 "ㅋㅋㅋㅋㅋ 사진 찍어 줘"라고 답했다. 위로는 받았지만 길은 여전히 모른다. 결국 40분 뒤 친구들이 돌아와서 데려갔다.',{noRisk:1})
+ev('japan_lost',27,27,'🚇 일본 지하철을 탑승하자!','친구들과 일본 14박 15일 여행 중. 도쿄 지하철 환승 구간에서 재민이는 여자친구와 카톡을 하느라 고개를 숙이고 걷고 있었다. 정신을 차려 보니 진호, 찬호, 경연, 세민, 범수는 이미 열차에 탔고 재민이만 승강장에 남았다. 문이 닫히는 소리. 창문 너머로 친구들이 입을 벌린 채 손을 흔든다. 폰 배터리는 12%. 다음 열차가 이미 들어오고 있다. 문이 닫히기 전에 올라타야 한다!',[
+{t:'🚇 달려서 다음 열차에 올라탄다! (미니게임)',fx:{},m:'',mini:5,fn:S=>{S.flags.subwayN=(S.flags.subwayN||0)+1;
+  if(DODGE.win)return [{hap:4,soc:2,int:1,f:['subway_ok'],q:'jinho_angry'},DODGE.hits===0?'사람 한 명 안 부딪치고 승강장을 질주해 열차에 올라탔다! 다음 역 승강장에서 친구들과 극적 재회. 5명이 박수를 쳤다. 여자친구에게는 "나 방금 영화 찍었다"라고 카톡을 보냈다.':`부딪히고 넘어질 뻔하면서도 ${DODGE.hits}번 버티고 열차에 겨우 올라탔다. 다음 역에서 친구들과 극적 재회. 진호의 눈빛이 살짝 매서웠다.`];
+  return [{hap:-6,sts:7,m:-3,q:'jinho_angry'},'문이 코앞에서 닫혔다. 반대 방향 열차를 탔다가 낯선 동네의 종점까지 갔고 라인은 다섯 번이나 바꿔 탔다. 친구들과는 두 시간 뒤 호텔에서 재회했다. 폰 배터리는 0%였다.']}},
+{t:'📱 "잠깐만!" 카톡을 보내며 일단 뛴다',fx:{},m:'',mini:5,force:'여자친구에게 "잠깐만!" 하고 카톡을 보내며 승강장을 질주한다. 다음 열차가 이미 들어오고 있다. 문이 닫히기 전에 올라타야 한다!',fn:S=>{S.flags.subwayN=(S.flags.subwayN||0)+1;
+  if(DODGE.win)return [{hap:4,soc:2,int:1,f:['subway_ok'],q:'jinho_angry'},'뛰면서 카톡을 보내다 넘어질 뻔했지만 결국 열차에 올라탔다. 다음 역 승강장에서 친구들과 극적 재회했다. 여자친구는 "ㅋㅋㅋㅋ 영화 찍는 줄"이라고 답했다.'];
+  return [{hap:-6,sts:7,m:-3,q:'jinho_angry'},'뛰면서 카톡을 보내다 문 앞에서 멈칫하는 사이 열차가 출발했다. 친구들은 창문 너머로 "재민아!!" 하고 외쳤고 재민이는 두 시간 뒤에야 호텔에서 합류했다.']}}
 ],{at:27,w:0,sur:1});
 Q('jinho_angry','🔥 진호가 화났다 (여행 3일 남기고)','여행이 끝나기 3일 전, 숙소 로비. 진호가 갑자기 정색하고 재민이를 불렀다. "재민아, 이번 여행에서 네가 폰 보다가 길을 잃은 게 몇 번이야?" 계획표를 들고 있는 진호의 손끝이 부들부들 떨린다. 육군장교의 일정 관리 본능이 폭발했다. "남은 3일은 규칙을 정하자. 폰 보면서 걷기 금지!" 다른 친구들은 눈치를 보며 아무 말도 못 한다.',[
 c('🙇 진심으로 사과한다',{soc:4,chr:3,hap:-2},'"미안해, 내가 진짜 정신 없었다." 진호는 한숨을 쉬더니 "...알았어. 대신 남은 3일은 내가 팔찌 채운다"고 말했다. 재민이 손목에는 진호가 챙겨 온 형광 밴드가 채워졌다. 남은 3일은 순조로웠다.',{noRisk:1}),
@@ -1062,12 +1080,14 @@ c('🍦 베스킨라빈스로 달랜다 (5만)',{m:-5,soc:3,hap:2},'재민이는
 c('😤 변명을 늘어놓는다',{soc:-4,hap:-3,sts:4},'"여자친구가 먼저 연락해서..." 진호의 눈썹이 올라갔다. "그게 변명이냐." 로비 분위기가 얼어붙었고 찬호가 슬그머니 자리를 떴다. 남은 3일은 서로 말없이 지하철만 탔다.',{noRisk:1}),
 c('🙈 진호를 달래는 척 계획표를 대신 짠다',{int:2,soc:2,sts:3},'"그럼 내가 남은 3일 계획 짤게!" 재민이는 노트북을 열었다. 진호는 5분 만에 "그건 아닌데" 하며 계획표를 빼앗아 갔다. 결국 계획표는 진호의 작품이 되었고 재민이는 짐꾼이 되었다.',{noRisk:1})
 ]);
-/* --- 돌발: 찬호의 가게 '인생은 아름다워라' (매주 호출, 10만 원 강제 계산) --- */
-ev('ch_shop',29,58,'🏪 찬호의 가게, 인생은 아름다워라',S=>{const n=S.flags.shopN||0;return n===0?'찬호가 드디어 가게를 차렸다. 이름은 「인생은 아름다워라」. 개업 첫날 찬호에게서 카톡이 왔다. "재민아, 오늘 저녁에 와라. 오픈 기념이다." 가서 보니 가게는 멋졌다. 그런데 계산서를 들고 찬호가 해맑게 웃고 있다. "오늘 매출 올려 줘서 고맙다. 10만 원이다."':n<3?`찬호에게서 또 카톡이 왔다. "재민아, 이번 주에도 와라. 신메뉴 시식이다." 가 보니 신메뉴는 시식이 아니라 정식 주문이었고 계산서에는 또 10만 원이 찍혀 있다. (${n+1}주째)`:`찬호의 호출 카톡이 이제 매주 날아온다. "재민아, ${n+1}주째다. 오늘은 단골 우대 이벤트야." 우대는 어디에도 없다. 계산서는 늘 정확히 10만 원이다. (${n+1}주째)`},[
-{t:'💸 웃으며 10만 원을 낸다',fx:{},m:'',fn:S=>{S.flags.shopN=(S.flags.shopN||0)+1;S.flags.shopNext=S.age+1;return [{m:-10,soc:3,hap:2},'결국 웃으며 10만 원을 냈다. 찬호는 "역시 재민이다!" 하며 서비스로 안주 하나를 올려 줬다. 재민이는 그 안주를 한 입 먹고 "...맛있네" 하며 조금 억울해졌다.']}},
-{t:'🙏 "이번엔 못 낸다"고 버틴다',fx:{},m:'',fn:S=>{S.flags.shopN=(S.flags.shopN||0)+1;S.flags.shopNext=S.age+1;return Math.random()<.12?[{hap:6,soc:2},'"이번 주는 진짜 안 돼." 재민이의 단호한 한마디에 찬호가 흠칫하며 계산서를 슬며시 접었다. 오늘만은 무료로 먹고 나왔다. 12%의 기적이다.']:[{m:-10,hap:-3,sts:3},'버텼지만 찬호가 눈물 연기를 시작했다. "재민아... 가게 월세가..." 결국 10만 원을 냈다. 버틴 보람은 눈물 연기에 묻혔다.']}},
-{t:'🧾 계산서를 진호에게 슬쩍 넘긴다',fx:{},m:'',fn:S=>{S.flags.shopN=(S.flags.shopN||0)+1;S.flags.shopNext=S.age+1;return Math.random()<.2?[{hap:5,soc:1,m:0},'계산서를 진호 쪽으로 슬쩍 밀었더니 진호가 "내가 낼게"라고 해 버렸다. 오늘의 10만 원은 육군장교가 냈다. 진호는 재민이를 한참 노려보았다.']:[{m:-10,soc:-2,hap:-2},'진호는 계산서를 도로 돌려놓았다. "이건 네 거야." 결국 재민이가 냈다. 진호는 옆에서 조용히 안주를 먹었다.']}},
-{t:'🏃 급한 일이 있다며 도망친다',fx:{},m:'',fn:S=>{S.flags.shopN=(S.flags.shopN||0)+1;S.flags.shopNext=S.age+1;return Math.random()<.25?[{hap:3,sts:-2},'"어, 전화 왔다!" 재민이는 가짜 전화를 받으며 가게를 빠져나왔다. 문 앞에서 이 순간만큼은 자유였다. 다음 주 호출이 걱정되긴 했다.']:[{m:-10,sts:4,hap:-3},'문 앞까지 갔는데 찬호가 먼저 와 있었다. "재민아, 어디 가냐?" 결국 다시 자리에 앉았고 10만 원은 두 배의 눈치와 함께 나갔다.']}}
+/* --- 돌발: 찬호의 가게 '인생은 아름다워' (매주 호출, 10만 원 강제 계산) --- */
+ev('ch_shop',29,58,'🏪 찬호의 가게, 인생은 아름다워',S=>{const n=S.flags.shopN||0;return n===0?'찬호가 드디어 가게를 차렸다. 이름은 「인생은 아름다워」. 개업 첫날 찬호에게서 카톡이 왔다. "재민아, 오늘 저녁에 와라. 오픈 기념이다." 가서 먹고 보니 가게는 멋졌다. 그런데 계산서를 들고 올 시간이 다가온다. 오늘 매출 올려 달라며 찬호는 10만 원짜리 계산서를 이미 뽑아 두었다. 지금 찬호는 주방에서 요리 중이다. 등을 돌리고 있다. 이 틈에 몰래 나갈 수 있지 않을까?':n<3?`찬호에게서 또 카톡이 왔다. "재민아, 이번 주에도 와라. 신메뉴 시식이다." 가 보니 신메뉴는 시식이 아니라 정식 주문이었고 계산서에는 또 10만 원이 찍혀 있다. 찬호는 주방에서 요리 중이다. 등을 돌린 지금이 기회다. (${n+1}주째)`:`찬호의 호출 카톡이 이제 매주 날아온다. "재민아, ${n+1}주째다. 오늘은 단골 우대 이벤트야." 우대는 어디에도 없다. 계산서는 늘 정확히 10만 원이다. 찬호는 오늘도 주방에서 요리 중. 등을 돌린 지금이 기회다. (${n+1}주째)`},[
+{t:'🏃 찬호가 요리하는 틈에 몰래 도망친다! (미니게임)',fx:{},m:'',mini:8,fn:S=>{S.flags.shopN=(S.flags.shopN||0)+1;S.flags.shopNext=S.age+1;
+  if(DODGE.win){S.flags.shopEsc=(S.flags.shopEsc||0)+1;return [{hap:7,soc:-1,sts:-3,f:['shop_escape']},'찬호가 주방에서 요리에 집중하는 사이 문밖으로 살금살금 빠져나왔다! 계산 안 하고 도망 성공! 밖에서 숨을 돌리는데 카톡이 울렸다. "재민이 어디냐." 재민이는 읽씹했다.']}
+  return [{m:-10,sts:3,hap:-3,soc:1},'문 앞에서 찬호가 돌아봤다. "재민아, 어디 가냐?" 결국 자리로 돌아가 10만 원을 냈다. 찬호는 서비스로 안주 하나를 올려 줬고 재민이는 그걸 한 입 먹고 "...맛있네" 하며 조금 억울해졌다.']}},
+{t:'🚻 "화장실 다녀올게" 하고 슬쩍 일어난다',fx:{},m:'',mini:8,force:'"화장실 다녀올게!" 큰소리로 말하고 일어섰다. 하지만 재민이의 발은 화장실이 아니라 출구를 향하고 있다. 찬호는 요리에 집중 중이다. 들키면 끝이다!',fn:S=>{S.flags.shopN=(S.flags.shopN||0)+1;S.flags.shopNext=S.age+1;
+  if(DODGE.win){S.flags.shopEsc=(S.flags.shopEsc||0)+1;return [{hap:7,soc:-1,sts:-3,f:['shop_escape']},'"화장실"로 위장해 출구까지 살금살금! 문을 열고 나온 순간 재민이는 자유를 얻었다. 찬호가 한참 뒤에야 "재민아 화장실 길다?" 하고 카톡을 보냈다.']}
+  return [{m:-10,sts:3,hap:-3,soc:1},'"화장실 가는 길이 왜 문 쪽이냐" 찬호가 눈을 가늘게 떴다. 도망은 실패했고 10만 원은 두 배의 눈치와 함께 나갔다.']}}
 ],{w:14,c:S=>S.age>=29&&(S.flags.shopN||0)<10,sur:1,rep:9});
 /* --- 이교현에게 고백하고 까이는 이벤트 --- */
 ev('confess_gh',18,19,'💘 이교현에게 용기를 내서','재민이는 이교현에게 오랫동안 마음이 있었다. 오늘은 큰맘 먹고 고백하기로 했다. 손은 떨리고 심장은 두근거린다. 어떤 방식으로 마음을 전할까?',[
@@ -1743,19 +1763,23 @@ g('베스킨라빈스를 진호에게 먹여 준다',.3,[{soc:3,hap:4,chr:2},'"�
 g('옆 침대 환자분들께도 나눠 드린다',.2,[{chr:3,soc:3,hap:4},'옆 침대 어르신들이 "아이고, 젊은이들이 마음씨가 곱네" 하며 반갑게 받아 주셨다. 찬호가 신이 나서 "저는 이찬호입니다!"라고 자기소개를 했고 경완은 어르신이 일어나시는 걸 부축해 드렸다. 병실 분위기가 훈훈해졌고 진호도 "역시 재민이다"라고 흐뭇하게 웃었다.'],[{hap:-2,sts:2,m:-2},'나눠 드리려 했는데 옆 침대 어르신이 당뇨가 있다고 하셔서 간호사가 급히 뛰어왔다. 재민이는 아이스크림을 도로 가방에 넣었다. 찬호가 "그럼 내가 먹을게"를 외치다가 경완에게 팔을 붙잡혔다. 결과적으로 진호만 못 먹은 셈이 됐다.'],{k:'soc'}),
 c('아무 말 없이 침대 옆에 조용히 앉아 있어 준다',{},'재민이는 진호 옆에 조용히 앉았다. 찬호도 웬일로 조용했고, 경완은 진호의 베개 높이를 조절해 주었다. 진호는 천장을 보며 "...고맙다"고 한 번 말했다. 세 사람은 말없이 한 시간을 같이 보냈다. 병실 창밖으로 노을이 졌다. 아이스크림은 봉지 속에서 서서히 녹고 있었다.')],{once:1,w:9});
 /* --- 야자 째고 만든 클랜: 클랜전 (BGM: assets/bgm/clan.mp3) --- */
-ev('clan_war',16,18,'🔫 야자 째고 만든 클랜, 오늘은 클랜전!','야간 자율학습 종이 치기 무섭게 재민이는 가방을 둘러메고 뒷문으로 빠져나갔다. 목적지는 학교 앞 PC방. 진호, 찬호, 경연, 세민, 범수, 경완까지 이미 모여 있다. 야자를 째고 만든 클랜 [야자째고]의 첫 클랜전이다. 상대는 옆 학교 클랜. 클랜 채팅창에는 "이기면 치킨, 지면 야자 두 배"라는 비장한 공약이 올라와 있다. 재민이는 어떤 역할로 나설까?',[
-g('🎯 저격총을 잡고 에이스를 노린다',.3,[{soc:6,hap:8,chr:3,f:['clan_ace']},'숨을 참고 클릭! 상대 에이스가 한 방에 쓰러졌다. 채팅창에 "ㅁㅊㅋㅋㅋ" 도배가 올라왔고 진호가 헤드셋을 던지며 환호했다. 클랜전 MVP는 재민이. 이날 PC방 야식 치킨은 전부 재민이 몫이었다. 인생에 이런 날도 있다.'],[{hap:-4,sts:5,soc:-2},'조준 중에 마우스 감도가 뒤틀려 상대 클랜원에게 헤드샷을 허용했다. 화면에 "KILLED" 글씨가 선명하게 떴다. 팀원들이 말을 잃었고 범수가 "...괜찮아, 누구나 그럴 수 있어"라고 말했지만 그 눈은 전혀 괜찮지 않았다. 관전 모드에서 재민이는 조용히 치킨 값을 계산하기 시작했다.']),
-g('🛡️ 진호의 작전대로 정면 돌파한다',.35,[{soc:5,hap:6,int:2},'진호의 "지금이야!" 소리와 함께 일곱 명이 동시에 돌진했다. 상대 클랜은 당황했고 작전은 기막히게 들어맞았다. 클랜전 승리! 진호는 육군장교 소질이 있다며 의기양양했고 재민이는 그 뒤에서 마지막 한 명을 정리했다.'],[{hap:-3,sts:4,soc:-1},'작전은 훌륭했는데 경완이 길을 잘못 들었고 세민이 뒤에서 팀킬을 했다. 순식간에 전멸. 진호가 "아니 왜 그쪽으로 가는데!"라고 소리쳤고 클랜 채팅창은 서로를 탓하는 글로 도배됐다. 야자째고 클랜 창설 후 첫 내분이었다.']),
-g('📣 마이크 잡고 응원만 한다',.4,[{soc:6,chr:3,hap:5},'재민이의 마이크 응원이 팀 사기를 폭발시켰다. "할 수 있다! 야자도 째고 왔는데 못 이길 게 뭐가 있어!" 오히려 분위기는 달아올라 클랜전을 이겼다. 승리의 8할은 재민이의 목소리였다. 상대 클랜은 "저 마이크 누구야" 하며 경악했다.'],[{soc:-2,hap:-2,sts:3},'너무 크게 외치는 바람에 PC방 사장님이 달려왔다. "너희 몇 학년 몇 반이야? 야자는 안 하고?" 클랜전은 중단됐고 일곱 명은 줄줄이 귀가 조치됐다. 야자째고 클랜의 첫 클랜전은 3분 만에 막을 내렸다.']),
-g('🏃 담임 순찰이 뜨자 먼저 도망친다',.45,[{hap:3,soc:-2,int:1},'PC방 창밖으로 담임 선생님의 차가 보이자 재민이는 번개처럼 뒷문으로 도망쳤다. 친구들은 뒤에서 "재민아!!" 하고 외쳤지만 재민이는 이미 모퉁이를 돌고 있었다. 나중에 안 사실이지만 담임 선생님은 치킨을 사러 온 것이었다. 눈치 하나는 인정.'],[{hap:-5,sts:6,soc:-3},'도망치다가 하필 순찰 중이던 담임 선생님과 정면으로 마주쳤다. 책가방에서는 헤드셋이 굴러 떨어졌다. "야자는?" 대답할 말이 없었다. 재민이는 그날 밤 교무실에서 클랜 이름 [야자째고]의 의미에 대해 장문의 반성문을 썼다.']),
-],{w:150});
+ev('clan_war',16,18,'🔫 서든어택 클랜전, 야째클 vs 옆 학교','야간 자율학습 종이 치기 무섭게 재민이는 가방을 둘러메고 뒷문으로 빠져나갔다. 목적지는 학교 앞 PC방. 진호, 찬호, 경연, 세민, 범수, 경완까지 이미 모여 있다. 야자를 째고 만든 클랜 「야자째고」(줄여서 야째클)의 첫 서든어택 클랜전이다. 상대는 옆 학교 클랜. 채팅창에는 "이기면 치킨, 지면 야자 두 배"라는 비장한 공약이 올라와 있다. 재민이도 총을 잡았다!',[
+{t:'🔫 소총을 잡고 클랜전에 합류한다! (미니게임)',fx:{},m:'',mini:6,fn:S=>{
+  if(DODGE.win)return [{soc:6,hap:9,chr:2,f:['clan_ace'],q:'fart_class'},`${DODGE.sec}점! 엄폐물 뒤의 적을 쓸어 담았다. 채팅창에 "ㅁㅊㅋㅋㅋ" 도배가 올라왔고 진호가 헤드셋을 던지며 환호했다. 클랜전 MVP는 재민이. 이날 PC방 야식 치킨은 전부 재민이 몫이었다. 인생에 이런 날도 있다.`];
+  return [{hap:-4,sts:5,soc:-2,q:'fart_class'},`${DODGE.sec}점에 그쳤다. 엄폐물 뒤에서 튀어나온 적에게 연속으로 헤드샷을 허용했고 화면에 "KILLED" 글씨가 선명하게 떴다. 팀원들이 말을 잃었고 범수가 "...괜찮아, 누구나 그럴 수 있어"라고 말했지만 그 눈은 전혀 괜찮지 않았다.`]}},
+{t:'🏃 "나 먼저 빠질게" 하고 일어서려 한다',fx:{},m:'',mini:6,force:'진호가 재민이의 어깨를 붙잡았다. "야, 7명 중 한 명이라도 빠지면 클랜전 진다! 지금 로그인해!" 마지못해 마우스를 잡았는데 상대 클랜은 이미 몰려오고 있다!',fn:S=>{
+  if(DODGE.win)return [{soc:6,hap:9,chr:2,f:['clan_ace'],q:'fart_class'},'빠지려던 재민이가 의외로 에이스가 됐다! 진호가 "내가 뭐랬어"라며 의기양양했고 상대 클랜은 채팅창에 "ㄷㄷ"만 남겼다. 이날 치킨은 재민이가 골랐다.'];
+  return [{hap:-4,sts:5,soc:-2,q:'fart_class'},'억지로 합류한 재민이는 첫 라운드에 전사했다. 진호가 "...빠지게 놔둘 걸"이라고 중얼거렸고 클랜 채팅창은 조용해졌다. 야자 두 배가 확정됐다.']}}
+],{w:150,at:17,sur:1});
 /* --- 성인이 되어 밤샘 PC방, 피파온라인3 (BGM: assets/bgm/fifa.mp3) --- */
-ev('fifa_pc',20,27,'⚽ 성인이 된 우리, 밤샘 PC방 피파온라인3','성인이 되고 처음으로 눈치 안 보고 PC방 야간 정액을 끊었다. 진호, 찬호, 경연, 세민, 범수, 경완이 나란히 앉았다. 오늘의 게임은 피파온라인3. 옆자리 간식 값 걸린 리그전이 시작됐다. 시계는 새벽 두 시. 컵라면 국물은 식었고 마우스 클릭 소리만 요란하다. 재민이는 어떻게 나설까?',[
-g('🏆 에이스 선수 풀 장착, 진호와 결승 한판',.25,[{hap:10,soc:5,chr:2,f:['fifa_win']},'연장전 후반 추가시간, 재민이의 크로스가 그대로 골문에 꽂혔다! 헤드셋 너머로 진호가 "아 미친!!" 하고 소리를 질렀고 PC방 알바생이 조용히 하라고 찾아왔다. 우승 상품은 찬호가 쏘는 컵라면. 새벽 네 시 PC방에서 재민이는 이 세상 가장 행복한 사람이었다.'],[{hap:-5,sts:5,soc:-1},'1:0으로 앞서다 종료 직전 진호가 마지막 한 방을 넣었다. 재민이는 의자에서 일어나 소리를 질렀고 키보드를 내려치려다 PC방 사장님과 눈이 마주쳤다. 그 후 조용히 앉았다. 진호는 일주일 내내 이 결과를 이야기할 예정이다.']),
-g('🔄 현질로 레전드 선수를 뽑는다',.12,[{hap:12,m:-100,soc:3},'만 원 현질로 팩을 열자 화면이 황금빛으로 번쩍였다. 레전드 선수가 나왔다! 친구들은 일제히 조용해졌다가 "야 재민아 어디서 샀어?"를 연발했다. 오늘만큼은 재민이가 PC방의 왕이었다. 통장 잔고는 조용히 눈물을 흘렸지만 행복은 돈으로 살 수 있었다.'],[{hap:-8,m:-300,sts:6},'3만 원을 태웠는데 나온 건 벤치 멤버만 한 무더기. 옆에서 범수가 "그럴 줄 알았다"며 헛기침을 했다. 경연은 "재민아 그만해"를 열 번 말했고 재민이는 열한 번째 팩을 열었다. 새벽 세 시, 재민이의 월세 계획이 PC방에서 증발했다.']),
-g('📱 감독 지시 훈수만 두는 전술가',.4,[{int:2,soc:5,hap:5},'"4-2-3-1로 바꿔! 지금 측면이 비었어!" 재민이의 훈수를 들은 세민이가 3:1로 역전했다. 친구들은 "재민이 말이 맞네"라며 감탄했다. 정작 본인은 한 번도 안 뛰었지만 승리 수당은 재민이도 받았다. 훈수의 승리다.'],[{soc:-3,hap:-3,sts:3},'재민이의 훈수를 따른 경완이 어이없는 실점을 했다. "누가 이렇게 하래!" 경완의 외침과 함께 모든 시선이 재민이에게 쏠렸다. 이후 재민이는 키보드를 만지는 것만으로도 눈치를 봤다. 훈수 값은 컵라면 두 개.']),
-g('🛌 5시에 먼저 퇴근한다',.45,[{hap:3,str:2,sts:-3},'"난 먼저 간다." 재민이는 새벽 다섯 시 뒷문을 열고 나왔다. 해가 뜨는 거리는 놀랄 만큼 상쾌했다. 집에 도착해 이불을 덮자마자 꿀잠. 친구들은 아침 아홉 시까지 남아서 점심까지 먹었다는 후문. 재민이는 아무도 모르는 승자가 됐다.'],[{hap:-4,sts:5,soc:-2},'먼저 가려다 이미 지갑을 PC방에 두고 온 것을 깨달았다. 돌아가 보니 친구들은 재민이 자리에서 재민이 계정으로 재민이 선수를 굴리고 있었다. 결과는 5연패. 재민이의 계정 전적이 순식간에 박살났다.']),
-],{w:150});
+ev('fifa_pc',20,27,'⚽ 피파온라인3, 승부차기 결승','성인이 되고 처음으로 눈치 안 보고 PC방 야간 정액을 끊었다. 진호, 찬호, 경연, 세민, 범수, 경완이 나란히 앉았다. 오늘은 간식 값 걸린 피파온라인3 리그전. 시계는 새벽 네 시. 컵라면 국물은 식었고 마우스 클릭 소리만 요란하다. 결승은 연장전까지 가도 승부가 안 나서 승부차기까지 왔다. 모두의 시선이 모니터에 꽂혔다. 재민이가 마지막 키커다!',[
+{t:'⚽ 키커로 나선다! (미니게임)',fx:{},m:'',mini:7,fn:S=>{
+  if(DODGE.win)return [{hap:12,soc:5,chr:2,f:['fifa_win']},`승부차기에서 ${DODGE.sec}골! 마지막 슛이 골망을 흔들자 PC방이 뒤집어졌다. 진호가 "아 미친!!" 하고 소리를 질렀고 알바생이 조용히 하라고 찾아왔다. 우승 상품은 찬호가 쏘는 컵라면. 새벽 네 시 PC방에서 재민이는 세상에서 가장 행복한 사람이었다.`];
+  return [{hap:-6,sts:5,soc:-1},`승부차기에서 ${DODGE.sec}골에 그쳤다. 마지막 슛이 키퍼 정면으로 향했고 진호가 일어서서 두 팔을 번쩍 들었다. 재민이는 의자에서 일어나 소리를 질렀고 키보드를 내려치려다 PC방 사장님과 눈이 마주쳤다. 그 후 조용히 앉았다.`]}},
+{t:'🙈 "나는 구경만 할게" 하고 물러선다',fx:{},m:'',mini:7,force:'그때 진호가 재민이의 어깨를 잡았다. "마지막 키커는 너야." 찬호가 마우스를 건넸다. 이미 PC방 전체가 재민이를 쳐다보고 있다. 숨을 고르고 키커로 나서야 한다!',fn:S=>{
+  if(DODGE.win)return [{hap:12,soc:5,chr:2,f:['fifa_win']},`물러서려던 재민이가 ${DODGE.sec}골로 팀을 우승시켰다! 진호가 "내가 지명한 거 맞지?"라며 어깨를 으쓱했다. 컵라면은 찬호가 쐈다.`];
+  return [{hap:-6,sts:5,soc:-1},`지목받고 나선 재민이는 ${DODGE.sec}골에 그쳤다. 진호는 "...내가 찰 걸"이라고 중얼거렸고 찬호는 컵라면을 혼자 먹었다. PC방에는 어색한 정적이 흘렀다.`]}}
+],{w:150,at:20,sur:1});
 /* --- 중간 미니게임: 찬호가 던지는 물건 피하기 (BGM: assets/bgm/dodge.mp3) --- */
 ev('dodge_game',30,34,'🎯 찬호의 물건 던지기 대작전','서른 살 무렵, 오랜만에 친구들이 모였다. 갑자기 찬호가 손에 뭔가를 한가득 들고 일어섰다. "재민아, 요즘 반사신경 죽었다며? 확인 좀 하자!" 오이고추, 비치발리볼, 소시지가 쉴 새 없이 날아올 예정이다. 최대한 오래 버티며 피해야 한다. 28초 동안 몇 대나 맞을까?',[
 {t:'🎮 피해본다! (미니게임)',fx:{},m:'',mini:1,fn:S=>{
@@ -1788,14 +1812,14 @@ ev('egg_game',36,40,'🥚 찬호의 날달걀 폭격','서른여섯의 어느 �
 c('🍳 그냥 먹겠다고 선언한다',{hap:5,sts:-1},'재민이는 피하기도 귀찮아서 "던지지 말고 그냥 줘, 먹을게"라고 말했다. 찬호는 한숨을 쉬며 달걀프라이를 부쳐 줬고 재민이는 그걸 맛있게 먹었다. 평화로운 결말이다.')
 ],{w:3,at:36,sur:1});
 /* --- 수업 시간 미니게임: 경연이의 몰래 방구 (걸리면 재민이가 혼남) --- */
-ev('fart_class',17,17,'💨 수업 중, 경연이의 비밀 작전','수학 시간. 칠판에 이차방정식이 가득하다. 옆자리 경연의 얼굴이 하얗게 질려 있다. 점심에 먹은 라면이 배 속에서 반란을 일으킨 것이다. "재민아... 나 지금 터진다. 선생님이 칠판 볼 때만 뀔 테니까, 뒤돌아보면 신호 줘. 나 자는 척할게." 경연은 눈물까지 글썽인다. 문제는 평소 행실 때문에 교실의 방귀 사건은 늘 재민이 몫이라는 것. 뒷자리에는 최다인과 임유미가 앉아 있다. 재민이는 경연의 망잡이가 됐다.',[
+ev('fart_class',16,25,'💨 수업 중, 경연이의 비밀 작전','클랜전 다음 날 수학 시간. 칠판에 이차방정식이 가득하다. 옆자리 경연의 얼굴이 하얗게 질려 있다. 점심에 먹은 라면이 배 속에서 반란을 일으킨 것이다. "재민아... 나 지금 터진다. 선생님이 칠판 볼 때만 뀔 테니까, 뒤돌아보면 신호 줘. 나 자는 척할게." 경연은 눈물까지 글썽인다. 문제는 평소 행실 때문에 교실의 방귀 사건은 늘 재민이 몫이라는 것. 뒷자리에는 최다인과 임유미가 앉아 있다. 재민이는 경연의 망잡이가 됐다.',[
 {t:'💨 경연이의 망을 봐 준다! (미니게임)',fx:{},m:'',mini:4,fn:S=>{
   const h=DODGE.hits,g=DODGE.sec;
-  if(h===0&&g>=100)return [{hap:3,soc:-2,sts:3,f:['fartSuspect']},'경연은 한 번도 안 들키고 방구 작전을 완수했다! 선생님은 끝까지 칠판만 봤다. 그런데 냄새는 교실 전체로 퍼졌고 선생님이 코를 막으며 물었다. "누가 뀌었니?" 경연은 어느새 코까지 골며 자는 척 중이었다. 모든 시선이 재민이에게 모였다. 최다인과 임유미가 동시에 외쳤다. "야!! 임재민!!! 방구좀 작작껴!!!" 결국 방구는 재민이가 뀐 걸로 결론이 났다. 경연은 눈을 감은 채 입꼬리만 올렸다.'];
-  if(g>=100)return [{hap:1,soc:-2,sts:4,f:['fartSuspect']},`${h}번 들킬 뻔했지만 경연은 끝내 작전을 완수했다. 선생님이 돌아봤을 때마다 재민이가 손짓으로 신호를 줬는데 그 모습이 오히려 범인 같았다. 마지막 구름이 퍼지자 최다인과 임유미가 재민이를 돌아봤다. "야!! 임재민!!! 방구좀 작작껴!!!" 방구는 경연이 뀌었지만 재민이가 뀐 걸로 결론이 났다. 경연은 자는 척하며 "미안... 매점 소시지빵"이라고 속삭였다.`];
-  return [{hap:-5,sts:6,soc:-2,f:['fartSuspect']},'선생님이 뒤돌아보는 순간 경연의 방구가 터졌다. 경연은 번개처럼 자는 척을 시작했고 모든 시선이 재민이에게 쏠렸다. 최다인과 임유미가 동시에 소리쳤다. "야!! 임재민!!! 방구좀 작작껴!!!" 방구는 경연이 뀌었는데 결론은 재민이가 뀐 걸로 났다. 억울함은 재민이의 몫이다. 경연은 코까지 골았다.']}},
-{t:'🙈 모른 척 공부한다',fx:{},m:'',mini:4,fn:S=>{return [{hap:-3,sts:4,soc:-2,f:['fartSuspect']},'모른 척하는 사이 경연이 참다못해 조용히 뀌었다. 냄새가 퍼지자 선생님이 물었다. "누구야?" 경연은 이미 자는 척 중이었고 모두의 시선이 재민이에게 향했다. "야!! 임재민!!! 방구좀 작작껴!!!" 결국 방구는 재민이가 뀐 걸로 결론이 났다.']}}
-],{w:3,at:17,sur:1});
+  if(h===0&&g>=100)return [{hap:3,soc:-2,sts:3,f:['fartSuspect','fartDone']},'경연은 한 번도 안 들키고 방구 작전을 완수했다! 선생님은 끝까지 칠판만 봤다. 그런데 냄새는 교실 전체로 퍼졌고 선생님이 코를 막으며 물었다. "누가 뀌었니?" 경연은 어느새 코까지 골며 자는 척 중이었다. 모든 시선이 재민이에게 모였다. 최다인과 임유미가 동시에 외쳤다. "야!! 임재민!!! 방구좀 작작껴!!!" 결국 방구는 재민이가 뀐 걸로 결론이 났다. 경연은 눈을 감은 채 입꼬리만 올렸다.'];
+  if(g>=100)return [{hap:1,soc:-2,sts:4,f:['fartSuspect','fartDone']},`${h}번 들킬 뻔했지만 경연은 끝내 작전을 완수했다. 선생님이 돌아봤을 때마다 재민이가 손짓으로 신호를 줬는데 그 모습이 오히려 범인 같았다. 마지막 구름이 퍼지자 최다인과 임유미가 재민이를 돌아봤다. "야!! 임재민!!! 방구좀 작작껴!!!" 방구는 경연이 뀌었지만 재민이가 뀐 걸로 결론이 났다. 경연은 자는 척하며 "미안... 매점 소시지빵"이라고 속삭였다.`];
+  return [{hap:-5,sts:6,soc:-2,f:['fartSuspect','fartDone']},'선생님이 뒤돌아보는 순간 경연의 방구가 터졌다. 경연은 번개처럼 자는 척을 시작했고 모든 시선이 재민이에게 쏠렸다. 최다인과 임유미가 동시에 소리쳤다. "야!! 임재민!!! 방구좀 작작껴!!!" 방구는 경연이 뀌었는데 결론은 재민이가 뀐 걸로 났다. 억울함은 재민이의 몫이다. 경연은 코까지 골았다.']}},
+{t:'🙈 모른 척 공부한다',fx:{},m:'',mini:4,fn:S=>{return [{hap:-3,sts:4,soc:-2,f:['fartSuspect','fartDone']},'모른 척하는 사이 경연이 참다못해 조용히 뀌었다. 냄새가 퍼지자 선생님이 물었다. "누구야?" 경연은 이미 자는 척 중이었고 모두의 시선이 재민이에게 향했다. "야!! 임재민!!! 방구좀 작작껴!!!" 결국 방구는 재민이가 뀐 걸로 결론이 났다.']}}
+],{w:0,sur:1,c:S=>!S.flags.fartDone});
 /* --- 야자 시간: 경연의 의도치 않은 신호 (재민이는 평소 행실 때문에 80% 의심받는다) --- */
 const SUSPECT_P=.8;
 ev('gy_yaja',16,18,'📚 야자 시간의 정적','야간 자율학습 시간. 조용한 교실에 연필 소리만 사각사각 울린다. 경연이 책상에 엎드려 곤히 자고 있다. 그런데 갑자기 교실의 정적을 가르며 "뿌우웅—" 하는 소리가 울려 퍼졌다. 온 반이 일제히 고개를 들었다. 범인은 경연이다. 하지만 정작 경연은 꿈속에서 아직 깨지 않았다. 재민이는 경연의 옆자리에 앉아 있다. 그리고 재민이에게는 불행한 전과가 있다. 평소 행실 때문에, 이런 일이 생기면 반 아이들은 80% 확률로 재민이를 의심한다.',[
@@ -1849,6 +1873,15 @@ ev('ch_baskin',21,62,'📞 찬호의 전화, 베스킨라빈스',S=>`${S.bk>=1?`
   return [{hap:3,soc:1},'"파인트로 하자"고 했더니 찬호가 의외로 "그래, 그걸로 괜찮아"라고 했다. 파인트 한 통을 사서 같이 나눠 먹었다. 이날의 협상은 완벽한 승리였다.']}}
 ],{rep:8,w:7});
 /* --- 찬호네 집: 반지 사건 (집 주소는 넣지 않음) --- */
+/* --- 돌발: 찬호의 반지를 훔쳐라! (이어서 ch_ring) --- */
+ev('ring_heist',21,34,'💍 찬호의 반지를 훔쳐라!','재민이가 찬호네 집에 놀러 갔다. 찬호는 거실 TV 앞에서 피파 방송에 푹 빠져 있다. 그런데 협탁 위에서 무언가가 반짝였다. 찬호가 아끼는 반지다. 재민이의 눈이 반짝였다. 아니, 손이 반짝였다. 찬호가 TV를 보는 사이 살금살금 다가가 반지를 집어 와야 한다. 찬호가 뒤돌아보면 바로 멈춰야 한다!',[
+{t:'💍 살금살금 반지를 노린다! (미니게임)',fx:{},m:'',mini:9,fn:S=>{
+  if(DODGE.win)return [{chr:-3,hap:2,sts:4,f:['ring_stolen'],q:'ch_ring'},'찬호가 TV에 집중하는 틈에 반지를 손에 넣었다! 심장이 터질 것 같았다. 그런데 때마침 찬호가 일어나는 소리가 들린다. 재민이의 손에는 반지가 있다. 이게 무슨 일인가.'];
+  return [{chr:-2,soc:-2,hap:-3,sts:5},'반지에 손을 뻗는 순간 찬호가 뒤돌아봤다. "재민아, 뭐 하냐?" 재민이는 "...먼지 털어 주려고"라고 대답했고 찬호는 의심의 눈빛으로 협탁을 바라봤다. 반지는 건드리지도 못했다. 벌금으로 베스킨라빈스를 사기로 했다.']}},
+{t:'👀 "나는 아무것도 안 봤어" 하며 협탁 쪽으로 다가간다',fx:{},m:'',mini:9,force:'"나는 반지 같은 거 관심 없어" 하면서 협탁 쪽으로 걸어가는 재민이의 눈은 이미 반지에 꽂혀 있다. 찬호는 TV에 집중 중이다. 들키지 않게 가야 한다!',fn:S=>{
+  if(DODGE.win)return [{chr:-3,hap:2,sts:4,f:['ring_stolen'],q:'ch_ring'},'관심 없는 척 걸어가다 반지를 슬쩍 집어 왔다! 찬호는 아직 TV만 보고 있다. 그런데 방금 찬호가 일어서는 소리가 들렸다. 손에 든 반지가 갑자기 무겁다.'];
+  return [{chr:-2,soc:-2,hap:-3,sts:5},'관심 없는 척하다 오히려 눈에 띄었다. 찬호가 돌아보며 "너 왜 그쪽에 서 있냐?"라고 물었다. 재민이는 "...TV가 잘 안 보여서"라고 답했다. 찬호는 의심스러워했고 반지는 찬호의 주머니로 들어갔다.']}}
+],{w:150,once:1,sur:1});
 ev('ch_ring',22,40,'💍 찬호네 집, 반짝이는 것','재민이가 찬호네 집에 놀러 갔다. 찬호가 화장실에 간 사이 거실 협탁 위에서 무언가가 반짝였다. 찬호가 아끼는 반지다. 재민이는 그걸 구경만 하려고 했다. 그런데 손이 먼저 움직였고, 정신을 차려 보니 반지는 재민이의 주머니 속에 들어 있었다. 이게 무슨 일인가. 때마침 화장실 문 열리는 소리가 들린다. 찬호가 돌아오고 있다. 재민이의 심장은 터질 것 같다.',[
 g('조용히 제자리에 돌려놓는다',.3,[{chr:2,hap:3,sts:-2},'찬호가 거실로 나오기 전에 반지를 협탁 위에 도로 올려놓았다. 찬호는 아무 일 없다는 듯 "뭐 마실래?" 하고 물었다. 재민이는 물을 한 컵 들이켰다. 심장이 아직도 쿵쾅댔지만 다행히 아무도 모르는 사건이 됐다. 재민이는 다시는 이러지 않기로 다짐했다.'],[{hap:-4,sts:5,chr:-2,f:['ring']},'돌려놓으려는 순간 찬호가 문을 열었다. 눈이 마주쳤다. 반지는 재민이의 손에 쥐어져 있다. 찬호가 한참 침묵하다 말했다. "...재민아, 그거 내 반지야." 재민이는 얼굴이 새빨개졌다. "구경하려고 했어..." 변명은 설득력이 없었다.'],{k:'chr'}),
 g('"반지 어디 갔지?" 하며 같이 찾는 척한다',.2,[{hap:2,sts:2,chr:-1},'찬호가 "어? 내 반지?" 하며 협탁 주변을 뒤졌고 재민이는 "내가 찾아 줄게" 하며 소파 틈에서 반지를 찾아냈다. "여기 있네!" 찬호는 "역시 재민이다~" 하며 고마워했다. 재민이의 양심은 조용히 비명을 질렀다.'],[{hap:-5,sts:6,chr:-3,f:['ring']},'같이 찾는 척했는데 소파 틈에서 "발견"하는 연기가 너무 어색했다. 찬호가 의아한 눈빛으로 재민이를 쳐다봤다. "...재민아, 거기 방금 내가 봤는데 없었는데?" 들켰다. 재민이는 입을 다물었다.'],{k:'cha'}),
@@ -1920,7 +1953,7 @@ function setJob(id){S.job=id;S.rank=0;const j=JOBS[id];S.s=Math.round(j.base*R(.
   S.fireP=(id!=='none'&&id!=='mp'&&Math.random()<.85)?1:0;S.fireAge=S.age+ri(3,12);delete S.flags.fireWarned;delete S.warnAge}
 /* 확정 결과였던 선택지도 모두 확률 도전으로: 성공하면 원래 효과, 실패하면 역효과.
    진행 필수 선택(직업·학력·결혼 등)과 위기/치료 장면은 제외 */
-const NORISK=new Set(['japan_lost','jinho_angry','ch_shop','fart_class','confess_gh','enter_mid','dodge_game','ggul_game','egg_game','hs','crisis','discharge','armyend2','armyhard','armyend_b','recovery','bust','quiet','will','retire','enter','suneung','boot']);
+const NORISK=new Set(['ring_heist','japan_lost','jinho_angry','ch_shop','fart_class','confess_gh','enter_mid','dodge_game','ggul_game','egg_game','hs','crisis','discharge','armyend2','armyhard','armyend_b','recovery','bust','quiet','will','retire','enter','suneung','boot']);
 const SKIPK=['q','job','edu','married','kids','pet','retire','rank','uf'];
 const FAILM={
  int:['머리가 하얘졌다. 아는 문제인데 처음 보는 문제 같았다.','뇌가 로딩 중이었다. 로딩은 끝내 완료되지 않았다.','머리를 굴렸더니 굴러서 바닥에 떨어졌다.','"어? 이거 어제 봤는데?" 어제의 재민이가 오늘의 재민이를 배신했다.','계산기를 두드렸는데 계산기가 먼저 한숨을 쉬었다.','두뇌 풀가동! ...이라고 생각했지만 사실 절전 모드였다.','머릿속에 지우개가 들어앉았다. 방금 외운 게 통째로 삭제됐다.','똑똑한 척하다가 도리어 바보라는 게 증명됐다. 증거 영상도 남았다.','뇌세포가 단체로 파업을 선언했다. 요구 조건은 "낮잠"이다.','"이 정도는 식은 죽 먹기지." 그 식은 죽이 재민이를 먹었다.'],
@@ -2080,9 +2113,9 @@ function onEnter(){const e=EV[S.cur];if(e&&e.pre&&!S.flags['p_'+S.cur]){S.flags[
 /* ===== achievements ===== */
 /* ===== 업적: 분류·등급·보너스·팝업 ===== */
 const ACHCAT={first:'일',mil:'군대',detain:'군대',heal:'마음',elite:'학업',m1:'돈',m10:'돈',m100:'돈',debt:'돈',wed:'가족',kids3:'가족',pet:'가족',genius:'능력',hulk:'능력',pop:'능력',joy:'능력',burn:'일',lotto:'돈',scam:'돈',gam:'돈',rew:'특별',mp:'일',star:'일',dad:'가족',hermit:'특별',phoenix:'돈',
- fartsus:'친구',fartgod:'미니게임',dodgegod:'미니게임',egggod:'미니게임',ggulgod:'미니게임',clanace:'친구',fifawin:'친구',shop1:'친구',shop5:'친구',shop10:'친구',japan:'친구',jinhoangry:'친구',rejected:'친구',allmini:'미니게임',lover:'가족',friendbest:'친구',trip:'특별',gradeS:'등급',gradeA:'등급',gradeB:'등급',gradeD:'등급',runs3:'특별',runs10:'특별'};
-const ACHHARD=new Set(['m100','lotto','genius','hulk','pop','joy','phoenix','mp','star','shop10','fartgod','dodgegod','egggod','ggulgod','gradeS','runs10','dad','kids3']);
-const ACHMID=new Set(['m10','elite','wed','hermit','gradeA','shop5','allmini','friendbest','clanace','fifawin','lover','trip','runs3','mil','heal','burn','scam','gam']);
+ fartsus:'친구',fartgod:'미니게임',dodgegod:'미니게임',egggod:'미니게임',ggulgod:'미니게임',clanace:'친구',fifawin:'친구',shop1:'친구',shop5:'친구',shop10:'친구',japan:'친구',jinhoangry:'친구',rejected:'친구',allmini:'미니게임',lover:'가족',friendbest:'친구',trip:'특별',gradeS:'등급',gradeA:'등급',gradeB:'등급',gradeD:'등급',runs3:'특별',runs10:'특별',ringthief:'미니게임',subwayok:'미니게임',saclan:'미니게임',pkwin:'미니게임',escape:'미니게임',escape3:'미니게임'};
+const ACHHARD=new Set(['escape3','pkwin','saclan','m100','lotto','genius','hulk','pop','joy','phoenix','mp','star','shop10','fartgod','dodgegod','egggod','ggulgod','gradeS','runs10','dad','kids3']);
+const ACHMID=new Set(['ringthief','subwayok','escape','m10','elite','wed','hermit','gradeA','shop5','allmini','friendbest','clanace','fifawin','lover','trip','runs3','mil','heal','burn','scam','gam']);
 const achTier=id=>ACHHARD.has(id)?3:ACHMID.has(id)?2:1; // 1 브론즈 2 실버 3 골드
 const TIERIC=['','🥉','🥈','🥇'],TIERPT=[0,1,2,4];
 const achPts=()=>ACH.reduce((t,a)=>t+(META.ach[a[0]]?TIERPT[achTier(a[0])]:0),0);
@@ -2381,7 +2414,8 @@ function gaugeAnim(p,r,ok,cb){
 }
 /* 9) 연타 미니게임: 4초 동안 연타해서 성공률 최대 +15% */
 /* ===== 미니게임: 물건 피하기 ===== */
-const DODGE={hits:0,sec:0,ready:false};
+const DODGE={hits:0,sec:0,ready:false,win:false};
+const MINIFN={};
 let MINI_INTRO='';
 const MINI3={hard:1,eat:1,egg:1,cw:22,items:[{e:'🥚',n:'날달걀',r:14,v:1},{e:'🥚',n:'날달걀(속사)',r:12,v:1.3},{e:'🥚',n:'날달걀(대)',r:18,v:.8}],title:'날달걀 피하기!',sub:'🥚 찬호가 던지는 날달걀을 피하세요<br>맞으면 재민이가 꿀꺽 맛있게 먹어요 😋',hud:'🥚 날달걀 피하기',bg:'kitchen',outfit:'casual',la:'🥚',lb:'😋',eatTxt:'꿀꺽! 😋',cnt:'먹은 달걀',unit:'개',bad:'🍳 달걀 먹방 완성',good:'🏆 전부 회피!',dur:30};
 const MINI1={hard:1,cw:20,title:'찬호의 물건 던지기!'};
@@ -2484,6 +2518,224 @@ function fartStop(quick){
   try{const c=AC,t=c.currentTime;x.g.gain.cancelScheduledValues(t);x.g.gain.setValueAtTime(Math.max(.0001,x.g.gain.value),t);x.g.gain.exponentialRampToValueAtTime(.0001,t+(quick?.03:.16));
     x.o.frequency.exponentialRampToValueAtTime(48,t+(quick?.03:.16));
     setTimeout(()=>{try{x.o.stop();x.o2.stop();x.l.stop()}catch(e){}},300)}catch(e){}
+}
+/* ===== 미니게임 공통: 껍데기 + 스프라이트 ===== */
+function mgSprite(outfit,hk){
+  const c=document.createElement('canvas');c.width=SPW*K;c.height=FULLH*K;
+  const ref={c,rebuild(){let ok=outfit||outfitKeyFor();if(ok[0]==='_'){const jv=JV[ok.slice(1)];OUTFIT[ok]={top:jv?jv.c:'#7a8cd6',bot:'#3a4a6a',shoe:'#fff',sl:1,x:'tie:#ffffff'}}
+    const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);drawBody(c,OUTFIT[ok]||OUTFIT.none,BODYY);const im=imgFor(HEADS[hk]||HEADS.face,()=>ref.rebuild());if(im&&im.naturalWidth){drawHead(c,im,false,hk||'face');if((OUTFIT[ok]||{}).cap)drawCap(c,OUTFIT[ok].cap)}}};
+  ref.rebuild();return ref}
+function mgShell(o){
+  const W=360,H=520,el=document.createElement('div');el.id='dodge';
+  el.innerHTML=`<div class="dgb"><div class="dgt"><b>${o.hud}</b><span id="dglife">${o.life||''}</span><span id="dgtime">${o.time||''}</span></div>
+   <canvas id="dgc" width="${W}" height="${H}"></canvas>${o.extra||''}
+   <div class="dgov" id="dgov"><h3>${o.title}</h3>${MINI_INTRO?`<p class="dgi">${MINI_INTRO}</p>`:''}<p>${o.desc}</p><button class="btn pri" id="dgstart">시작!</button></div></div>`;
+  document.body.appendChild(el);
+  const cv=el.querySelector('#dgc'),g=cv.getContext('2d');
+  const sh={el,cv,g,W,H,over:false,
+    life:t=>{el.querySelector('#dglife').textContent=t},time:t=>{el.querySelector('#dgtime').textContent=t},
+    finish(win,head,sub,hits,sec){if(sh.over)return;sh.over=true;DODGE.win=!!win;DODGE.hits=hits||0;DODGE.sec=sec||0;
+      const ov=el.querySelector('#dgov');ov.style.display='flex';
+      ov.innerHTML=`<h3>${head}</h3><p>${sub}</p><button class="btn pri" id="dgdone">결과 보기</button>`;sfx(win?'fanA':'sadD');
+      el.querySelector('#dgdone').onclick=()=>{el.remove();setBgm(eventBgm()||stageMode(S.age));o.done()}}};
+  setBgm('dodge');
+  el.querySelector('#dgstart').onclick=()=>{el.querySelector('#dgov').style.display='none';bgmKick();o.onstart&&o.onstart(sh)};
+  return sh}
+
+/* ===== 미니게임: 몰래 이동(찬호의 반지 훔치기 / 계산 안 하고 도망치기) — 방구 게임과 같은 방식 ===== */
+function startStealth(done,cfg){
+  const DUR=cfg.dur||40,MAXS=2,RATE=cfg.rate||9;
+  const sh=mgShell({hud:cfg.hud,life:'💢 0/'+MAXS,time:DUR,title:cfg.title,desc:cfg.desc,done,
+    extra:`<div class="fgauge"><i id="fgi"></i><span id="fgt">${cfg.gauge} 0%</span></div><button id="fbtn" class="fbtn">${cfg.btn}</button>`,
+    onstart:start});
+  const {g,W,H,el}=sh,fbtn=el.querySelector('#fbtn');
+  const spr=mgSprite(cfg.outfit,'face');
+  const rollGlance=()=>{const q=Math.random()<.45;return {len:q?R(.22,.55):R(.6,1.6),wait:Math.random()<.35?R(.5,1.1):R(1.2,3.4),warn:Math.random()<.5,fake:Math.random()<.18}};
+  let ng=rollGlance(),t=0,prog=0,strikes=0,phase='back',pt=1.2,tele=false,holding=false,run=false,sayT=0,raf=0,last=0,keys=false,over=false,grace=0;
+  const stop=()=>{fartStop(true);removeEventListener('keydown',kd);removeEventListener('keyup',ku);cancelAnimationFrame(raf)};
+  const setHold=v=>{if(!run||sayT>0){if(!v)holding=false;fbtn.classList.remove('on');return}if(v&&!holding)sfx('stepf');holding=v;fbtn.classList.toggle('on',v)};
+  const kd=e=>{if(e.key===' '||e.key==='ArrowRight'){e.preventDefault();if(!keys){keys=true;setHold(true)}}},ku=e=>{if(e.key===' '||e.key==='ArrowRight'){keys=false;setHold(false)}};
+  addEventListener('keydown',kd);addEventListener('keyup',ku);
+  fbtn.addEventListener('pointerdown',e=>{e.preventDefault();try{fbtn.setPointerCapture(e.pointerId)}catch(x){}setHold(true)});
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>fbtn.addEventListener(ev,()=>setHold(false)));
+  function end(win){if(over)return;over=true;run=false;stop();fbtn.style.display='none';
+    sh.finish(win,win?cfg.winHead:cfg.loseHead,`진행 <b>${Math.round(prog)}%</b> · 들킨 횟수 <b>${strikes}</b>번`,strikes,Math.round(prog))}
+  function start(){run=true;last=performance.now();raf=requestAnimationFrame(loop)}
+  function loop(now){
+    if(!run)return;raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;
+    if(sayT>0){sayT-=dt;if(sayT<=0){phase='back';ng=rollGlance();pt=1.2;tele=false}}
+    else{
+      t+=dt;pt-=dt;
+      if(phase==='back'){
+        if(!tele&&pt<=.3&&ng.warn){tele=true;sfx('gasp')}
+        if(pt<=0){if(tele&&ng.fake){tele=false;ng=rollGlance();pt=R(.6,2)}else{phase='look';tele=false;pt=ng.len;grace=.08;sfx('turn')}}
+      }else if(pt<=0){phase='back';ng=rollGlance();pt=ng.wait}
+      if(phase==='look'&&grace>0)grace-=dt;
+      if(holding){
+        if(phase==='look'&&grace<=0){strikes++;holding=false;fbtn.classList.remove('on');el.querySelector('#dglife').textContent='💢 '+strikes+'/'+MAXS;sayT=1.8;sfx('scare');setTimeout(()=>sfx('fail'),400);setTimeout(()=>playVoice(1),700);if(strikes>=MAXS)setTimeout(()=>end(false),1500)}
+        else{prog=Math.min(100,prog+RATE*dt);if(Math.random()<dt*3)sfx('stepf')}
+      }
+      if(prog>=100)end(true);else if(t>=DUR)end(false);
+    }
+    el.querySelector('#dgtime').textContent=Math.max(0,Math.ceil(DUR-t));el.querySelector('#fgi').style.width=prog+'%';el.querySelector('#fgt').textContent=cfg.gauge+' '+Math.round(prog)+'%';
+    g.clearRect(0,0,W,H);cfg.scene(g,{W,H,t,phase,tele,prog,holding,say:sayT>0,spr:spr.c,looking:phase==='look'||sayT>0});
+    if(sayT>0){g.fillStyle='rgba(0,0,0,.45)';g.fillRect(0,0,W,H);const bub=(txt,y)=>{g.font='19px "Jua",sans-serif';g.textAlign='center';const w=g.measureText(txt).width+26;g.fillStyle='#fff';g.strokeStyle='#3a220a';g.lineWidth=4;g.beginPath();g.roundRect(W/2-w/2,y-24,w,38,12);g.fill();g.stroke();g.fillStyle='#c25a00';g.fillText(txt,W/2,y+2)};
+      cfg.caught.forEach((tx,i)=>bub(tx,230+i*54));g.font='22px "Jua",sans-serif';g.fillStyle='#fff';g.fillText('😡 들켰다! 💢 '+strikes+'/'+MAXS,W/2,370)}
+  }
+}
+MINIFN[4]=d=>startFart(d);MINIFN[5]=d=>startSubway(d);MINIFN[6]=d=>startSA(d);MINIFN[7]=d=>startPK(d);MINIFN[8]=d=>startEscape(d);MINIFN[9]=d=>startRing(d);
+const STEALTH_RING={hud:'💍 찬호의 반지를 훔쳐라!',title:'찬호의 반지를 훔쳐라!',desc:'버튼을 <b>누르고 있으면</b> 재민이가 살금살금 반지 쪽으로 가요 🤫<br>찬호가 <b>뒤돌아보면 바로 손을 떼고</b> 가만히!<br>40초 안에 반지에 닿기, 2번 들키면 끝!',gauge:'반지까지',btn:'🤫 누르는 동안 살금살금',dur:40,rate:8.5,outfit:'casual',winHead:'💍 반지 획득!',loseHead:'😱 들켰다...',caught:['찬호: 재민아, 뭐 하냐?!','찬호: 거기 내 반지 옆에서!!'],
+  scene(g,c){const {W,H}=c;const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#f6e6c8');bg.addColorStop(.62,'#fff3d6');bg.addColorStop(.62,'#c79a62');bg.addColorStop(1,'#a67a44');g.fillStyle=bg;g.fillRect(0,0,W,H);
+    g.fillStyle='#222';g.fillRect(110,40,140,90);g.fillStyle='#3a8a4a';g.fillRect(116,46,128,78);g.font='28px sans-serif';g.textAlign='center';g.fillText('⚽',180,98);g.font='12px "Jua",sans-serif';g.fillStyle='#fff';g.fillText('피파 방송 중',180,60);
+    g.fillStyle='#8a5a28';g.fillRect(70,230,220,56);g.fillStyle='#a8703a';g.fillRect(70,200,220,40);
+    g.font='54px sans-serif';g.fillStyle='#000';g.fillText(c.looking?'😠':'🎮',160,230);g.font='13px "Jua",sans-serif';g.fillStyle='#fff';g.fillText('찬호',160,268);
+    if(c.tele){g.font='34px sans-serif';g.fillText('⚠️',230,220)}
+    g.fillStyle='#6b3f17';g.fillRect(262,350,70,10);g.fillRect(268,360,8,50);g.fillRect(318,360,8,50);g.font='34px sans-serif';g.fillText('💍',300,346);
+    const x=40+c.prog/100*210,y=330;g.imageSmoothingEnabled=false;g.drawImage(c.spr,0,0,SPW*K,FULLH*K,x,y,SPW*1.9,FULLH*1.9);
+    if(c.looking){g.fillStyle='rgba(232,67,61,.12)';g.fillRect(0,0,W,H)}
+    g.font='13px "Jua",sans-serif';g.fillStyle='#4a2f14';g.textAlign='center';g.fillText(c.looking?'찬호가 돌아본다!!':c.tele?'어? 이쪽을 보려 한다...':'게임에 집중하는 중 (지금이야!)',W/2,306)}};
+const STEALTH_ESCAPE={hud:'🏃 계산 안 하고 도망치기',title:'계산하기 전에 도망쳐!',desc:'찬호가 요리하는 동안 <b>버튼을 누르고 있으면</b> 문 쪽으로 살금살금 🚪<br>찬호가 <b>돌아보면 바로 손을 떼세요</b> (먹는 척!)<br>40초 안에 문밖으로, 2번 들키면 끝!',gauge:'문까지',btn:'🏃 누르는 동안 살금살금',dur:40,rate:8.5,outfit:'casual',winHead:'🚪 도망 성공!',loseHead:'😱 들켰다...',caught:['찬호: 야 임재민!! 어디 가!','찬호: 계산하고 가야지!!'],
+  scene(g,c){const {W,H}=c;const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#ffe9c2');bg.addColorStop(.62,'#fff6e0');bg.addColorStop(.62,'#b8885a');bg.addColorStop(1,'#946a3c');g.fillStyle=bg;g.fillRect(0,0,W,H);
+    g.fillStyle='#fff';g.fillRect(20,36,320,28);g.font='14px "Jua",sans-serif';g.fillStyle='#c25a00';g.textAlign='center';g.fillText('🏪 인생은 아름다워',W/2,56);
+    g.fillStyle='#6b3f17';g.fillRect(30,170,170,60);g.fillStyle='#a8703a';g.fillRect(30,150,170,30);
+    g.font='52px sans-serif';g.fillStyle='#000';g.fillText(c.looking?'😡':'🧑‍🍳',115,160);g.font='38px sans-serif';g.fillText('🍳',70,160+Math.sin(c.t*8)*3);g.fillText('♨️',150,128+Math.sin(c.t*4)*4);g.font='13px "Jua",sans-serif';g.fillStyle='#fff';g.fillText('찬호',115,222);
+    if(c.tele){g.font='34px sans-serif';g.fillText('⚠️',210,150)}
+    g.fillStyle='#6b3f17';g.fillRect(40,370,70,10);g.font='26px sans-serif';g.fillText('🍽️',75,368);
+    g.font='72px sans-serif';g.fillStyle='#000';g.fillText('🚪',310,360);g.font='13px "Jua",sans-serif';g.fillStyle='#c25a00';g.fillText('출구',310,386);
+    const x=50+c.prog/100*215,y=330;g.imageSmoothingEnabled=false;g.drawImage(c.spr,0,0,SPW*K,FULLH*K,x,y,SPW*1.9,FULLH*1.9);
+    if(c.looking){g.fillStyle='rgba(232,67,61,.12)';g.fillRect(0,0,W,H)}
+    g.font='13px "Jua",sans-serif';g.fillStyle='#4a2f14';g.textAlign='center';g.fillText(c.looking?'찬호가 돌아본다!!':c.tele?'어? 이쪽을 보려 한다...':'요리하는 중 (지금이야!)',W/2,306)}};
+const startRing=d=>startStealth(d,STEALTH_RING),startEscape=d=>startStealth(d,STEALTH_ESCAPE);
+
+/* ===== 미니게임: 일본 지하철을 탑승하자! (승강장 달리기) ===== */
+function startSubway(done){
+  const DUR=15;
+  const sh=mgShell({hud:'🚇 일본 지하철을 탑승하자!',life:'❤❤❤',time:DUR,title:'열차 문이 닫히기 전에!',done,
+    desc:'승강장을 달려 <b>열차에 올라타세요</b> 🚇<br>화면 <b>왼쪽/오른쪽을 터치</b>(또는 ← → 키, 스와이프)해서 사람과 캐리어를 피해요.<br>부딪히면 느려지고 ❤가 줄어요. 문이 닫히기 전에 도착!',onstart:start});
+  const {g,W,H,cv}=sh,spr=mgSprite('casual','face');
+  const LX=[90,180,270];let lane=1,tx=LX[1],px=LX[1],obs=[],t=0,dist=0,life=3,slow=0,rowT=.5,run=false,raf=0,last=0,flash=0,over=false,bump=0;
+  const move=d=>{if(!run)return;lane=Math.max(0,Math.min(2,lane+d));tx=LX[lane];sfx('stepf')};
+  const kd=e=>{if(e.key==='ArrowLeft'||e.key==='a')move(-1);else if(e.key==='ArrowRight'||e.key==='d')move(1)};addEventListener('keydown',kd);
+  let sx=null;cv.addEventListener('pointerdown',e=>{sx=e.clientX;const r=cv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W;if(Math.abs(x-px)>30){move(x<px?-1:1)}});
+  cv.addEventListener('pointerup',e=>{if(sx!=null&&Math.abs(e.clientX-sx)>40)move(e.clientX<sx?-1:1);sx=null});
+  const end=win=>{if(over)return;over=true;run=false;cancelAnimationFrame(raf);removeEventListener('keydown',kd);sfx(win?'tbell':'fail');
+    sh.finish(win,win?'🚇 탑승 성공!':life<=0?'😵 넘어졌다...':'🚪 문이 닫혔다...',`달린 거리 <b>${Math.round(dist)}%</b> · 부딪힌 횟수 <b>${3-life}</b>번`,3-life,Math.round(dist))};
+  function start(){run=true;last=performance.now();sfx('whistle');raf=requestAnimationFrame(loop)}
+  function loop(now){
+    if(!run)return;raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;
+    slow=Math.max(0,slow-dt);flash=Math.max(0,flash-dt);const v=(slow>0?3.2:10.2)+Math.min(2.4,t*.18); // 진행 속도
+    dist=Math.min(100,dist+v*dt);rowT-=dt;
+    if(rowT<=0&&dist<86){rowT=Math.max(.42,.78-t*.03);const n=Math.random()<.45?2:1,free=ri(0,2),ls=[0,1,2].filter(x=>x!==free);for(let i=0;i<n;i++){const l=ls.splice(ri(0,ls.length-1),1)[0];obs.push({l,y:-40,e:pick(['🧍','🧳','🚶','📱','🧑‍💼','🛒'])})}}
+    obs.forEach(o=>{o.y+=(300+v*14)*dt});
+    px+=(tx-px)*Math.min(1,dt*16);
+    for(const o of obs){if(!o.hit&&o.y>385&&o.y<455&&Math.abs(LX[o.l]-px)<34){o.hit=1;life--;slow=.9;flash=.5;bump=.4;sfx('hurt');sh.life('❤'.repeat(Math.max(0,life))+'🖤'.repeat(3-Math.max(0,life)));if(life<=0)setTimeout(()=>end(false),300)}}
+    obs=obs.filter(o=>o.y<560);
+    sh.time(Math.max(0,Math.ceil(DUR-t)));
+    if(dist>=100&&life>0)end(true);else if(t>=DUR)end(false);
+    // draw
+    const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#8a9ab8');bg.addColorStop(.25,'#d6dcea');bg.addColorStop(1,'#eef0f6');g.fillStyle=bg;g.fillRect(0,0,W,H);
+    g.fillStyle='#ffd24a';g.fillRect(40,0,6,H);g.fillRect(W-46,0,6,H); // 점자블록 라인
+    g.fillStyle='#c9ced8';for(let i=0;i<14;i++){const y=((i*46+t*(v*12))%(H+46))-46;g.fillRect(60,y,W-120,3)}
+    // 열차: dist>55부터 나타남
+    const tp=Math.max(0,(dist-55)/45);if(dist>55){const ty=-170+tp*200;g.fillStyle='#e8eef8';g.fillRect(20,ty,W-40,150);g.fillStyle='#2a6fd6';g.fillRect(20,ty+110,W-40,16);
+      const door=Math.max(0,Math.min(1,(DUR-t)/4));g.fillStyle='#3a4a6a';for(let i=0;i<3;i++){const dx=LX[i]-34;g.fillRect(dx,ty+20,34*door+4,86);g.fillRect(dx+68-(34*door+4),ty+20,34*door+4,86)}
+      g.font='16px "Jua",sans-serif';g.fillStyle='#2a3a5a';g.textAlign='center';g.fillText(door<.4?'문이 닫힌다!!':'탑승 구간',W/2,ty+142)}
+    obs.forEach(o=>{g.font='44px sans-serif';g.textAlign='center';g.fillStyle='#000';g.fillText(o.e,LX[o.l],o.y+34)});
+    g.imageSmoothingEnabled=false;const sw=SPW*2,sh2=FULLH*2;if(flash>0&&Math.floor(flash*20)%2)g.globalAlpha=.4;g.drawImage(spr.c,0,0,SPW*K,FULLH*K,px-sw/2,410-sh2/2+Math.sin(t*20)*2,sw,sh2);g.globalAlpha=1;
+    g.fillStyle='#e8433d';g.fillRect(12,H-18,(dist/100)*(W-24),8);g.strokeStyle='#3a220a';g.lineWidth=2;g.strokeRect(12,H-18,W-24,8);
+    if(flash>0){g.fillStyle='rgba(255,60,60,'+flash*.35+')';g.fillRect(0,0,W,H)}
+  }
+}
+
+/* ===== 미니게임: 서든어택 클랜전 (사격) ===== */
+function startSA(done){
+  const DUR=32,GOAL=14;
+  const sh=mgShell({hud:'🔫 서든어택 클랜전',life:'❤❤❤',time:DUR,title:'야째클 클랜전! (야자째고 만든 클랜)',done,
+    desc:'엄폐물 뒤에서 튀어나오는 적을 <b>터치해서 쏘세요</b> 🔫<br>머리(위쪽)를 맞히면 <b>헤드샷 2점</b>!<br>쏘기 전에 적이 먼저 쏘면 ❤가 줄어요.<br>탄창 8발, 다 쓰면 자동 장전. '+DUR+'초 안에 '+GOAL+'점!',onstart:start});
+  const {g,W,H,cv}=sh;
+  const SP=[[60,300],[150,250],[240,310],[310,260],[110,370],[220,390]];
+  let en=[],score=0,life=3,ammo=8,reload=0,t=0,spawnT=.6,run=false,raf=0,last=0,over=false,flash=0,mx=W/2,my=H/2,hit=[];
+  const end=win=>{if(over)return;over=true;run=false;cancelAnimationFrame(raf);sh.finish(win,win?'🏆 클랜전 승리!':life<=0?'☠️ 전멸...':'⏱️ 시간 종료...',`점수 <b>${score}/${GOAL}</b> · 받은 피해 <b>${3-life}</b>`,3-life,score)};
+  function shoot(x,y){if(!run||reload>0)return;if(ammo<=0)return;ammo--;sfx('gun');mx=x;my=y;
+    let k=null;for(const e of en){if(e.dead)continue;const cx=SP[e.s][0],top=SP[e.s][1]-e.up*70;const bx=cx-24,bw=48,by=top-8,bh=78;if(x>=bx&&x<=bx+bw&&y>=by&&y<=by+bh*Math.max(.3,e.up)){k=e;break}}
+    if(k){k.dead=1;k.t=.3;const hs=y<SP[k.s][1]-k.up*70+30;score+=hs?2:1;hit.push({x,y,txt:hs?'HEADSHOT +2':'+1',a:1});sfx(hs?'goalc':'saved')}
+    if(ammo<=0){reload=1.0;sfx('reload')}}
+  const pt=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]};
+  cv.addEventListener('pointerdown',e=>{const [x,y]=pt(e);shoot(x,y)});cv.addEventListener('pointermove',e=>{const [x,y]=pt(e);mx=x;my=y});
+  function start(){run=true;last=performance.now();sfx('whistle');raf=requestAnimationFrame(loop)}
+  function loop(now){
+    if(!run)return;raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;flash=Math.max(0,flash-dt);
+    if(reload>0){reload-=dt;if(reload<=0)ammo=8}
+    spawnT-=dt;const live=en.filter(e=>!e.dead).length;
+    if(spawnT<=0&&live<2){const used=en.filter(e=>!e.dead).map(e=>e.s),free=SP.map((_,i)=>i).filter(i=>!used.includes(i));en.push({s:pick(free),up:0,life:Math.max(.55,1.05-t*.014),age:0,dead:0,t:0,shot:0});spawnT=Math.max(.28,.7-t*.012)+Math.random()*.2}
+    en.forEach(e=>{if(e.dead){e.t-=dt;return}e.age+=dt;e.up=Math.min(1,e.age/.18);if(e.age>=e.life&&!e.shot){e.shot=1;e.dead=2;life--;flash=.5;sfx('hurt');sh.life('❤'.repeat(Math.max(0,life))+'🖤'.repeat(3-Math.max(0,life)));if(life<=0)setTimeout(()=>end(false),400)}});
+    en=en.filter(e=>!(e.dead&&e.t<=0&&e.dead===1)&&!(e.dead===2&&e.age>e.life+.3));hit.forEach(h=>{h.a-=dt*1.4;h.y-=dt*40});hit=hit.filter(h=>h.a>0);
+    sh.time(Math.max(0,Math.ceil(DUR-t)));if(score>=GOAL)end(true);else if(t>=DUR)end(false);
+    // draw
+    const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#3a4258');bg.addColorStop(.55,'#6a6f80');bg.addColorStop(.55,'#4a4d58');bg.addColorStop(1,'#2e3038');g.fillStyle=bg;g.fillRect(0,0,W,H);
+    g.fillStyle='#555a68';for(let i=0;i<5;i++)g.fillRect(i*72+10,60,56,150);g.fillStyle='#7a8094';g.font='13px "Jua",sans-serif';g.textAlign='center';g.fillText('[야째클] vs 옆 학교 클랜',W/2,40);
+    en.forEach(e=>{const [cx,cy]=SP[e.s];const rise=e.dead?0:e.up*70;if(e.dead===1){g.globalAlpha=Math.max(0,e.t/.3);}
+      g.fillStyle='#223';g.fillRect(cx-18,cy-rise+26,36,Math.max(0,rise));g.font='44px sans-serif';g.textAlign='center';g.fillStyle='#000';g.fillText(e.dead===1?'💥':'🪖',cx,cy-rise+24);g.globalAlpha=1;
+      if(!e.dead){g.fillStyle='#e8433d';g.fillRect(cx-22,cy-rise-12,44*(e.age/e.life),5)}});
+    SP.forEach(([cx,cy])=>{g.fillStyle='#8a6a3a';g.fillRect(cx-34,cy+12,68,52);g.fillStyle='#6a4a22';g.fillRect(cx-34,cy+12,68,8);g.strokeStyle='#3a220a';g.lineWidth=3;g.strokeRect(cx-34,cy+12,68,52)});
+    hit.forEach(h=>{g.globalAlpha=h.a;g.font='18px "Jua",sans-serif';g.fillStyle='#ffd24a';g.strokeStyle='#000';g.lineWidth=3;g.strokeText(h.txt,h.x,h.y);g.fillText(h.txt,h.x,h.y);g.globalAlpha=1});
+    // 조준
+    g.strokeStyle='#3aff6a';g.lineWidth=2;g.beginPath();g.arc(mx,my,16,0,7);g.moveTo(mx-24,my);g.lineTo(mx+24,my);g.moveTo(mx,my-24);g.lineTo(mx,my+24);g.stroke();
+    // HUD
+    g.fillStyle='#000a';g.fillRect(0,H-34,W,34);g.font='16px "Jua",sans-serif';g.fillStyle='#fff';g.textAlign='left';g.fillText('🎯 '+score+' / '+GOAL,12,H-12);g.textAlign='right';g.fillText(reload>0?'장전 중...':'🔫 '+'▮'.repeat(ammo)+'▯'.repeat(8-ammo),W-12,H-12);
+    if(flash>0){g.fillStyle='rgba(255,40,40,'+flash*.45+')';g.fillRect(0,0,W,H)}
+  }
+}
+
+/* ===== 미니게임: 피파온라인3 승부차기 ===== */
+function startPK(done){
+  const KICKS=5,NEED=3;
+  const sh=mgShell({hud:'⚽ 피파온라인3 승부차기',life:'0 : 0',time:'1/5',title:'결승전 승부차기!',done,
+    desc:'<b>1) 터치</b>: 좌우로 움직이는 조준을 맞추고<br><b>2) 터치</b>: 파워 게이지를 <b>초록 구간</b>에서 멈추세요 ⚽<br>골대 밖이나 너무 센 슛은 날아가고, 약한 슛은 막혀요.<br>5번 차서 <b>'+NEED+'골</b> 이상 넣어야 승리!',onstart:start});
+  const {g,W,H,cv}=sh;
+  const GX0=40,GX1=320,GY0=100,GY1=215;
+  let k=0,goals=0,res=[],phase='aim',ax=0,aDir=1,aSpeed=240,pw=0,pDir=1,lockX=0,power=0,t=0,run=false,raf=0,last=0,over=false,ball={x:180,y:440,s:0},keeper={x:180,dive:0,target:180,h:0},say='',sayT=0,anim=0,outcome=null;
+  const spr=mgSprite('athlete','face');
+  const tap=()=>{if(!run)return;if(phase==='aim'){lockX=ax;phase='power';pw=0;pDir=1;sfx('tick')}else if(phase==='power'){power=pw;phase='shoot';kick()}};
+  cv.addEventListener('pointerdown',tap);const kd=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tap()}};addEventListener('keydown',kd);
+  const end=()=>{if(over)return;over=true;run=false;cancelAnimationFrame(raf);removeEventListener('keydown',kd);const win=goals>=NEED;sh.finish(win,win?'🏆 우승!':'😭 패배...',`성공 <b>${goals}</b> / ${KICKS}골`,KICKS-goals,goals)};
+  function kick(){
+    sfx('kick');
+    // 키퍼: 조준을 읽고 방향 선택(55%)
+    const read=Math.random()<.55,side=read?(lockX<180?-1:1):(Math.random()<.5?-1:1),mid=!read&&Math.random()<.18;
+    keeper.target=mid?180:180+side*82;keeper.h=0;
+    const x=lockX,wide=x<GX0+6||x>GX1-6,over_=power>.84,weak=power<.34,strong=power>=.62&&power<=.84;
+    const cover=strong?30:weak?60:46;
+    const saved=!wide&&!over_&&(Math.abs(x-keeper.target)<cover||(weak&&Math.abs(x-keeper.target)<cover+20));
+    outcome=wide?'wide':over_?'over':saved?'saved':'goal';
+    ball.s=0;ball.fx=x;ball.fy=over_?GY0-40:wide?GY0+50:(strong?GY0+18:GY0+(1-Math.min(1,power*1.15))*70+30);anim=0}
+  function nextKick(){res.push(outcome==='goal');if(outcome==='goal')goals++;
+    const left=KICKS-res.length;if(goals>=NEED||goals+left<NEED||res.length>=KICKS){end();return}
+    k++;phase='aim';ax=GX0;aDir=1;aSpeed=240+k*26;ball={x:180,y:440,s:0};keeper={x:180,dive:0,target:180,h:0};sh.time((k+1)+'/'+KICKS);outcome=null;say=''}
+  function start(){run=true;last=performance.now();ax=GX0;sfx('whistle');raf=requestAnimationFrame(loop)}
+  function loop(now){
+    if(!run)return;raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;
+    if(phase==='aim'){ax+=aDir*aSpeed*dt;if(ax>GX1+16){ax=GX1+16;aDir=-1}if(ax<GX0-16){ax=GX0-16;aDir=1}}
+    else if(phase==='power'){pw+=pDir*(1.5+k*.12)*dt;if(pw>1){pw=1;pDir=-1}if(pw<0){pw=0;pDir=1}}
+    else if(phase==='shoot'){anim+=dt/.55;const e=Math.min(1,anim);ball.x=180+(ball.fx-180)*e;ball.y=440+(ball.fy-440)*e;keeper.x=180+(keeper.target-180)*Math.min(1,anim*1.4);
+      if(anim>=1){phase='result';sayT=1.2;say=outcome==='goal'?'⚽ 골!!!':outcome==='saved'?'🧤 선방!':outcome==='over'?'🚀 하늘로...':'💨 빗나갔다...';sfx(outcome==='goal'?'goalc':'saved')}}
+    else if(phase==='result'){sayT-=dt;if(sayT<=0)nextKick()}
+    sh.life(goals+' : '+(res.length-goals+(phase==='result'&&outcome!=='goal'?0:0)));
+    // draw
+    const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#2a5aa8');bg.addColorStop(.2,'#6aa0e8');bg.addColorStop(.2,'#3f9e3a');bg.addColorStop(1,'#2a7a2a');g.fillStyle=bg;g.fillRect(0,0,W,H);
+    g.fillStyle='#ffffff22';for(let i=0;i<8;i++)g.fillRect(0,110+i*52,W,24);
+    g.strokeStyle='#fff';g.lineWidth=6;g.strokeRect(GX0,GY0,GX1-GX0,GY1-GY0);g.lineWidth=1;for(let x=GX0;x<=GX1;x+=20){g.beginPath();g.moveTo(x,GY0);g.lineTo(x,GY1);g.stroke()}for(let y=GY0;y<=GY1;y+=20){g.beginPath();g.moveTo(GX0,y);g.lineTo(GX1,y);g.stroke()}
+    g.font='54px sans-serif';g.textAlign='center';g.fillStyle='#000';g.fillText(phase==='shoot'&&outcome==='saved'?'🤾':'🧤',keeper.x,GY1-8-(phase==='shoot'?Math.abs(keeper.x-180)*.18:0));
+    g.strokeStyle='#fff';g.lineWidth=3;g.beginPath();g.arc(180,440,6,0,7);g.stroke();
+    if(phase==='aim'){g.strokeStyle='#ffd24a';g.lineWidth=3;g.beginPath();g.arc(ax,(GY0+GY1)/2,18,0,7);g.moveTo(ax-26,(GY0+GY1)/2);g.lineTo(ax+26,(GY0+GY1)/2);g.moveTo(ax,(GY0+GY1)/2-26);g.lineTo(ax,(GY0+GY1)/2+26);g.stroke()}
+    if(phase==='power'||phase==='aim'){const bx=W-40,by=250,bh=190;g.fillStyle='#3a220a';g.fillRect(bx-3,by-3,26,bh+6);const seg=[[0,.34,'#e8433d'],[.34,.62,'#ffd24a'],[.62,.84,'#4fc22b'],[.84,1,'#e8433d']];seg.forEach(([a,b,c])=>{g.fillStyle=c;g.fillRect(bx,by+bh-b*bh,20,(b-a)*bh)});
+      if(phase==='power'){g.fillStyle='#fff';g.fillRect(bx-8,by+bh-pw*bh-3,36,6)}g.font='11px "Jua",sans-serif';g.fillStyle='#fff';g.textAlign='center';g.fillText('파워',bx+10,by-8)}
+    g.font=(phase==='shoot'?34-ball.s*0:34)+'px sans-serif';g.textAlign='center';g.fillStyle='#000';const sc=phase==='shoot'?1-.5*Math.min(1,anim):1;g.save();g.translate(ball.x,ball.y);g.scale(sc,sc);g.fillText('⚽',0,12);g.restore();
+    g.imageSmoothingEnabled=false;g.drawImage(spr.c,0,0,SPW*K,FULLH*K,40,400,SPW*1.9,FULLH*1.9);
+    g.font='13px "Jua",sans-serif';g.fillStyle='#fff';g.textAlign='left';g.fillText('결과: '+res.map(x=>x?'⚽':'❌').join(' ')+' '+'⬜ '.repeat(KICKS-res.length),12,H-14);
+    g.textAlign='center';g.font='15px "Jua",sans-serif';g.fillStyle='#fff';g.fillText(phase==='aim'?'터치! 조준을 멈춰요':phase==='power'?'터치! 초록 구간에서 멈춰요':'',W/2,250);
+    if(say){g.font='38px "Jua",sans-serif';g.strokeStyle='#3a220a';g.lineWidth=7;g.strokeText(say,W/2,330);g.fillStyle='#ffd24a';g.fillText(say,W/2,330)}
+  }
 }
 /* ===== 미니게임: 수업 중 몰래 방구 ===== */
 /* 미니게임 이벤트: 어느 쪽을 골라도 반드시 미니게임으로 이어지게 함(자연스러운 멘트 포함) */
@@ -2695,8 +2947,8 @@ function choose(i){
   if(!S.cur||!EV[S.cur])return;
   const e=EV[S.cur];const chs=getChoices(e);const ch=chs[i];if(!ch||ch.dis)return;
   if(ch.need&&S.m<ch.need)return;
-  if(ch.mini&&FAST){DODGE.hits=ri(0,4);DODGE.sec=ch.mini===4?ri(30,100):28}
-  else if(ch.mini&&!DODGE.ready){DODGE.ready=false;MINI_INTRO=ch.force||'';(ch.mini===4?startFart:startDodge)(()=>{DODGE.ready=true;choose(i);DODGE.ready=false},ch.mini===2?MINI2:ch.mini===3?MINI3:ch.mini===1?MINI1:null);return}
+  if(ch.mini&&FAST){DODGE.hits=ri(0,4);DODGE.sec=ch.mini===4?ri(30,100):28;DODGE.win=Math.random()<.4}
+  else if(ch.mini&&!DODGE.ready){DODGE.ready=false;MINI_INTRO=ch.force||'';(MINIFN[ch.mini]||startDodge)(()=>{DODGE.ready=true;choose(i);DODGE.ready=false},ch.mini===2?MINI2:ch.mini===3?MINI3:ch.mini===1?MINI1:null);return}
   SNAP=JSON.stringify(S);
   const before={};['int','str','chr','cha','soc','hap','sts','m','s','inv'].forEach(k=>before[k]=S[k]);
   let out,ok=null;
@@ -2712,7 +2964,7 @@ function choose(i){
   S.res={id:e.id,d,m:out[1]||'',ok,p:out[2],t:e.title,pk:ch.t,cmt:pickCmt(ok,d)};
   ensure(S);
   if(e.id==='geoje_bag'){S.queue.push('geoje_hwe','geoje_boiler','geoje_terminal')}
-  if(e.id==='confess_hk'){S.queue.push('drive_mishap','pt_jayu_karaoke')}
+  if(e.id==='confess_hk'){S.queue.push('drive_mishap','pt_jayu_karaoke','ring_heist')}
   if(ch.p!=null){
     if(ok){S.combo++;S.maxCombo=Math.max(S.maxCombo,S.combo);S.pity=0}else{S.combo=0;S.pity=Math.min(10,S.pity+1)}
     S.charmOn=0;S.tapBonus=0;
@@ -3123,7 +3375,7 @@ function achView(){
   stopVoiceLoop();lobbyVoiceOff();
   const n=Object.keys(META.ach).length,tot=ACH.length,pct=Math.round(n/tot*100),cats=[...new Set(ACH.map(a=>ACHCAT[a[0]]||'기타'))];
   const nextM=(Math.floor(n/5)+1)*5;
-  $('#main').innerHTML=`<div class="card"><h2>🏆 업적 도감</h2>
+  $('#main').innerHTML=`<button class="btn c" id="backtop">◀ 돌아가기</button><div class="card"><h2>🏆 업적 도감</h2>
    <div class="achtop"><div class="achbig">${n}<small>/${tot}</small></div><div class="achrk"><b>${achRank()}</b><span>업적 점수 ${achPts()}점 · ${pct}%</span></div></div>
    <div class="achbar"><i style="width:${pct}%"></i><span>${n} / ${tot}</span></div>
    <div class="mut" style="margin:6px 0 2px">🎁 5개 달성할 때마다 <b>환생 포인트 +2</b> · 다음 보너스까지 <b>${nextM-n}개</b> 남음 (지금까지 ${(META.achMile||0)*2}포인트 획득)</div>
@@ -3131,7 +3383,7 @@ function achView(){
    ${cats.map(c=>{const list=ACH.filter(a=>(ACHCAT[a[0]]||'기타')===c),got=list.filter(a=>META.ach[a[0]]).length;
      return `<div class="card"><b>${c}</b> <span class="mut">${got}/${list.length}</span><div class="achgrid">${list.filter(a=>META.ach[a[0]]).map(a=>{const t=achTier(a[0]);return `<div class="achc ok t${t}"><i class="ai">${a[1].split(' ')[0]}</i><div><b>${a[1].split(' ').slice(1).join(' ')}</b><small>${a[2]}</small></div><em>${TIERIC[t]}</em></div>`}).join('')}${list.some(a=>!META.ach[a[0]])?`<div class="achlock">${list.filter(a=>!META.ach[a[0]]).map(a=>`<span title="숨겨진 업적">❓<sup>${TIERIC[achTier(a[0])]}</sup></span>`).join('')}<small>숨겨진 업적 ${list.filter(a=>!META.ach[a[0]]).length}개</small></div>`:''}</div></div>`}).join('')}
   <button class="btn pri" id="back">◀ 돌아가기</button>`;
-  $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
+  $('#back').onclick=$('#backtop').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
 }
 function rankView(){
   stopVoiceLoop();
@@ -3143,7 +3395,7 @@ function rankView(){
   <button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};const aj=$('#achjump');if(aj)aj.onclick=()=>{VIEW='ach';achView()};
 }
-const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','도전 성공률 낮게 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 S·A·B·C·D 5단계(상위 3% / 7% / 20% / 35% / 35%) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 인생','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 낮은 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','시스템① 운명의 게이지: 도전할 때마다 바늘이 움직여 성공/실패가 갈리는 연출','시스템② 행운 게이지(천장): 실패가 쌓일수록 다음 도전 성공률 최대 +25%','시스템③ 아이템: 행운의 부적·영양제·되감기 티켓 (이벤트에서 획득, 도전 전에 사용)','시스템④ 연속 성공 콤보: 불꽃 애니메이션 + 최고 콤보 점수 보너스','시스템⑤ 컨페티·도장 쾅·점수 카운트업 연출(대성공·A/B 인증)','시스템⑥ 인생 그래프: 재산·행복 추이가 애니메이션으로 그려짐','시스템⑦ 동창회 순위: 가상 동창 5명과 재산 비교, 실시간 순위·결과 막대 그래프','시스템⑧ 실시간 별명: 상태에 따라 별명이 바뀌고 팝업(백수 재민, 호구 재민, 천재 재민 등)','시스템⑨ 연타 미니게임: 4초 연타로 성공률 최대 +15%','시스템⑩ 시기별 배경 연출 + 인생 하이라이트 리플레이(타임라인 애니메이션 재생)','찬호 시리즈 4종: 미역국에 꿀떡 · 사물함 스티로폼 가루 · 남은 음식 몰아주기 · 재민이 메뉴는 절대 안 시키기','회기역 자판기 커피 사건 3부작(진호·찬호·경연·세민·범수 전원 등장: 고등학교 졸업앨범 촬영 → 뭘 내도 100% 지는 가위바위보 → 자판기 앞 30초 → "커피는?") + 별명 "회기역 커피 재민"','거제도 가는 지하철에서 "비닐봉지 있는 사람 있어요?!"를 외치는 이벤트(친구 다섯 명 전원 외면) + 별명 "비닐봉지 재민"','선재도 여행 시리즈: 끄래야 끌 수 없는 "재민!" 음성 알람 → 이튿날 밤 택시에서 또 비닐봉지','PC방 상가 화장실 사건: 문 위로 폰이 쑥 올라온다 → 범인은 사실 찬호','거제도 돌아오는 길: 터미널에서 찬호가 훌라에 빠져 보라색 뉴발란스를 놓고 오는 이벤트 + 버스 안 후속','거제도 여행 연쇄: 지하철 → 횟집 바가지 → 보일러(0~10을 분으로 착각해 이불·장판 태움) → 버스터미널','건강 이벤트: 족저근막염 · 치핵 절제 입원 · 치아 교정(철제/투명)','천하경에게 고백하는 이벤트(20세)','PC방 알바 "형 이름은 왜 잼민이에요?" 이벤트(초등학생 습격) + 별명 "잼민이 형 재민"','재민이가 진호의 주미 고백 작전을 돕는 이벤트','재민이가 찬호의 희연 고백 작전을 돕는 이벤트','학교에서 한승연과 싸우는 이벤트(필기 노트 국물 자국 사건, 말싸움)','학교에서 서예림과 매점 마지막 소시지빵을 두고 싸우는 이벤트','진호 병문안: 오른쪽 세 번째 갈비뼈를 제거한 진호에게 경완·찬호·재민이 베스킨라빈스를 들고 가는 이벤트','야자 시간에 엎드려 자던 경연이 방귀 뀌는 이벤트(재민이는 평소 행실 때문에 의심받을 확률 80%) + 별명 "방귀 용의자 재민"','고등학교 야구: 찬호가 일부러 공을 담장 밖으로 넘겨 범수에게 라면과 하와이안블루를 시키는 이벤트','20살 첫 운전: 사이드 브레이크를 안 내리고 헤드라이트도 안 켜고 달리는 이벤트 + 별명 "사이드 브레이크 재민"','자이노래방 알바 이벤트: 포천 한샘 기숙학원에서 재수하다 도망친 진호가 돈을 빌려 달라고 찾아옴 + 별명 "자이노래방 알바 재민"','가끔 찬호가 전화해서 베스킨라빈스 하프갤런을 사 달라고 하는 이벤트(거절해도 높은 확률로 사 주게 됨, 반복) + 별명 "찬호의 베스킨 은행 재민"','재민이 음성 녹음: 이벤트 중 가끔 재생, "끌 수 없는 알람" 이벤트에서는 계속 반복(🔊 버튼으로 끌 수 있음)','찬호네 집에서 찬호의 반지를 몰래 가져가는 이벤트(들키지 않으려 숨기면 불리, 솔직하게 돌려주면 유리) + 별명 "반지 사건 재민"','시작 화면: 비치볼에 맞는 재민이(날아온 공에 퍽! 맞는 애니메이션, AI 이미지를 넣으면 자동 교체) + AI 장면 이미지 자동 연결 구조(직업·나이·이벤트·엔딩별)','그래픽 업그레이드: 움직이는 로비(밤하늘·흐르는 양주 스카이라인·걸어 다니는 재민이·떠다니는 사진·흐르는 인생 타임라인) + 시기별 배경 입자 + 이벤트 장면 배너 + 능력치 바/숫자 애니메이션 + 변화량 팝업 + 성공/실패 반응 연출','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)','사운드 대폭 강화: 나이대별 자동 배경음악(🎵 버튼으로 끄기) + 효과음 30여 종(퍽·화상 지글·방귀·사이렌·동전·하트·해고 경보·등급별 팡파르), 시작 화면 비치볼 "퍽!" 소리 동기화','메이플스토리풍 전면 리뉴얼(자체 제작 UI): 따뜻한 나무 테두리 창·NPC 퀘스트 대화창·HP/MP 게이지·Lv.나이 배지·MISS/CRITICAL/LEVEL UP 연출·헤네시스풍 낮 로비(달팽이·주황버섯·슬라임, 단풍잎), 🌙 버튼으로 밤 맵 전환','메이플 캐릭터 생성 화면풍 재민이 만들기(후보 3명·이름 CHECK·스탯 집중 육성·GENERATE 리롤)','메이플 로그인 화면풍 시작 화면(숲 배경·나무 간판 메뉴)','재민이 캐릭터: 머리는 보내주신 사진에서 오려낸 얼굴(웃음·장난·무표정 등 표정별 고화질)을 도트화, 몸은 메이플 기본 캐릭터풍 도트(의사 가운·정장·군복·요리사 앞치마 등 20종 옷, 자동 외곽선·명암)','캐릭터 만들기: 후보 대신 주사위 굴리기(랜덤, 최대 5회)','결과 화면 📸 공유 이미지(캐릭터·등급·점수·인증코드가 담긴 카드 PNG 저장/공유/복사)','BGM 품질: 전곡 음량 균일화(-16 LUFS)·1초 크로스페이드·돌아오면 듣던 곳부터 이어 재생·음성/팡파르 때 자동 볼륨 낮춤·🎵 버튼 3단 음량','군 복무 중 군복+군모로 변신, 밝은 모드 고정, 상단 상태창 컴팩트화(캐릭터·수치 유지, 선택지가 한 화면에 보임), 재민이 얼굴 스티커 스타일(사진 화질 그대로 + 흰 테두리 외곽선), 헤더·로고·버튼 정리','BGM 자동재생(열자마자 시도, 막히면 터치해서 시작 화면 → 터치 즉시 BGM)','어색한 질문·답변 문구 28건 수정(빈 결과·범용 필러·톤 불일치), 플레이 화면 재민이 캐릭터 확대(크게), 캐릭터 만들기 정보판(집안·성향·출발) 글자 확대, 학교 설정: 삼숭초등학교(7~12세)·삼숭중학교(13~15세) 입학 이벤트와 상태창 표시','확률 게이지 빨강/초록 칸이 번갈아 섞인 긴장감 연출(성공 확률은 그대로)+게이지 전용 사운드(바늘 휙휙·심장 박동·드럼롤·딸깍·성공 팡파르/실패 부저)·시작 대기·캐릭터 만들기 화면에서 2초마다 끊김 없이 재민 소리 5종 재생(미리 불러오기·막히면 즉시 재시도)·주사위 버튼음에도 재민 소리, 잠긴 선택지 표시 개선(더 투명한 버튼+빨간 자물쇠 제한 이유: 직업 조건·돈 부족)·나이를 먹을 때마다 재민 소리 5종 랜덤 재생(무조건)·재민 소리 5종 섞어 재생(재생 중 BGM·효과음이 작아졌다가 끝나면 원래 음량)(이벤트 3번마다 반드시 재생)·돌발 이벤트 연출(🚨 돌발 이벤트 출현!)·일본 14박 15일 지하철 낙오·진호의 여행 3일 전 분노·찬호의 가게 인생은 아름다워라(매주 10만 원)·주사위 캐릭터 대폭 다양화(원형 8→18종, 집안 3→7종, 성향 8→15종, 멘탈갑·유리멘탈·게임중독·먹보 등 효과 있는 새 성향)·업적 도감 대폭 강화(49개·브론즈/실버/골드·분류별 도감·달성 팝업·5개마다 환생 포인트 보너스·메인 화면 진행도)','미니게임 4종은 어느 선택지를 골라도 반드시 진행(선생님 뒤돌아보는 시간 랜덤), 수업 중 경연이 몰래 방구 미니게임(17세, 사운드: 누르는 동안 이어지는 부르르 방구음·분필 소리·선생님 뒤돌기 휙·들킬 때 방구+경고+재민 소리, 경연이 뀌고 재민이가 망잡이·결론은 재민이가 뀐 걸로, 선생님 뒤돌면 멈추기·최다인/임유미 "야!! 임재민!!!")·이교현에게 고백하고 까이는 이벤트(18세), 미니게임 3종: 날달걀 피하기(36세 전후, 결국 다 맛있게 먹음) + 미역국에 꿀떡 풍덩 막기(15세 전후, 식판 이동) + 찬호의 물건 던지기(30세 전후, 오이고추·비치발리볼·소시지 피하기, 전용 BGM)','팝업 가상 광고 3회(24·46·68세, 재민이 얼굴 패러디, X 즉시 닫기·2초 후 건너뛰기, 이벤트 화면에 바로 표시)','나이대별 BGM(메이플 곡, 끊김 없이): 시작~12세(8세 입학 징글) / 13~18세 / 19~29세 / 30~49세 / 50세~·결과 화면, 이벤트별 곡(클랜전·피파) + 레벨업(나이 증가) 효과음 파일 슬롯(assets/sfx/levelup.mp3)','새 이벤트: 성인이 되어 밤샘 PC방 피파온라인3(20~27세, 전용 BGM)','새 이벤트: 야자 째고 만든 클랜 [야자째고]의 클랜전(16~18세, 친구 6명 총출동, 서든어택 메인 테마가 흐름)'];
+const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','도전 성공률 낮게 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 S·A·B·C·D 5단계(상위 3% / 7% / 20% / 35% / 35%) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 인생','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 낮은 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','시스템① 운명의 게이지: 도전할 때마다 바늘이 움직여 성공/실패가 갈리는 연출','시스템② 행운 게이지(천장): 실패가 쌓일수록 다음 도전 성공률 최대 +25%','시스템③ 아이템: 행운의 부적·영양제·되감기 티켓 (이벤트에서 획득, 도전 전에 사용)','시스템④ 연속 성공 콤보: 불꽃 애니메이션 + 최고 콤보 점수 보너스','시스템⑤ 컨페티·도장 쾅·점수 카운트업 연출(대성공·A/B 인증)','시스템⑥ 인생 그래프: 재산·행복 추이가 애니메이션으로 그려짐','시스템⑦ 동창회 순위: 가상 동창 5명과 재산 비교, 실시간 순위·결과 막대 그래프','시스템⑧ 실시간 별명: 상태에 따라 별명이 바뀌고 팝업(백수 재민, 호구 재민, 천재 재민 등)','시스템⑨ 연타 미니게임: 4초 연타로 성공률 최대 +15%','시스템⑩ 시기별 배경 연출 + 인생 하이라이트 리플레이(타임라인 애니메이션 재생)','찬호 시리즈 4종: 미역국에 꿀떡 · 사물함 스티로폼 가루 · 남은 음식 몰아주기 · 재민이 메뉴는 절대 안 시키기','회기역 자판기 커피 사건 3부작(진호·찬호·경연·세민·범수 전원 등장: 고등학교 졸업앨범 촬영 → 뭘 내도 100% 지는 가위바위보 → 자판기 앞 30초 → "커피는?") + 별명 "회기역 커피 재민"','거제도 가는 지하철에서 "비닐봉지 있는 사람 있어요?!"를 외치는 이벤트(친구 다섯 명 전원 외면) + 별명 "비닐봉지 재민"','선재도 여행 시리즈: 끄래야 끌 수 없는 "재민!" 음성 알람 → 이튿날 밤 택시에서 또 비닐봉지','PC방 상가 화장실 사건: 문 위로 폰이 쑥 올라온다 → 범인은 사실 찬호','거제도 돌아오는 길: 터미널에서 찬호가 훌라에 빠져 보라색 뉴발란스를 놓고 오는 이벤트 + 버스 안 후속','거제도 여행 연쇄: 지하철 → 횟집 바가지 → 보일러(0~10을 분으로 착각해 이불·장판 태움) → 버스터미널','건강 이벤트: 족저근막염 · 치핵 절제 입원 · 치아 교정(철제/투명)','천하경에게 고백하는 이벤트(20세)','PC방 알바 "형 이름은 왜 잼민이에요?" 이벤트(초등학생 습격) + 별명 "잼민이 형 재민"','재민이가 진호의 주미 고백 작전을 돕는 이벤트','재민이가 찬호의 희연 고백 작전을 돕는 이벤트','학교에서 한승연과 싸우는 이벤트(필기 노트 국물 자국 사건, 말싸움)','학교에서 서예림과 매점 마지막 소시지빵을 두고 싸우는 이벤트','진호 병문안: 오른쪽 세 번째 갈비뼈를 제거한 진호에게 경완·찬호·재민이 베스킨라빈스를 들고 가는 이벤트','야자 시간에 엎드려 자던 경연이 방귀 뀌는 이벤트(재민이는 평소 행실 때문에 의심받을 확률 80%) + 별명 "방귀 용의자 재민"','고등학교 야구: 찬호가 일부러 공을 담장 밖으로 넘겨 범수에게 라면과 하와이안블루를 시키는 이벤트','20살 첫 운전: 사이드 브레이크를 안 내리고 헤드라이트도 안 켜고 달리는 이벤트 + 별명 "사이드 브레이크 재민"','자이노래방 알바 이벤트: 포천 한샘 기숙학원에서 재수하다 도망친 진호가 돈을 빌려 달라고 찾아옴 + 별명 "자이노래방 알바 재민"','가끔 찬호가 전화해서 베스킨라빈스 하프갤런을 사 달라고 하는 이벤트(거절해도 높은 확률로 사 주게 됨, 반복) + 별명 "찬호의 베스킨 은행 재민"','재민이 음성 녹음: 이벤트 중 가끔 재생, "끌 수 없는 알람" 이벤트에서는 계속 반복(🔊 버튼으로 끌 수 있음)','찬호네 집에서 찬호의 반지를 몰래 가져가는 이벤트(들키지 않으려 숨기면 불리, 솔직하게 돌려주면 유리) + 별명 "반지 사건 재민"','시작 화면: 비치볼에 맞는 재민이(날아온 공에 퍽! 맞는 애니메이션, AI 이미지를 넣으면 자동 교체) + AI 장면 이미지 자동 연결 구조(직업·나이·이벤트·엔딩별)','그래픽 업그레이드: 움직이는 로비(밤하늘·흐르는 양주 스카이라인·걸어 다니는 재민이·떠다니는 사진·흐르는 인생 타임라인) + 시기별 배경 입자 + 이벤트 장면 배너 + 능력치 바/숫자 애니메이션 + 변화량 팝업 + 성공/실패 반응 연출','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)','사운드 대폭 강화: 나이대별 자동 배경음악(🎵 버튼으로 끄기) + 효과음 30여 종(퍽·화상 지글·방귀·사이렌·동전·하트·해고 경보·등급별 팡파르), 시작 화면 비치볼 "퍽!" 소리 동기화','메이플스토리풍 전면 리뉴얼(자체 제작 UI): 따뜻한 나무 테두리 창·NPC 퀘스트 대화창·HP/MP 게이지·Lv.나이 배지·MISS/CRITICAL/LEVEL UP 연출·헤네시스풍 낮 로비(달팽이·주황버섯·슬라임, 단풍잎), 🌙 버튼으로 밤 맵 전환','메이플 캐릭터 생성 화면풍 재민이 만들기(후보 3명·이름 CHECK·스탯 집중 육성·GENERATE 리롤)','메이플 로그인 화면풍 시작 화면(숲 배경·나무 간판 메뉴)','재민이 캐릭터: 머리는 보내주신 사진에서 오려낸 얼굴(웃음·장난·무표정 등 표정별 고화질)을 도트화, 몸은 메이플 기본 캐릭터풍 도트(의사 가운·정장·군복·요리사 앞치마 등 20종 옷, 자동 외곽선·명암)','캐릭터 만들기: 후보 대신 주사위 굴리기(랜덤, 최대 5회)','결과 화면 📸 공유 이미지(캐릭터·등급·점수·인증코드가 담긴 카드 PNG 저장/공유/복사)','BGM 품질: 전곡 음량 균일화(-16 LUFS)·1초 크로스페이드·돌아오면 듣던 곳부터 이어 재생·음성/팡파르 때 자동 볼륨 낮춤·🎵 버튼 3단 음량','군 복무 중 군복+군모로 변신, 밝은 모드 고정, 상단 상태창 컴팩트화(캐릭터·수치 유지, 선택지가 한 화면에 보임), 재민이 얼굴 스티커 스타일(사진 화질 그대로 + 흰 테두리 외곽선), 헤더·로고·버튼 정리','BGM 자동재생(열자마자 시도, 막히면 터치해서 시작 화면 → 터치 즉시 BGM)','어색한 질문·답변 문구 28건 수정(빈 결과·범용 필러·톤 불일치), 플레이 화면 재민이 캐릭터 확대(크게), 캐릭터 만들기 정보판(집안·성향·출발) 글자 확대, 학교 설정: 삼숭초등학교(7~12세)·삼숭중학교(13~15세) 입학 이벤트와 상태창 표시','확률 게이지 빨강/초록 칸이 번갈아 섞인 긴장감 연출(성공 확률은 그대로)+게이지 전용 사운드(바늘 휙휙·심장 박동·드럼롤·딸깍·성공 팡파르/실패 부저)·시작 대기·캐릭터 만들기 화면에서 2초마다 끊김 없이 재민 소리 5종 재생(미리 불러오기·막히면 즉시 재시도)·주사위 버튼음에도 재민 소리, 잠긴 선택지 표시 개선(더 투명한 버튼+빨간 자물쇠 제한 이유: 직업 조건·돈 부족)·나이를 먹을 때마다 재민 소리 5종 랜덤 재생(무조건)·재민 소리 5종 섞어 재생(재생 중 BGM·효과음이 작아졌다가 끝나면 원래 음량)(이벤트 3번마다 반드시 재생)·돌발 이벤트 연출(🚨 돌발 이벤트 출현!)·일본 14박 15일 지하철 낙오·진호의 여행 3일 전 분노·찬호의 가게 인생은 아름다워(매주 10만 원)·주사위 캐릭터 대폭 다양화(원형 8→18종, 집안 3→7종, 성향 8→15종, 멘탈갑·유리멘탈·게임중독·먹보 등 효과 있는 새 성향)·업적 도감 대폭 강화(49개·브론즈/실버/골드·분류별 도감·달성 팝업·5개마다 환생 포인트 보너스·메인 화면 진행도)','새 미니게임 5종(찬호의 반지를 훔쳐라·일본 지하철 탑승·서든어택 클랜전 사격·피파 승부차기·인생은 아름다워 계산 안 하고 도망치기), 가게 이름 변경(인생은 아름다워), 업적 화면 위쪽 돌아가기 버튼','미니게임 4종은 어느 선택지를 골라도 반드시 진행(선생님 뒤돌아보는 시간 랜덤), 수업 중 경연이 몰래 방구 미니게임(17세, 사운드: 누르는 동안 이어지는 부르르 방구음·분필 소리·선생님 뒤돌기 휙·들킬 때 방구+경고+재민 소리, 경연이 뀌고 재민이가 망잡이·결론은 재민이가 뀐 걸로, 선생님 뒤돌면 멈추기·최다인/임유미 "야!! 임재민!!!")·이교현에게 고백하고 까이는 이벤트(18세), 미니게임 3종: 날달걀 피하기(36세 전후, 결국 다 맛있게 먹음) + 미역국에 꿀떡 풍덩 막기(15세 전후, 식판 이동) + 찬호의 물건 던지기(30세 전후, 오이고추·비치발리볼·소시지 피하기, 전용 BGM)','팝업 가상 광고 3회(24·46·68세, 재민이 얼굴 패러디, X 즉시 닫기·2초 후 건너뛰기, 이벤트 화면에 바로 표시)','나이대별 BGM(메이플 곡, 끊김 없이): 시작~12세(8세 입학 징글) / 13~18세 / 19~29세 / 30~49세 / 50세~·결과 화면, 이벤트별 곡(클랜전·피파) + 레벨업(나이 증가) 효과음 파일 슬롯(assets/sfx/levelup.mp3)','새 이벤트: 성인이 되어 밤샘 PC방 피파온라인3(20~27세, 전용 BGM)','새 이벤트: 야자 째고 만든 클랜 「야자째고」(줄여서 야째클)의 서든어택 클랜전(16~18세, 친구 6명 총출동, 서든어택 메인 테마가 흐름)'];
 function info(){
   $('#main').innerHTML=`<div class="card"><h2>✨ 추가된 재미 요소 ${FEATURES.length}가지</h2><ol style="padding-left:18px;font-size:14px">${FEATURES.map(f=>`<li>${f}</li>`).join('')}</ol></div><button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW='title';render()};
