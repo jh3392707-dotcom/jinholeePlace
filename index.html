@@ -2743,7 +2743,7 @@ function startSA(done){
     if(!run)return;raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;flash=Math.max(0,flash-dt);
     if(reload>0){reload-=dt;if(reload<=0)ammo=8}
     spawnT-=dt;const live=en.filter(e=>!e.dead).length;
-    if(spawnT<=0&&live<2){const used=en.filter(e=>!e.dead).map(e=>e.s),free=SP.map((_,i)=>i).filter(i=>!used.includes(i));en.push({s:pick(free),up:0,life:Math.max(.46,.9-t*.014),age:0,dead:0,t:0,shot:0});spawnT=Math.max(.28,.7-t*.012)+Math.random()*.2}
+    if(spawnT<=0&&live<2){const used=en.filter(e=>!e.dead).map(e=>e.s),free=SP.map((_,i)=>i).filter(i=>!used.includes(i));en.push({s:pick(free),up:0,life:Math.max(.4,.8-t*.014),age:0,dead:0,t:0,shot:0});spawnT=Math.max(.28,.7-t*.012)+Math.random()*.2}
     en.forEach(e=>{if(e.dead){e.t-=dt;return}e.age+=dt;e.up=Math.min(1,e.age/.18);if(e.age>=e.life&&!e.shot){e.shot=1;e.dead=2;life--;flash=.5;sfx('hurt');sh.life('❤'.repeat(Math.max(0,life))+'🖤'.repeat(3-Math.max(0,life)));if(life<=0)setTimeout(()=>end(false),400)}});
     en=en.filter(e=>!(e.dead&&e.t<=0&&e.dead===1)&&!(e.dead===2&&e.age>e.life+.3));hit.forEach(h=>{h.a-=dt*1.4;h.y-=dt*40});hit=hit.filter(h=>h.a>0);
     sh.time(Math.max(0,Math.ceil(DUR-t)));if(score>=GOAL)end(true);else if(t>=DUR)end(false);
