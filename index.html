@@ -454,6 +454,15 @@ canvas.spr{display:block;image-rendering:pixelated;image-rendering:crisp-edges;f
 @keyframes adprog{to{width:100%}}
 .adskip{font-family:inherit;font-size:13px;background:#0006;color:#fff;border:2px solid #fff8;border-radius:8px;padding:3px 10px;cursor:pointer}
 .adskip:disabled{opacity:.6;cursor:not-allowed}
+
+#dodge{position:fixed;inset:0;z-index:92;background:#000c;display:flex;align-items:center;justify-content:center;padding:8px}
+.dgb{position:relative;width:100%;max-width:380px;background:var(--card);border:4px solid var(--wood);border-radius:14px;padding:8px;box-shadow:0 8px 0 #0006}
+.dgt{display:flex;justify-content:space-between;align-items:center;font-size:18px;padding:0 6px 6px;color:var(--tx)}
+.dgt #dgtime{background:#ff8a00;color:#fff;border:2px solid var(--wood);border-radius:8px;padding:0 10px}
+#dgc{display:block;width:100%;height:auto;border:3px solid var(--wood);border-radius:10px;touch-action:none;background:#59b6ff}
+.dgov{position:absolute;left:12px;right:12px;top:60px;bottom:16px;border-radius:10px;background:#000a;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:12px}
+.dgov h3{margin:0;font-size:26px;color:#ffd24a;text-shadow:2px 2px 0 #8a4b00}.dgov p{margin:0;font-size:14px;font-family:"Noto Sans KR",sans-serif;line-height:1.5}
+.dgov .btn{width:80%}
 </style>
 </head>
 <body>
@@ -1506,6 +1515,16 @@ g('🔄 현질로 레전드 선수를 뽑는다',.12,[{hap:12,m:-100,soc:3},'만
 g('📱 감독 지시 훈수만 두는 전술가',.4,[{int:2,soc:5,hap:5},'"4-2-3-1로 바꿔! 지금 측면이 비었어!" 재민이의 훈수를 들은 세민이가 3:1로 역전했다. 친구들은 "재민이 말이 맞네"라며 감탄했다. 정작 본인은 한 번도 안 뛰었지만 승리 수당은 재민이도 받았다. 훈수의 승리다.'],[{soc:-3,hap:-3,sts:3},'재민이의 훈수를 따른 경완이 어이없는 실점을 했다. "누가 이렇게 하래!" 경완의 외침과 함께 모든 시선이 재민이에게 쏠렸다. 이후 재민이는 키보드를 만지는 것만으로도 눈치를 봤다. 훈수 값은 컵라면 두 개.']),
 g('🛌 5시에 먼저 퇴근한다',.45,[{hap:3,str:2,sts:-3},'"난 먼저 간다." 재민이는 새벽 다섯 시 뒷문을 열고 나왔다. 해가 뜨는 거리는 놀랄 만큼 상쾌했다. 집에 도착해 이불을 덮자마자 꿀잠. 친구들은 아침 아홉 시까지 남아서 점심까지 먹었다는 후문. 재민이는 아무도 모르는 승자가 됐다.'],[{hap:-4,sts:5,soc:-2},'먼저 가려다 이미 지갑을 PC방에 두고 온 것을 깨달았다. 돌아가 보니 친구들은 재민이 자리에서 재민이 계정으로 재민이 선수를 굴리고 있었다. 결과는 5연패. 재민이의 계정 전적이 순식간에 박살났다.']),
 ],{w:150});
+/* --- 중간 미니게임: 찬호가 던지는 물건 피하기 (BGM: assets/bgm/dodge.mp3) --- */
+ev('dodge_game',30,34,'🎯 찬호의 물건 던지기 대작전','서른 살 무렵, 오랜만에 친구들이 모였다. 갑자기 찬호가 손에 뭔가를 한가득 들고 일어섰다. "재민아, 요즘 반사신경 죽었다며? 확인 좀 하자!" 오이고추, 비치발리볼, 소시지가 쉴 새 없이 날아올 예정이다. 최대한 오래 버티며 피해야 한다. 28초 동안 몇 대나 맞을까?',[
+{t:'🎮 피해본다! (미니게임)',fx:{},m:'',mini:1,fn:S=>{
+  const h=DODGE.hits,sec=DODGE.sec;
+  if(h===0)return [{hap:12,soc:6,str:3,chr:2,f:['dodge_god']},'28초를 한 대도 안 맞고 버텼다! 찬호가 던질 물건이 떨어지자 "이게 사람이냐"며 주저앉았다. 오이고추와 비치발리볼과 소시지 모두 재민이 옆을 스쳐 지나갔다. 반사신경 전설의 시작이다.'];
+  if(h<=1)return [{hap:8,soc:4,str:2},`겨우 ${h}대만 맞았다. 소시지 한 방 정도는 인생의 소금이다. 찬호는 "다음엔 더 빠르게 던진다"며 의욕을 불태웠고 재민이는 어깨를 으쓱했다.`];
+  if(h<=2)return [{hap:3,soc:2,sts:3},`${h}대 맞고 살아남았다. 오이고추 한 개가 정확히 이마에 박힌 건 못 본 걸로 하기로 했다. 친구들은 박수를 쳤고 재민이는 조용히 이마를 문질렀다.`];
+  return [{hap:-4,sts:6,soc:-1},`결국 ${h}대 맞고 쓰러졌다. 비치발리볼이 얼굴 정중앙에 꽂히는 장면은 친구 단톡방에 영원히 박제됐다. 찬호는 승리의 포즈를 취했고 재민이는 바닥에 누워 하늘을 올려다보았다.`]}},
+c('😴 귀찮다, 그냥 맞고 만다',{hap:-2,sts:2},'피하는 것도 귀찮아서 가만히 서 있었다. 오이고추가 어깨에, 비치발리볼이 머리에, 소시지가 배에 차례로 꽂혔다. 찬호는 "재미없어"라며 던지기를 멈췄다.')
+],{w:3});
 /* --- 야자 시간: 경연의 의도치 않은 신호 (재민이는 평소 행실 때문에 80% 의심받는다) --- */
 const SUSPECT_P=.8;
 ev('gy_yaja',16,18,'📚 야자 시간의 정적','야간 자율학습 시간. 조용한 교실에 연필 소리만 사각사각 울린다. 경연이 책상에 엎드려 곤히 자고 있다. 그런데 갑자기 교실의 정적을 가르며 "뿌우웅—" 하는 소리가 울려 퍼졌다. 온 반이 일제히 고개를 들었다. 범인은 경연이다. 하지만 정작 경연은 꿈속에서 아직 깨지 않았다. 재민이는 경연의 옆자리에 앉아 있다. 그리고 재민이에게는 불행한 전과가 있다. 평소 행실 때문에, 이런 일이 생기면 반 아이들은 80% 확률로 재민이를 의심한다.',[
@@ -1627,7 +1646,7 @@ function setJob(id){S.job=id;S.rank=0;const j=JOBS[id];S.s=Math.round(j.base*R(.
   S.fireP=(id!=='none'&&id!=='mp'&&Math.random()<.85)?1:0;S.fireAge=S.age+ri(3,12);delete S.flags.fireWarned;delete S.warnAge}
 /* 확정 결과였던 선택지도 모두 확률 도전으로: 성공하면 원래 효과, 실패하면 역효과.
    진행 필수 선택(직업·학력·결혼 등)과 위기/치료 장면은 제외 */
-const NORISK=new Set(['hs','crisis','discharge','armyend2','armyhard','armyend_b','recovery','bust','quiet','will','retire','enter','suneung','boot']);
+const NORISK=new Set(['dodge_game','hs','crisis','discharge','armyend2','armyhard','armyend_b','recovery','bust','quiet','will','retire','enter','suneung','boot']);
 const SKIPK=['q','job','edu','married','kids','pet','retire','rank','uf'];
 const FAILM={
  int:['머리가 하얘졌다. 아는 문제인데 처음 보는 문제 같았다.','뇌가 로딩 중이었다. 로딩은 끝내 완료되지 않았다.','머리를 굴렸더니 굴러서 바닥에 떨어졌다.','"어? 이거 어제 봤는데?" 어제의 재민이가 오늘의 재민이를 배신했다.','계산기를 두드렸는데 계산기가 먼저 한숨을 쉬었다.','두뇌 풀가동! ...이라고 생각했지만 사실 절전 모드였다.','머릿속에 지우개가 들어앉았다. 방금 외운 게 통째로 삭제됐다.','똑똑한 척하다가 도리어 바보라는 게 증명됐다. 증거 영상도 남았다.','뇌세포가 단체로 파업을 선언했다. 요구 조건은 "낮잠"이다.','"이 정도는 식은 죽 먹기지." 그 식은 죽이 재민이를 먹었다.'],
@@ -1874,12 +1893,12 @@ const ADS=[
 ];
 let adOpen=false;
 function adCheck(){
-  if(adOpen||!S||S.over||FAST)return;
+  if(adOpen||!S||S.over||FAST||document.getElementById('dodge'))return;
   S.flags=S.flags||{};
   const ad=ADS.find(a=>S.age>=a.at&&!S.flags[a.id]);
   if(!ad)return;
   S.flags[ad.id]=1;adOpen=true;
-  const go=()=>{if(mqBusy||MQ.length||document.getElementById('gauge')||document.getElementById('tapgame'))setTimeout(go,400);else showAd(ad)};setTimeout(go,900);
+  const go=()=>{if(mqBusy||MQ.length||document.getElementById('gauge')||document.getElementById('tapgame')||document.getElementById('dodge'))setTimeout(go,400);else showAd(ad)};setTimeout(go,900);
 }
 function showAd(ad){
   const m=document.createElement('div');m.id='adm';
@@ -2006,6 +2025,74 @@ function gaugeAnim(p,r,ok,cb){
   setTimeout(()=>{o.remove();cb()},1950);
 }
 /* 9) 연타 미니게임: 4초 동안 연타해서 성공률 최대 +15% */
+/* ===== 미니게임: 물건 피하기 ===== */
+const DODGE={hits:0,sec:0,ready:false};
+/* 찬호 얼굴: assets/heads/chanho.png (투명 PNG)가 있으면 사용, 없으면 이모지 */
+let CHANHO=null;try{CHANHO=new Image();CHANHO.src='assets/heads/chanho.png';CHANHO.onerror=()=>{CHANHO=null}}catch(e){}
+const DODGE_ITEMS=[{e:'🥒',n:'오이고추',r:15,v:1},{e:'🏐',n:'비치발리볼',r:24,v:.8},{e:'🌭',n:'소시지',r:18,v:1.15}];
+function startDodge(done){
+  const W=360,H=520,DUR=28;
+  const o=document.createElement('div');o.id='dodge';
+  o.innerHTML=`<div class="dgb"><div class="dgt"><b>🎯 물건 피하기</b><span id="dglife">❤❤❤</span><span id="dgtime">28</span></div>
+   <canvas id="dgc" width="${W}" height="${H}"></canvas>
+   <div class="dgov" id="dgov"><h3>찬호의 물건 던지기!</h3><p>🥒 오이고추 · 🏐 비치발리볼 · 🌭 소시지<br>손가락(마우스)으로 좌우로 움직이거나 ← → 키로 피하세요.<br>목숨은 ❤ 3개, 28초 버티면 끝!</p><button class="btn pri" id="dgstart">시작!</button><button class="btn c" id="dgskip">포기하고 맞기</button></div></div>`;
+  document.body.appendChild(o);
+  const cv=document.getElementById('dgc'),g=cv.getContext('2d');
+  const mk=(hk)=>{const c=document.createElement('canvas');c.width=SPW*K;c.height=FULLH*K;
+    let ok=outfitKeyFor();if(ok[0]==='_'){const jv=JV[ok.slice(1)];OUTFIT[ok]={top:jv?jv.c:'#7a8cd6',bot:'#3a4a6a',shoe:'#fff',sl:1,x:'tie:#ffffff'}}
+    drawBody(c,OUTFIT[ok]||OUTFIT.none,BODYY);const im=imgFor(HEADS[hk]||HEADS.face,()=>{});if(im&&im.naturalWidth)drawHead(c,im,S.age>=55,hk);return c};
+  let spN=mk('face'),spH=mk('mess');
+  imgFor(HEADS.mess,()=>{spH=mk('mess')});imgFor(HEADS.face,()=>{spN=mk('face')});
+  const ch=document.createElement('canvas');ch.width=SPW*K;ch.height=BODYH*K;drawBody(ch,OUTFIT.casual,0);
+  let px=W/2,tx=W/2,items=[],t=0,spawn=0,hits=0,run=false,over=false,flash=0,keys={},raf=0,last=0,bx=W/2,bd=1;
+  const stopBgm=()=>{setBgm(eventBgm()||stageMode(S.age))};
+  setBgm('dodge');
+  const finish=()=>{if(over)return;over=true;run=false;cancelAnimationFrame(raf);DODGE.hits=hits;DODGE.sec=Math.round(t);
+    removeEventListener('keydown',kd);removeEventListener('keyup',ku);
+    const ov=document.getElementById('dgov');ov.style.display='flex';
+    ov.innerHTML=`<h3>${hits===0?'🏆 노히트!':hits<=2?'👍 선방!':'😵 맞았다...'}</h3><p>맞은 횟수 <b>${hits}</b>대 · 버틴 시간 <b>${Math.round(t)}</b>초</p><button class="btn pri" id="dgdone">결과 보기</button>`;
+    sfx(hits===0?'fanA':hits<=2?'good':'sadD');
+    document.getElementById('dgdone').onclick=()=>{o.remove();stopBgm();done()}};
+  const kd=e=>{keys[e.key]=1;if(['ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault()},ku=e=>{keys[e.key]=0};
+  addEventListener('keydown',kd);addEventListener('keyup',ku);
+  const setX=ev=>{const r=cv.getBoundingClientRect();tx=Math.max(24,Math.min(W-24,(ev.clientX-r.left)/r.width*W))};
+  cv.addEventListener('pointerdown',e=>{cv.setPointerCapture&&cv.setPointerCapture(e.pointerId);setX(e)});
+  cv.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch')setX(e)});
+  const start=()=>{document.getElementById('dgov').style.display='none';run=true;last=performance.now();bgmKick();raf=requestAnimationFrame(loop)};
+  document.getElementById('dgstart').onclick=start;
+  document.getElementById('dgskip').onclick=()=>{hits=3;finish()};
+  function loop(now){
+    if(!run)return;raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;
+    if(keys.ArrowLeft||keys.a)tx-=260*dt;if(keys.ArrowRight||keys.d)tx+=260*dt;tx=Math.max(24,Math.min(W-24,tx));
+    px+=(tx-px)*Math.min(1,dt*14);
+    // 찬호 이동 + 던지기
+    bx+=bd*(70+t*3)*dt;if(bx>W-36){bx=W-36;bd=-1}if(bx<36){bx=36;bd=1}
+    spawn-=dt;if(spawn<=0){const it=pick(DODGE_ITEMS);const aim=Math.random()<.55?px:Math.random()*(W-60)+30;
+      items.push({...it,x:bx,y:74,vx:(aim-bx)/ (H/(220+t*8+it.v*60))*1,vy:(220+t*8)*it.v+60,rot:0,vr:R(-6,6)});
+      spawn=Math.max(.32,.95-t*.025)+Math.random()*.25;sfx('whoosh')}
+    for(const it of items){it.x+=it.vx*dt*1.0;it.y+=it.vy*dt;it.rot+=it.vr*dt;
+      if(!it.hit&&it.y>H-110&&it.y<H-40&&Math.abs(it.x-px)<it.r+16){it.hit=1;hits++;flash=.5;sfx('hit');document.getElementById('dglife').textContent='❤'.repeat(Math.max(0,3-hits))+'🖤'.repeat(Math.min(3,hits));if(hits>=3)finish()}
+      if(!it.pass&&it.y>H-30){it.pass=1;if(!it.hit)sfx('tick')}}
+    items=items.filter(it=>it.y<H+40);
+    flash=Math.max(0,flash-dt);
+    document.getElementById('dgtime').textContent=Math.max(0,Math.ceil(DUR-t));
+    if(t>=DUR)finish();
+    // draw
+    const bgG=g.createLinearGradient(0,0,0,H);bgG.addColorStop(0,'#59b6ff');bgG.addColorStop(.7,'#c8efff');bgG.addColorStop(.7,'#78d44a');bgG.addColorStop(1,'#3f9e22');g.fillStyle=bgG;g.fillRect(0,0,W,H);
+    g.font='38px sans-serif';g.textAlign='center';g.fillText('☁️',70+((t*8)%300),60);g.fillText('☁️',260-((t*5)%200),110);
+    g.imageSmoothingEnabled=false;
+    // 찬호(위쪽): 몸 + 얼굴 이모지
+    g.drawImage(ch,0,0,SPW*K,BODYH*K,bx-27,50,54,42);if(CHANHO&&CHANHO.complete&&CHANHO.naturalWidth){g.imageSmoothingEnabled=true;g.drawImage(CHANHO,bx-30,6,60,60);g.imageSmoothingEnabled=false}else{g.font='34px sans-serif';g.fillText('😝',bx,64)};g.font='12px "Jua",sans-serif';g.fillStyle='#fff';g.strokeStyle='#3a220a';g.lineWidth=3;g.strokeText('찬호',bx,100);g.fillText('찬호',bx,100);
+    for(const it of items){g.save();g.translate(it.x,it.y);g.rotate(it.rot);g.font=(it.r*2)+'px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(it.e,0,0);g.restore()}
+    // 플레이어
+    const spr=flash>0?spH:spN,w=SPW*K*.58,h=FULLH*K*.58;g.imageSmoothingEnabled=false;
+    if(flash>0&&Math.floor(flash*20)%2)g.globalAlpha=.5;
+    g.fillStyle='#0003';g.beginPath();g.ellipse(px,H-26,22,6,0,0,7);g.fill();
+    g.drawImage(spr,px-w/2,H-24-h,w,h);g.globalAlpha=1;
+    if(flash>0){g.fillStyle='rgba(255,60,60,'+flash*.4+')';g.fillRect(0,0,W,H)}
+  }
+  g.fillStyle='#59b6ff';g.fillRect(0,0,W,H);
+}
 function tapGame(){
   const key=S.cur+'@'+S.age;
   const o=document.createElement('div');o.id='tapgame';
@@ -2090,6 +2177,8 @@ function choose(i){
   if(!S.cur||!EV[S.cur])return;
   const e=EV[S.cur];const chs=getChoices(e);const ch=chs[i];if(!ch||ch.dis)return;
   if(ch.need&&S.m<ch.need)return;
+  if(ch.mini&&FAST){DODGE.hits=ri(0,4);DODGE.sec=28}
+  else if(ch.mini&&!DODGE.ready){DODGE.ready=false;startDodge(()=>{DODGE.ready=true;choose(i);DODGE.ready=false});return}
   SNAP=JSON.stringify(S);
   const before={};['int','str','chr','cha','soc','hap','sts','m','s','inv'].forEach(k=>before[k]=S[k]);
   let out,ok=null;
@@ -2512,7 +2601,7 @@ function rankView(){
   <button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
 }
-const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 S·A·B·C·D 5단계(상위 3% / 7% / 20% / 35% / 35%) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','시스템① 운명의 게이지: 도전할 때마다 바늘이 움직여 성공/실패가 갈리는 연출','시스템② 행운 게이지(천장): 실패가 쌓일수록 다음 도전 성공률 최대 +25%','시스템③ 아이템: 행운의 부적·영양제·되감기 티켓 (이벤트에서 획득, 도전 전에 사용)','시스템④ 연속 성공 콤보: 불꽃 애니메이션 + 최고 콤보 점수 보너스','시스템⑤ 컨페티·도장 쾅·점수 카운트업 연출(대성공·A/B 인증)','시스템⑥ 인생 그래프: 재산·행복 추이가 애니메이션으로 그려짐','시스템⑦ 동창회 순위: 가상 동창 5명과 재산 비교, 실시간 순위·결과 막대 그래프','시스템⑧ 실시간 별명: 상태에 따라 별명이 바뀌고 팝업(백수 재민, 호구 재민, 천재 재민 등)','시스템⑨ 연타 미니게임: 4초 연타로 성공률 최대 +15%','시스템⑩ 시기별 배경 연출 + 인생 하이라이트 리플레이(타임라인 애니메이션 재생)','찬호 시리즈 4종: 미역국에 꿀떡 · 사물함 스티로폼 가루 · 남은 음식 몰아주기 · 재민이 메뉴는 절대 안 시키기','회기역 자판기 커피 사건 3부작(진호·찬호·경연·세민·범수 전원 등장: 고등학교 졸업앨범 촬영 → 뭘 내도 100% 지는 가위바위보 → 자판기 앞 30초 → "커피는?") + 별명 "회기역 커피 재민"','거제도 가는 지하철에서 "비닐봉지 있는 사람 있어요?!"를 외치는 이벤트(친구 다섯 명 전원 외면) + 별명 "비닐봉지 재민"','선재도 여행 시리즈: 끄래야 끌 수 없는 "재민!" 음성 알람 → 이튿날 밤 택시에서 또 비닐봉지','PC방 상가 화장실 사건: 문 위로 폰이 쑥 올라온다 → 범인은 사실 찬호','거제도 돌아오는 길: 터미널에서 찬호가 훌라에 빠져 보라색 뉴발란스를 놓고 오는 이벤트 + 버스 안 후속','거제도 여행 연쇄: 지하철 → 횟집 바가지 → 보일러(0~10을 분으로 착각해 이불·장판 태움) → 버스터미널','건강 이벤트: 족저근막염 · 치핵 절제 입원 · 치아 교정(철제/투명)','천하경에게 고백하는 이벤트(20세)','PC방 알바 "형 이름은 왜 잼민이에요?" 이벤트(초등학생 습격) + 별명 "잼민이 형 재민"','재민이가 진호의 주미 고백 작전을 돕는 이벤트','재민이가 찬호의 희연 고백 작전을 돕는 이벤트','학교에서 한승연과 싸우는 이벤트(필기 노트 국물 자국 사건, 말싸움)','학교에서 서예림과 매점 마지막 소시지빵을 두고 싸우는 이벤트','진호 병문안: 오른쪽 세 번째 갈비뼈를 제거한 진호에게 경완·찬호·재민이 베스킨라빈스를 들고 가는 이벤트','야자 시간에 엎드려 자던 경연이 방귀 뀌는 이벤트(재민이는 평소 행실 때문에 의심받을 확률 80%) + 별명 "방귀 용의자 재민"','고등학교 야구: 찬호가 일부러 공을 담장 밖으로 넘겨 범수에게 라면과 하와이안블루를 시키는 이벤트','20살 첫 운전: 사이드 브레이크를 안 내리고 헤드라이트도 안 켜고 달리는 이벤트 + 별명 "사이드 브레이크 재민"','자이노래방 알바 이벤트: 포천 한샘 기숙학원에서 재수하다 도망친 진호가 돈을 빌려 달라고 찾아옴 + 별명 "자이노래방 알바 재민"','가끔 찬호가 전화해서 베스킨라빈스 하프갤런을 사 달라고 하는 이벤트(거절해도 높은 확률로 사 주게 됨, 반복) + 별명 "찬호의 베스킨 은행 재민"','재민이 음성 녹음: 이벤트 중 가끔 재생, "끌 수 없는 알람" 이벤트에서는 계속 반복(🔊 버튼으로 끌 수 있음)','찬호네 집에서 찬호의 반지를 몰래 가져가는 이벤트(들키지 않으려 숨기면 불리, 솔직하게 돌려주면 유리) + 별명 "반지 사건 재민"','시작 화면: 비치볼에 맞는 재민이(날아온 공에 퍽! 맞는 애니메이션, AI 이미지를 넣으면 자동 교체) + AI 장면 이미지 자동 연결 구조(직업·나이·이벤트·엔딩별)','그래픽 업그레이드: 움직이는 로비(밤하늘·흐르는 양주 스카이라인·걸어 다니는 재민이·떠다니는 사진·흐르는 인생 타임라인) + 시기별 배경 입자 + 이벤트 장면 배너 + 능력치 바/숫자 애니메이션 + 변화량 팝업 + 성공/실패 반응 연출','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)','사운드 대폭 강화: 나이대별 자동 배경음악(🎵 버튼으로 끄기) + 효과음 30여 종(퍽·화상 지글·방귀·사이렌·동전·하트·해고 경보·등급별 팡파르), 시작 화면 비치볼 "퍽!" 소리 동기화','메이플스토리풍 전면 리뉴얼(자체 제작 UI): 따뜻한 나무 테두리 창·NPC 퀘스트 대화창·HP/MP 게이지·Lv.나이 배지·MISS/CRITICAL/LEVEL UP 연출·헤네시스풍 낮 로비(달팽이·주황버섯·슬라임, 단풍잎), 🌙 버튼으로 밤 맵 전환','메이플 캐릭터 생성 화면풍 재민이 만들기(후보 3명·이름 CHECK·스탯 집중 육성·GENERATE 리롤)','메이플 로그인 화면풍 시작 화면(숲 배경·나무 간판 메뉴)','재민이 캐릭터: 머리는 보내주신 사진에서 오려낸 얼굴(웃음·장난·무표정 등 표정별 고화질)을 도트화, 몸은 메이플 기본 캐릭터풍 도트(의사 가운·정장·군복·요리사 앞치마 등 20종 옷, 자동 외곽선·명암)','캐릭터 만들기: 후보 대신 주사위 굴리기(랜덤, 최대 5회)','결과 화면 📸 공유 이미지(캐릭터·등급·점수·인증코드가 담긴 카드 PNG 저장/공유/복사)','팝업 가상 광고 3회(24·46·68세, 재민이 얼굴 패러디, X·건너뛰기 버튼)','나이대별 BGM(메이플 곡, 끊김 없이): 시작~12세(8세 입학 징글) / 13~18세 / 19~29세 / 30~49세 / 50세~·결과 화면, 이벤트별 곡(클랜전·피파) + 레벨업(나이 증가) 효과음 파일 슬롯(assets/sfx/levelup.mp3)','새 이벤트: 성인이 되어 밤샘 PC방 피파온라인3(20~27세, 전용 BGM)','새 이벤트: 야자 째고 만든 클랜 [야자째고]의 클랜전(16~18세, 친구 6명 총출동, 서든어택 메인 테마가 흐름)'];
+const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 S·A·B·C·D 5단계(상위 3% / 7% / 20% / 35% / 35%) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','시스템① 운명의 게이지: 도전할 때마다 바늘이 움직여 성공/실패가 갈리는 연출','시스템② 행운 게이지(천장): 실패가 쌓일수록 다음 도전 성공률 최대 +25%','시스템③ 아이템: 행운의 부적·영양제·되감기 티켓 (이벤트에서 획득, 도전 전에 사용)','시스템④ 연속 성공 콤보: 불꽃 애니메이션 + 최고 콤보 점수 보너스','시스템⑤ 컨페티·도장 쾅·점수 카운트업 연출(대성공·A/B 인증)','시스템⑥ 인생 그래프: 재산·행복 추이가 애니메이션으로 그려짐','시스템⑦ 동창회 순위: 가상 동창 5명과 재산 비교, 실시간 순위·결과 막대 그래프','시스템⑧ 실시간 별명: 상태에 따라 별명이 바뀌고 팝업(백수 재민, 호구 재민, 천재 재민 등)','시스템⑨ 연타 미니게임: 4초 연타로 성공률 최대 +15%','시스템⑩ 시기별 배경 연출 + 인생 하이라이트 리플레이(타임라인 애니메이션 재생)','찬호 시리즈 4종: 미역국에 꿀떡 · 사물함 스티로폼 가루 · 남은 음식 몰아주기 · 재민이 메뉴는 절대 안 시키기','회기역 자판기 커피 사건 3부작(진호·찬호·경연·세민·범수 전원 등장: 고등학교 졸업앨범 촬영 → 뭘 내도 100% 지는 가위바위보 → 자판기 앞 30초 → "커피는?") + 별명 "회기역 커피 재민"','거제도 가는 지하철에서 "비닐봉지 있는 사람 있어요?!"를 외치는 이벤트(친구 다섯 명 전원 외면) + 별명 "비닐봉지 재민"','선재도 여행 시리즈: 끄래야 끌 수 없는 "재민!" 음성 알람 → 이튿날 밤 택시에서 또 비닐봉지','PC방 상가 화장실 사건: 문 위로 폰이 쑥 올라온다 → 범인은 사실 찬호','거제도 돌아오는 길: 터미널에서 찬호가 훌라에 빠져 보라색 뉴발란스를 놓고 오는 이벤트 + 버스 안 후속','거제도 여행 연쇄: 지하철 → 횟집 바가지 → 보일러(0~10을 분으로 착각해 이불·장판 태움) → 버스터미널','건강 이벤트: 족저근막염 · 치핵 절제 입원 · 치아 교정(철제/투명)','천하경에게 고백하는 이벤트(20세)','PC방 알바 "형 이름은 왜 잼민이에요?" 이벤트(초등학생 습격) + 별명 "잼민이 형 재민"','재민이가 진호의 주미 고백 작전을 돕는 이벤트','재민이가 찬호의 희연 고백 작전을 돕는 이벤트','학교에서 한승연과 싸우는 이벤트(필기 노트 국물 자국 사건, 말싸움)','학교에서 서예림과 매점 마지막 소시지빵을 두고 싸우는 이벤트','진호 병문안: 오른쪽 세 번째 갈비뼈를 제거한 진호에게 경완·찬호·재민이 베스킨라빈스를 들고 가는 이벤트','야자 시간에 엎드려 자던 경연이 방귀 뀌는 이벤트(재민이는 평소 행실 때문에 의심받을 확률 80%) + 별명 "방귀 용의자 재민"','고등학교 야구: 찬호가 일부러 공을 담장 밖으로 넘겨 범수에게 라면과 하와이안블루를 시키는 이벤트','20살 첫 운전: 사이드 브레이크를 안 내리고 헤드라이트도 안 켜고 달리는 이벤트 + 별명 "사이드 브레이크 재민"','자이노래방 알바 이벤트: 포천 한샘 기숙학원에서 재수하다 도망친 진호가 돈을 빌려 달라고 찾아옴 + 별명 "자이노래방 알바 재민"','가끔 찬호가 전화해서 베스킨라빈스 하프갤런을 사 달라고 하는 이벤트(거절해도 높은 확률로 사 주게 됨, 반복) + 별명 "찬호의 베스킨 은행 재민"','재민이 음성 녹음: 이벤트 중 가끔 재생, "끌 수 없는 알람" 이벤트에서는 계속 반복(🔊 버튼으로 끌 수 있음)','찬호네 집에서 찬호의 반지를 몰래 가져가는 이벤트(들키지 않으려 숨기면 불리, 솔직하게 돌려주면 유리) + 별명 "반지 사건 재민"','시작 화면: 비치볼에 맞는 재민이(날아온 공에 퍽! 맞는 애니메이션, AI 이미지를 넣으면 자동 교체) + AI 장면 이미지 자동 연결 구조(직업·나이·이벤트·엔딩별)','그래픽 업그레이드: 움직이는 로비(밤하늘·흐르는 양주 스카이라인·걸어 다니는 재민이·떠다니는 사진·흐르는 인생 타임라인) + 시기별 배경 입자 + 이벤트 장면 배너 + 능력치 바/숫자 애니메이션 + 변화량 팝업 + 성공/실패 반응 연출','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)','사운드 대폭 강화: 나이대별 자동 배경음악(🎵 버튼으로 끄기) + 효과음 30여 종(퍽·화상 지글·방귀·사이렌·동전·하트·해고 경보·등급별 팡파르), 시작 화면 비치볼 "퍽!" 소리 동기화','메이플스토리풍 전면 리뉴얼(자체 제작 UI): 따뜻한 나무 테두리 창·NPC 퀘스트 대화창·HP/MP 게이지·Lv.나이 배지·MISS/CRITICAL/LEVEL UP 연출·헤네시스풍 낮 로비(달팽이·주황버섯·슬라임, 단풍잎), 🌙 버튼으로 밤 맵 전환','메이플 캐릭터 생성 화면풍 재민이 만들기(후보 3명·이름 CHECK·스탯 집중 육성·GENERATE 리롤)','메이플 로그인 화면풍 시작 화면(숲 배경·나무 간판 메뉴)','재민이 캐릭터: 머리는 보내주신 사진에서 오려낸 얼굴(웃음·장난·무표정 등 표정별 고화질)을 도트화, 몸은 메이플 기본 캐릭터풍 도트(의사 가운·정장·군복·요리사 앞치마 등 20종 옷, 자동 외곽선·명암)','캐릭터 만들기: 후보 대신 주사위 굴리기(랜덤, 최대 5회)','결과 화면 📸 공유 이미지(캐릭터·등급·점수·인증코드가 담긴 카드 PNG 저장/공유/복사)','미니게임 찬호의 물건 던지기(30세 전후, 오이고추·비치발리볼·소시지 피하기, 전용 BGM)','팝업 가상 광고 3회(24·46·68세, 재민이 얼굴 패러디, X·건너뛰기 버튼)','나이대별 BGM(메이플 곡, 끊김 없이): 시작~12세(8세 입학 징글) / 13~18세 / 19~29세 / 30~49세 / 50세~·결과 화면, 이벤트별 곡(클랜전·피파) + 레벨업(나이 증가) 효과음 파일 슬롯(assets/sfx/levelup.mp3)','새 이벤트: 성인이 되어 밤샘 PC방 피파온라인3(20~27세, 전용 BGM)','새 이벤트: 야자 째고 만든 클랜 [야자째고]의 클랜전(16~18세, 친구 6명 총출동, 서든어택 메인 테마가 흐름)'];
 function info(){
   $('#main').innerHTML=`<div class="card"><h2>✨ 추가된 재미 요소 ${FEATURES.length}가지</h2><ol style="padding-left:18px;font-size:14px">${FEATURES.map(f=>`<li>${f}</li>`).join('')}</ol></div><button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW='title';render()};
