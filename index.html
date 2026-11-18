@@ -1925,7 +1925,7 @@ function pickCand(){
   const good=Math.random()<.12;let a,bg,trait;
   const GOODT=['genius','strongbody','lucky','charming','latebloom','frugal','sharp','mentalrock'];
   const BADT=['spender','unlucky','glass','clumsy','gamer','foodie','nightowl','latebloom','spender'];
-  if(good){a=pick(ARCH);bg=pick(['gold','mid','mid','shop','twin','rural']);trait=pick(GOODT);if(trait==='genius'&&(a.n==='공부형'||a.n==='발명가형'))trait='lucky';if(bg==='gold'&&(trait==='lucky'||trait==='genius'))trait='frugal'}
+  if(good){a=pick(ARCH);bg=pick(['gold','mid','mid','shop','twin','rural','mid','shop','twin','rural','mid','rural']);trait=pick(GOODT);if(trait==='genius'&&(a.n==='공부형'||a.n==='발명가형'))trait='lucky';if(bg==='gold'&&(trait==='lucky'||trait==='genius'))trait='frugal'}
   else if(Math.random()<.5){a=pick(BADARCH);bg=pick(['poor','single','mid','rural','twin','poor']);trait=pick(BADT)}
   else{a=pick(ARCH.concat(BADARCH));bg=pick(['poor','single','poor','rural','shop']);trait=pick(BADT.concat(['frugal','charming']))}
   const v=a.v.map(x=>x+ri(-5,5));const tgt=a.v.reduce((p,q)=>p+q,0);v[ri(0,4)]+=tgt-v.reduce((p,q)=>p+q,0);
