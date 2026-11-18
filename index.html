@@ -2086,13 +2086,16 @@ function eligible(){
     return true;
   });
 }
+/* 미니게임 이벤트가 두 번 연속 나오지 않게: 직전 이벤트가 미니게임이면 다음은 미니게임이 아닌 이벤트로 */
+function isMiniEv(id){const e=EV[id];return !!(e&&Array.isArray(e.choices)&&e.choices.some(c=>c&&c.mini))}
 function chooseEvent(){
-  for(const e of EVL){if(e.at!=null&&S.age>=e.at&&!S.seen[e.id]&&S.age<=e.b+(e.id==='retire'?0:3)){S.seen[e.id]=S.age;if(e.c&&!e.c(S))continue;return e.id}}
+  const sk=!!S.lastMini;
+  for(const e of EVL){if(e.at!=null&&S.age>=e.at&&!S.seen[e.id]&&S.age<=e.b+(e.id==='retire'?0:3)){if(sk&&isMiniEv(e.id))continue;S.seen[e.id]=S.age;if(e.c&&!e.c(S))continue;return e.id}}
   /* 반드시 겪는 이벤트: 고정 나이에 못 나왔으면 이후 첫 기회에 반드시 */
-  for(const id of ['ring_heist','ch_heeyeon'])if(S.age>=26&&S.age<=45&&!S.seen[id]&&EV[id]){S.seen[id]=S.age;return id}
+  for(const id of ['ring_heist','ch_heeyeon'])if(S.age>=26&&S.age<=45&&!S.seen[id]&&EV[id]&&!sk){S.seen[id]=S.age;return id}
   /* 찬호의 가게: 첫 호출 뒤에는 매년(1주 느낌으로) 꾸준히 불려 나감, 최대 10번 */
-  if((S.flags.shopN||0)>0&&(S.flags.shopN||0)<2&&S.age>=(S.flags.shopNext||0)+2&&S.age<=62&&S.cur!=='ch_shop'&&!S.seen['ch_shop@'+S.age]){S.seen['ch_shop@'+S.age]=1;return 'ch_shop'}
-  const pool=eligible();
+  if((S.flags.shopN||0)>0&&(S.flags.shopN||0)<2&&S.age>=(S.flags.shopNext||0)+2&&S.age<=62&&S.cur!=='ch_shop'&&!sk&&!S.seen['ch_shop@'+S.age]){S.seen['ch_shop@'+S.age]=1;return 'ch_shop'}
+  const pool=eligible().filter(e=>!(sk&&isMiniEv(e.id)));
   if(!pool.length||Math.random()<.08)return 'quiet';
   const tot=pool.reduce((p,e)=>p+e.w,0);let r=Math.random()*tot;
   for(const e of pool){r-=e.w;if(r<=0)return e.id}
@@ -2100,7 +2103,7 @@ function chooseEvent(){
 }
 function advance(){
   if(S.over){S.cur=null;return}
-  if(S.queue.length){S.cur=S.queue.shift();onEnter();return}
+  if(S.queue.length&&!(S.lastMini&&isMiniEv(S.queue[0]))){S.cur=S.queue.shift();onEnter();return}
   ensure(S);
   const n=step();S.age+=n;S.flags.burnoutNow=0;tick(n);checkAch();checkEnd();
   S.hist.push([S.age,Math.round(net()),Math.round(S.hap)]);
@@ -3081,6 +3084,7 @@ function choose(i){
   if(ch.need&&S.m<ch.need)return;
   if(ch.mini&&FAST){DODGE.hits=ri(0,4);DODGE.sec=ch.mini===4?ri(30,100):28;DODGE.win=Math.random()<.4}
   else if(ch.mini&&!DODGE.ready){DODGE.ready=false;MINI_INTRO=ch.force||'';(MINIFN[ch.mini]||startDodge)(()=>{DODGE.ready=true;choose(i);DODGE.ready=false},ch.mini===2?MINI2:ch.mini===3?MINI3:ch.mini===1?MINI1:null);return}
+  S.lastMini=!!ch.mini;
   SNAP=JSON.stringify(S);
   const before={};['int','str','chr','cha','soc','hap','sts','m','s','inv'].forEach(k=>before[k]=S[k]);
   let out,ok=null;
