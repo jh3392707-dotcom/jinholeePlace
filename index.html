@@ -2451,7 +2451,7 @@ function startDodge(done,cfg){
   const ch=document.createElement('canvas');ch.width=SPW*K;ch.height=BODYH*K;drawBody(ch,OUTFIT[OUTF]||OUTFIT.casual,0);
   let splats=[],splash=0,px=W/2,tx=W/2,items=[],t=0,spawn=0,hits=0,run=false,over=false,flash=0,keys={},raf=0,last=0,bx=W/2,bd=1;
   const stopBgm=()=>{setBgm(eventBgm()||stageMode(S.age))};
-  setBgm('dodge');
+  setBgm(eventBgm()||'dodge');
   const finish=()=>{if(over)return;over=true;run=false;cancelAnimationFrame(raf);DODGE.hits=hits;DODGE.sec=Math.round(t);
     removeEventListener('keydown',kd);removeEventListener('keyup',ku);
     const ov=document.getElementById('dgov');ov.style.display='flex';
@@ -2547,7 +2547,7 @@ function mgShell(o){
       const ov=el.querySelector('#dgov');ov.style.display='flex';
       ov.innerHTML=`<h3>${head}</h3><p>${sub}</p><button class="btn pri" id="dgdone">결과 보기</button>`;sfx(win?'fanA':'sadD');
       el.querySelector('#dgdone').onclick=()=>{el.remove();setBgm(eventBgm()||stageMode(S.age));o.done()}}};
-  setBgm('dodge');
+  setBgm(eventBgm()||'dodge');
   el.querySelector('#dgstart').onclick=()=>{el.querySelector('#dgov').style.display='none';bgmKick();o.onstart&&o.onstart(sh)};
   return sh}
 
@@ -2858,7 +2858,7 @@ function startFart(done){
   let sp=null;const rebuild=()=>{sp=mk()};imgFor(HEADS.face,rebuild);rebuild();
   const rollGlance=()=>{const quick=Math.random()<.45;return {len:quick?R(.22,.55):R(.6,1.7),wait:Math.random()<.35?R(.5,1.1):R(1.2,3.6),warn:Math.random()<.5,fake:Math.random()<.18}};let nextGlance=rollGlance(),chalkT=.5;
   let t=0,gauge=0,strikes=0,phase='board',pt=1.4,tele=false,fake=false,holding=false,run=false,over=false,raf=0,last=0,puffs=[],caught=0,say=null,fakeLeft=0,grace=0,keys=false;
-  setBgm('dodge');
+  setBgm(eventBgm()||'dodge');
   const stopBgm=()=>{setBgm(eventBgm()||stageMode(S.age))};
   const finish=()=>{if(over)return;over=true;run=false;fartStop(true);cancelAnimationFrame(raf);DODGE.hits=strikes;DODGE.sec=Math.round(gauge);
     removeEventListener('keydown',kd);removeEventListener('keyup',ku);fbtn.style.display='none';
