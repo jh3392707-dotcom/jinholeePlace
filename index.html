@@ -2602,7 +2602,7 @@ function chanhoFace(g,cx,cy,h,flip){
 
 /* ===== 미니게임: 찬호의 반지를 훔쳐라! — 드래그 미로(손 떨림 챌린지) ===== */
 function startRing(done){
-  const DUR=40,MAXS=2;
+  const DUR=34,MAXS=2;
   const sh=mgShell({hud:'💍 찬호의 반지를 훔쳐라!',life:'💢 0/'+MAXS,time:DUR,title:'찬호의 반지를 훔쳐라!',done,
     desc:'왼쪽 아래 <b>🤏 손</b>을 눌러 잡고 <b>손가락을 끌어서</b> 협탁 위 컵·휴대폰 사이로 반지까지 가요 💍<br>물건에 닿으면 딸그락! 소리에 찬호가 의심해요.<br>손가락을 떼면 손이 되돌아가요. '+DUR+'초 안에, 2번 들키면 끝!',onstart:start});
   const {g,W,H,cv}=sh;
@@ -2645,7 +2645,7 @@ function startRing(done){
 
 /* ===== 미니게임: 계산 안 하고 도망치기 — 도마질 리듬(발소리 숨기기) ===== */
 function startEscape(done){
-  const DUR=46,MAXS=2,WIN=.075,SPD=170,HX=84;
+  const DUR=38,MAXS=2,WIN=.075,SPD=170,HX=84;
   const sh=mgShell({hud:'🏃 계산 안 하고 도망치기',life:'💢 0/'+MAXS,time:DUR,title:'도마질 소리에 발소리를 숨겨!',done,
     desc:'찬호가 <b>도마질하는 소리(🔪)</b>가 날 때만 발소리가 묻혀요.<br>🔪가 <b>왼쪽 선</b>에 닿는 순간 화면을 <b>터치</b>하면 한 걸음 🚪<br>칼질이 멈춘 때 터치하면 찬호가 알아채요! '+DUR+'초 안에 문밖으로, 2번 들키면 끝!',onstart:start,
     extra:'<div class="fgauge"><i id="fgi"></i><span id="fgt">문까지 0%</span></div>'});
@@ -2654,7 +2654,7 @@ function startEscape(done){
   const sched=()=>{while(nextB<t+2.4){const bi=60/bpm;if(rest>0){rest--;nextB+=bi;if(rest===0){grp=ri(3,6);bpm=Math.min(188,bpm+ri(-4,14))}continue}beats.push({t:nextB,hit:false});nextB+=Math.max(.22,bi*(.4+Math.random()*1.2));grp--;if(grp<=0)rest=ri(2,4)}};
   const tap=()=>{if(!run||sayT>0)return;
     let b=null,bd=1;for(const x of beats){if(x.hit)continue;const d=Math.abs(x.t-t);if(d<bd){bd=d;b=x}}
-    if(b&&bd<WIN){b.hit=true;prog=Math.min(100,prog+3.8);sfx('chop');pop.push({x:HX,y:410,a:1,txt:bd<.05?'PERFECT':'GOOD'})}
+    if(b&&bd<WIN){b.hit=true;prog=Math.min(100,prog+4.6);sfx('chop');pop.push({x:HX,y:410,a:1,txt:bd<.05?'PERFECT':'GOOD'})}
     else{strikes++;flash=.5;sayT=1.7;sh.life('💢 '+strikes+'/'+MAXS);sfx('scare');setTimeout(()=>sfx('fail'),350);setTimeout(()=>playVoice(1),650);if(strikes>=MAXS)setTimeout(()=>end(false),1500)}};
   cv.addEventListener('pointerdown',tap);const kd=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tap()}};addEventListener('keydown',kd);
   function end(win){if(over)return;over=true;run=false;cancelAnimationFrame(raf);removeEventListener('keydown',kd);sh.finish(win,win?'🚪 도망 성공!':'😱 들켰다...',`진행 <b>${Math.round(prog)}%</b> · 들킨 횟수 <b>${strikes}</b>번`,strikes,Math.round(prog))}
@@ -2914,7 +2914,7 @@ function openMinigames(){
   document.getElementById('mgx').onclick=()=>o.remove();
 }
 function startFart(done){
-  const W=360,H=520,DUR=45,GOAL=100,MAXS=2;
+  const W=360,H=520,DUR=35,GOAL=100,MAXS=2;
   const o=document.createElement('div');o.id='dodge';
   o.innerHTML=`<div class="dgb"><div class="dgt"><b>💨 경연이의 몰래 방구</b><span id="dglife">💢 0/2</span><span id="dgtime">${DUR}</span></div>
    <canvas id="dgc" width="${W}" height="${H}"></canvas>
@@ -2967,7 +2967,7 @@ function startFart(done){
       if(phase==='class'&&grace>0)grace-=dt;
       if(holding){
         if(phase==='class'&&grace<=0&&!say)caughtNow();
-        else{gauge=Math.min(GOAL,gauge+10*dt);if(Math.random()<dt*14)puffs.push({x:W*.36+R(-8,8),y:H*.6,vx:R(-30,30),vy:R(-60,-110),a:1,r:R(10,18)});if(Math.random()<dt*2.2)sfx('fartsm')}
+        else{gauge=Math.min(GOAL,gauge+12.9*dt);if(Math.random()<dt*14)puffs.push({x:W*.36+R(-8,8),y:H*.6,vx:R(-30,30),vy:R(-60,-110),a:1,r:R(10,18)});if(Math.random()<dt*2.2)sfx('fartsm')}
       }
       if(gauge>=GOAL||t>=DUR)finish();
     }
