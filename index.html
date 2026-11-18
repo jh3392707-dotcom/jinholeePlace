@@ -2744,14 +2744,14 @@ function startSA(done){
     if(reload>0){reload-=dt;if(reload<=0)ammo=8}
     spawnT-=dt;const live=en.filter(e=>!e.dead).length;
     if(spawnT<=0&&live<2){const used=en.filter(e=>!e.dead).map(e=>e.s),free=SP.map((_,i)=>i).filter(i=>!used.includes(i));en.push({s:pick(free),up:0,life:Math.max(.4,.8-t*.014),age:0,dead:0,t:0,shot:0});spawnT=Math.max(.28,.7-t*.012)+Math.random()*.2}
-    en.forEach(e=>{if(e.dead){e.t-=dt;return}e.age+=dt;e.up=Math.min(1,e.age/.18);if(e.age>=e.life&&!e.shot){e.shot=1;e.dead=2;life--;flash=.5;sfx('hurt');sh.life('❤'.repeat(Math.max(0,life))+'🖤'.repeat(3-Math.max(0,life)));if(life<=0)setTimeout(()=>end(false),400)}});
-    en=en.filter(e=>!(e.dead&&e.t<=0&&e.dead===1)&&!(e.dead===2&&e.age>e.life+.3));hit.forEach(h=>{h.a-=dt*1.4;h.y-=dt*40});hit=hit.filter(h=>h.a>0);
+    en.forEach(e=>{if(e.dead){e.t-=dt;return}e.age+=dt;e.up=Math.min(1,e.age/.18);if(e.age>=e.life&&!e.shot){e.shot=1;e.dead=2;e.t=.3;life--;flash=.5;sfx('hurt');sh.life('❤'.repeat(Math.max(0,life))+'🖤'.repeat(3-Math.max(0,life)));if(life<=0)setTimeout(()=>end(false),400)}});
+    en=en.filter(e=>!(e.dead&&e.t<=0));hit.forEach(h=>{h.a-=dt*1.4;h.y-=dt*40});hit=hit.filter(h=>h.a>0);
     sh.time(Math.max(0,Math.ceil(DUR-t)));if(score>=GOAL)end(true);else if(t>=DUR)end(false);
     // draw
     const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#3a4258');bg.addColorStop(.55,'#6a6f80');bg.addColorStop(.55,'#4a4d58');bg.addColorStop(1,'#2e3038');g.fillStyle=bg;g.fillRect(0,0,W,H);
     g.fillStyle='#555a68';for(let i=0;i<5;i++)g.fillRect(i*72+10,60,56,150);g.fillStyle='#7a8094';g.font='13px "Jua",sans-serif';g.textAlign='center';g.fillText('[야째클] vs 옆 학교 클랜',W/2,40);
     SP.map((_,i)=>i).sort((x,y)=>SP[x][1]-SP[y][1]).forEach(si=>{
-    en.filter(e=>e.s===si).forEach(e=>{const [cx,cy]=SP[e.s];const rise=e.dead?0:e.up*70;if(e.dead===1){g.globalAlpha=Math.max(0,e.t/.3);}
+    en.filter(e=>e.s===si).forEach(e=>{const [cx,cy]=SP[e.s];const rise=e.dead?0:e.up*70;if(e.dead){g.globalAlpha=Math.max(0,e.t/.3);}
       g.fillStyle='#223';g.fillRect(cx-18,cy-rise+26,36,Math.max(0,rise));g.font='44px sans-serif';g.textAlign='center';g.fillStyle='#000';g.fillText(e.dead===1?'💥':'🪖',cx,cy-rise+24);g.globalAlpha=1;
       if(!e.dead){g.fillStyle='#e8433d';g.fillRect(cx-22,cy-rise-12,44*(e.age/e.life),5)}});
     {const [cx,cy]=SP[si];g.fillStyle='#8a6a3a';g.fillRect(cx-34,cy+12,68,52);g.fillStyle='#6a4a22';g.fillRect(cx-34,cy+12,68,8);g.strokeStyle='#3a220a';g.lineWidth=3;g.strokeRect(cx-34,cy+12,68,52)}});
