@@ -191,6 +191,22 @@ body[data-stage=old]::before{background-image:linear-gradient(135deg,#6a4a2a44,#
 @keyframes spk{from{opacity:1;transform:translate(0,0) scale(.5)}to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(160deg)}}
 .flash{position:fixed;inset:0;z-index:65;pointer-events:none;background:radial-gradient(circle,transparent 35%,#ff3b5c66 100%);animation:flashout .7s ease-out forwards}
 @keyframes flashout{from{opacity:1}to{opacity:0}}
+
+/* ===== 로비 히어로: 비치볼에 맞는 재민이 ===== */
+.hit-hero{display:flex;justify-content:center;margin-top:6px}
+.hh-wrap{position:relative;width:150px;height:150px}
+.hh-img{width:150px;height:150px;border-radius:26px;border:4px solid #ffd166;object-fit:cover;box-shadow:0 10px 30px #000a;animation:hhhit 4.6s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes hhhit{0%,36%{transform:none}40%{transform:translate(-10px,4px) rotate(-12deg) scale(.96,.92)}46%{transform:translate(4px,-3px) rotate(6deg)}52%{transform:rotate(-3deg)}58%,100%{transform:none}}
+.bball{position:absolute;width:56px;height:56px;border-radius:50%;left:46px;top:-8px;z-index:3;background:conic-gradient(#ff4d4d 0 60deg,#fff 60deg 120deg,#ffd43b 120deg 180deg,#fff 180deg 240deg,#339af0 240deg 300deg,#fff 300deg 360deg);box-shadow:inset -9px -9px 15px #0004,inset 6px 6px 10px #fff8,0 6px 12px #0006;animation:bballfly 4.6s cubic-bezier(.4,0,.6,1) infinite}
+@keyframes bballfly{0%{transform:translate(180px,-130px) rotate(0);opacity:0}6%{opacity:1}38%{transform:translate(0,0) rotate(540deg)}41%{transform:translate(-4px,2px) rotate(560deg) scale(.9,1.1)}60%{transform:translate(-150px,-130px) rotate(-200deg);opacity:1}72%,100%{transform:translate(-190px,-170px) rotate(-360deg);opacity:0}}
+.hh-pow{position:absolute;left:-34px;top:8px;z-index:4;font-size:26px;font-weight:900;color:#fff;background:#ff4d4d;border:3px solid #fff;border-radius:14px;padding:2px 12px;transform:rotate(-12deg) scale(0);animation:hhpow 4.6s infinite;box-shadow:0 4px 10px #0007}
+@keyframes hhpow{0%,38%{transform:rotate(-12deg) scale(0);opacity:0}41%{transform:rotate(-12deg) scale(1.3);opacity:1}52%{transform:rotate(-12deg) scale(1);opacity:1}60%,100%{transform:rotate(-12deg) scale(0);opacity:0}}
+.hh-stars span{position:absolute;font-size:22px;opacity:0;animation:hhs 4.6s infinite}
+.hh-stars span:nth-child(1){left:-8px;top:-10px}.hh-stars span:nth-child(2){right:-10px;top:2px;animation-delay:.08s}.hh-stars span:nth-child(3){right:22px;top:-22px;animation-delay:.16s}
+@keyframes hhs{0%,39%{opacity:0;transform:scale(.3) rotate(0)}43%{opacity:1;transform:scale(1.3) rotate(40deg)}58%,100%{opacity:0;transform:scale(1) rotate(120deg) translateY(-18px)}}
+.hit-hero.has-img .bball,.hit-hero.has-img .hh-pow{display:none}
+.scene.img{height:150px;background-size:cover;background-position:center 30%}
+.scene.img .se{display:none}.scene.img i{display:none}
 /* 큰 글씨 */
 body{font-size:18px;line-height:1.6}
 #app{max-width:640px}
@@ -216,6 +232,7 @@ input[type=text]{font-size:18px}
 <header><h1><img id="logo" alt="재민" width="30" height="30"> 재민이 키우기</h1><div class="tools"><button id="bSnd" title="효과음">🔊</button><button id="bTh" title="테마">🌓</button></div></header>
 <main id="main"></main>
 </div>
+<script src="assets/scenes/manifest.js" onerror="window.SCENE_MANIFEST=window.SCENE_MANIFEST||[]"></script>
 <script>
 /* ===== utils ===== */
 const $=s=>document.querySelector(s);
@@ -1360,6 +1377,25 @@ function onEnter(){const e=EV[S.cur];if(e&&e.pre&&!S.flags['p_'+S.cur]){S.flags[
 /* ===== achievements ===== */
 function checkAch(){ACH.forEach(([id,n,d,f])=>{if(!S.runAch[id]){try{if(f()){S.runAch[id]=1;S.newAch.push(n);if(!META.ach[id]){META.ach[id]=Date.now()}}}catch(e){}}});saveMeta()}
 
+/* ===== 장면 이미지(AI로 만든 재민이): assets/scenes/<키>.jpg 를 넣으면 자동 사용 ===== */
+const SCN={};
+(function(){
+  try{(window.SCENE_MANIFEST||[]).forEach(f=>{const key=String(f).replace(/\.[a-z0-9]+$/i,'');SCN[key]='assets/scenes/'+f;const im=new Image();im.src=SCN[key]})}catch(e){}
+})();
+function avatarSrc(){
+  const k=photoKey();
+  if(k==='mess'||k==='tired')return PH[k];
+  const jk=S.job==='none'?'job_none':(S.job?'job_'+S.job:null);
+  if(jk&&SCN[jk])return SCN[jk];
+  const a=S.age,ak=a<13?'age_child':a<19?'age_teen':a>=65?'age_old':null;
+  if(ak&&SCN[ak])return SCN[ak];
+  return PH[k];
+}
+function endAvatar(g){
+  const u=SCN['end_'+g];
+  if(!u)return avatar(210);
+  return `<div class="avp" style="--jc:#ffd166;width:210px;height:210px"><img src="${u}" alt="재민" width="210" height="210"></div>`;
+}
 /* ===== 그래픽 업그레이드: 배경 입자, 스카이라인, 연출 ===== */
 let PREV={},ambMode=null,ambCanvas=null,ambRaf=null,ambP=[];
 function skylineSVG(){
@@ -1397,6 +1433,8 @@ function sceneHTML(e,ok){
   const m=(e.title||'').match(/^\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic}️?)*/u);
   const em=m?m[0]:'✨';let h=0;for(const c of e.id)h=(h*31+c.charCodeAt(0))%360;
   const t=ok===true?' win':ok===false?' lose':'';
+  const img=SCN['ev_'+e.id];
+  if(img)return `<div class="scene img${t}" style="--h:${h};background-image:url('${img}')"></div>`;
   return `<div class="scene${t}" style="--h:${h}"><span class="se">${em}</span><i class="o1"></i><i class="o2"></i><i class="o3"></i></div>`;
 }
 function popDelta(k,v){
@@ -1689,7 +1727,7 @@ function avatar(size){
   let hat=jv?jv.hat:(a>=19?'🎓':''),prop=jv&&S.job!=='none'?jv.prop:(S.flags.retired?'🏖️':jv?jv.prop:'🎒');
   if(S.flags.retired&&!S.job)prop='🏖️';
   const old=a>=55;
-  return `<div class="avp${old?' old':''}" style="--jc:${col};width:${size}px;height:${size}px"><img src="${PH[photoKey()]}" alt="재민" width="${size}" height="${size}">${hat?`<span class="hat">${hat}</span>`:''}${old?`<span class="gray">🦳</span>`:''}<span class="prop">${prop}</span></div>`;
+  return `<div class="avp${old?' old':''}" style="--jc:${col};width:${size}px;height:${size}px"><img src="${avatarSrc()}" alt="재민" width="${size}" height="${size}">${hat?`<span class="hat">${hat}</span>`:''}${old?`<span class="gray">🦳</span>`:''}<span class="prop">${prop}</span></div>`;
 }
 function statBar(k){const v=Math.round(S[k]);return `<div class="st" data-k="${k}">${LB[k]} <b>${v}</b><div class="bar"><i class="${k==='sts'?'sts':''}" style="width:${v}%"></i></div></div>`}
 function header(){
@@ -1755,7 +1793,7 @@ function endView(){
   sc.grade==='D'||S.over&&S.over!=='natural'?sBad():sGood();
   const ach=Object.keys(S.runAch).map(id=>ACH.find(a=>a[0]===id)[1]);
   const share=`🧒 재민이 키우기 | ${S.name} (${S.age}세) | 등급 ${sc.grade} · ${sc.total}점 | ${en[1]} | ${(sc.grade==='S'||sc.grade==='A')?'🎁 '+sc.grade+'인증(열외+하프갤런) '+stampCode(S.name,sc.total,S.age,sc.grade):sc.grade==='B'?'🎁 B인증(열외) '+stampCode(S.name,sc.total,S.age,sc.grade):'이벤트 도전 중'} | 직업 ${S.job&&S.job!=='none'?JOBS[S.job].n:'없음'} | 순자산 ${fmt(net())} | 연봉 최고 ${fmt(S.peakS)}`;
-  $('#main').innerHTML=`<div class="card center"><div class="big-av">${avatar(210)}</div><div class="mut">최종 인생 점수</div><div class="grade stamp g${sc.grade}">${sc.grade}</div><h2 id="scoreNum">0점</h2><div class="nick" style="margin:0 0 6px">🏷️ ${esc(S.nick||'')}</div>
+  $('#main').innerHTML=`<div class="card center"><div class="big-av">${endAvatar(sc.grade)}</div><div class="mut">최종 인생 점수</div><div class="grade stamp g${sc.grade}">${sc.grade}</div><h2 id="scoreNum">0점</h2><div class="nick" style="margin:0 0 6px">🏷️ ${esc(S.nick||'')}</div>
   <div style="font-size:40px">${en[0]}</div><h2>${en[1]}</h2><p class="mut">${en[2]}</p></div>
   ${evtCard(sc,en)}
   <div class="card"><b>📈 내 인생 그래프</b>${chartSVG(S.hist)}</div>
@@ -1809,7 +1847,7 @@ function rankView(){
   <button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
 }
-const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 S·A·B·C·D 5단계(상위 3% / 7% / 20% / 35% / 35%) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','시스템① 운명의 게이지: 도전할 때마다 바늘이 움직여 성공/실패가 갈리는 연출','시스템② 행운 게이지(천장): 실패가 쌓일수록 다음 도전 성공률 최대 +25%','시스템③ 아이템: 행운의 부적·영양제·되감기 티켓 (이벤트에서 획득, 도전 전에 사용)','시스템④ 연속 성공 콤보: 불꽃 애니메이션 + 최고 콤보 점수 보너스','시스템⑤ 컨페티·도장 쾅·점수 카운트업 연출(대성공·A/B 인증)','시스템⑥ 인생 그래프: 재산·행복 추이가 애니메이션으로 그려짐','시스템⑦ 동창회 순위: 가상 동창 5명과 재산 비교, 실시간 순위·결과 막대 그래프','시스템⑧ 실시간 별명: 상태에 따라 별명이 바뀌고 팝업(백수 재민, 호구 재민, 천재 재민 등)','시스템⑨ 연타 미니게임: 4초 연타로 성공률 최대 +15%','시스템⑩ 시기별 배경 연출 + 인생 하이라이트 리플레이(타임라인 애니메이션 재생)','찬호 시리즈 4종: 미역국에 꿀떡 · 사물함 스티로폼 가루 · 남은 음식 몰아주기 · 재민이 메뉴는 절대 안 시키기','회기역 자판기 커피 사건 3부작(진호·찬호·경연·세민·범수 전원 등장: 고등학교 졸업앨범 촬영 → 뭘 내도 100% 지는 가위바위보 → 자판기 앞 30초 → "커피는?") + 별명 "회기역 커피 재민"','거제도 가는 지하철에서 "비닐봉지 있는 사람 있어요?!"를 외치는 이벤트(친구 다섯 명 전원 외면) + 별명 "비닐봉지 재민"','선재도 여행 시리즈: 끄래야 끌 수 없는 "재민!" 음성 알람 → 이튿날 밤 택시에서 또 비닐봉지','PC방 상가 화장실 사건: 문 위로 폰이 쑥 올라온다 → 범인은 사실 찬호','거제도 돌아오는 길: 터미널에서 찬호가 훌라에 빠져 보라색 뉴발란스를 놓고 오는 이벤트 + 버스 안 후속','거제도 여행 연쇄: 지하철 → 횟집 바가지 → 보일러(0~10을 분으로 착각해 이불·장판 태움) → 버스터미널','건강 이벤트: 족저근막염 · 치핵 절제 입원 · 치아 교정(철제/투명)','천하경에게 고백하는 이벤트(20세)','PC방 알바 "형 이름은 왜 잼민이에요?" 이벤트(초등학생 습격) + 별명 "잼민이 형 재민"','재민이가 진호의 주미 고백 작전을 돕는 이벤트','재민이가 찬호의 희연 고백 작전을 돕는 이벤트','학교에서 한승연과 싸우는 이벤트(필기 노트 국물 자국 사건, 말싸움)','학교에서 서예림과 매점 마지막 소시지빵을 두고 싸우는 이벤트','진호 병문안: 오른쪽 세 번째 갈비뼈를 제거한 진호에게 경완·찬호·재민이 베스킨라빈스를 들고 가는 이벤트','야자 시간에 엎드려 자던 경연이 방귀 뀌는 이벤트(재민이는 평소 행실 때문에 의심받을 확률 80%) + 별명 "방귀 용의자 재민"','고등학교 야구: 찬호가 일부러 공을 담장 밖으로 넘겨 범수에게 라면과 하와이안블루를 시키는 이벤트','20살 첫 운전: 사이드 브레이크를 안 내리고 헤드라이트도 안 켜고 달리는 이벤트 + 별명 "사이드 브레이크 재민"','자이노래방 알바 이벤트: 포천 한샘 기숙학원에서 재수하다 도망친 진호가 돈을 빌려 달라고 찾아옴 + 별명 "자이노래방 알바 재민"','가끔 찬호가 전화해서 베스킨라빈스 하프갤런을 사 달라고 하는 이벤트(거절해도 높은 확률로 사 주게 됨, 반복) + 별명 "찬호의 베스킨 은행 재민"','재민이 음성 녹음: 이벤트 중 가끔 재생, "끌 수 없는 알람" 이벤트에서는 계속 반복(🔊 버튼으로 끌 수 있음)','찬호네 집에서 찬호의 반지를 몰래 가져가는 이벤트(들키지 않으려 숨기면 불리, 솔직하게 돌려주면 유리) + 별명 "반지 사건 재민"','그래픽 업그레이드: 움직이는 로비(밤하늘·흐르는 양주 스카이라인·걸어 다니는 재민이·떠다니는 사진·흐르는 인생 타임라인) + 시기별 배경 입자 + 이벤트 장면 배너 + 능력치 바/숫자 애니메이션 + 변화량 팝업 + 성공/실패 반응 연출','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
+const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 S·A·B·C·D 5단계(상위 3% / 7% / 20% / 35% / 35%) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','시스템① 운명의 게이지: 도전할 때마다 바늘이 움직여 성공/실패가 갈리는 연출','시스템② 행운 게이지(천장): 실패가 쌓일수록 다음 도전 성공률 최대 +25%','시스템③ 아이템: 행운의 부적·영양제·되감기 티켓 (이벤트에서 획득, 도전 전에 사용)','시스템④ 연속 성공 콤보: 불꽃 애니메이션 + 최고 콤보 점수 보너스','시스템⑤ 컨페티·도장 쾅·점수 카운트업 연출(대성공·A/B 인증)','시스템⑥ 인생 그래프: 재산·행복 추이가 애니메이션으로 그려짐','시스템⑦ 동창회 순위: 가상 동창 5명과 재산 비교, 실시간 순위·결과 막대 그래프','시스템⑧ 실시간 별명: 상태에 따라 별명이 바뀌고 팝업(백수 재민, 호구 재민, 천재 재민 등)','시스템⑨ 연타 미니게임: 4초 연타로 성공률 최대 +15%','시스템⑩ 시기별 배경 연출 + 인생 하이라이트 리플레이(타임라인 애니메이션 재생)','찬호 시리즈 4종: 미역국에 꿀떡 · 사물함 스티로폼 가루 · 남은 음식 몰아주기 · 재민이 메뉴는 절대 안 시키기','회기역 자판기 커피 사건 3부작(진호·찬호·경연·세민·범수 전원 등장: 고등학교 졸업앨범 촬영 → 뭘 내도 100% 지는 가위바위보 → 자판기 앞 30초 → "커피는?") + 별명 "회기역 커피 재민"','거제도 가는 지하철에서 "비닐봉지 있는 사람 있어요?!"를 외치는 이벤트(친구 다섯 명 전원 외면) + 별명 "비닐봉지 재민"','선재도 여행 시리즈: 끄래야 끌 수 없는 "재민!" 음성 알람 → 이튿날 밤 택시에서 또 비닐봉지','PC방 상가 화장실 사건: 문 위로 폰이 쑥 올라온다 → 범인은 사실 찬호','거제도 돌아오는 길: 터미널에서 찬호가 훌라에 빠져 보라색 뉴발란스를 놓고 오는 이벤트 + 버스 안 후속','거제도 여행 연쇄: 지하철 → 횟집 바가지 → 보일러(0~10을 분으로 착각해 이불·장판 태움) → 버스터미널','건강 이벤트: 족저근막염 · 치핵 절제 입원 · 치아 교정(철제/투명)','천하경에게 고백하는 이벤트(20세)','PC방 알바 "형 이름은 왜 잼민이에요?" 이벤트(초등학생 습격) + 별명 "잼민이 형 재민"','재민이가 진호의 주미 고백 작전을 돕는 이벤트','재민이가 찬호의 희연 고백 작전을 돕는 이벤트','학교에서 한승연과 싸우는 이벤트(필기 노트 국물 자국 사건, 말싸움)','학교에서 서예림과 매점 마지막 소시지빵을 두고 싸우는 이벤트','진호 병문안: 오른쪽 세 번째 갈비뼈를 제거한 진호에게 경완·찬호·재민이 베스킨라빈스를 들고 가는 이벤트','야자 시간에 엎드려 자던 경연이 방귀 뀌는 이벤트(재민이는 평소 행실 때문에 의심받을 확률 80%) + 별명 "방귀 용의자 재민"','고등학교 야구: 찬호가 일부러 공을 담장 밖으로 넘겨 범수에게 라면과 하와이안블루를 시키는 이벤트','20살 첫 운전: 사이드 브레이크를 안 내리고 헤드라이트도 안 켜고 달리는 이벤트 + 별명 "사이드 브레이크 재민"','자이노래방 알바 이벤트: 포천 한샘 기숙학원에서 재수하다 도망친 진호가 돈을 빌려 달라고 찾아옴 + 별명 "자이노래방 알바 재민"','가끔 찬호가 전화해서 베스킨라빈스 하프갤런을 사 달라고 하는 이벤트(거절해도 높은 확률로 사 주게 됨, 반복) + 별명 "찬호의 베스킨 은행 재민"','재민이 음성 녹음: 이벤트 중 가끔 재생, "끌 수 없는 알람" 이벤트에서는 계속 반복(🔊 버튼으로 끌 수 있음)','찬호네 집에서 찬호의 반지를 몰래 가져가는 이벤트(들키지 않으려 숨기면 불리, 솔직하게 돌려주면 유리) + 별명 "반지 사건 재민"','시작 화면: 비치볼에 맞는 재민이(날아온 공에 퍽! 맞는 애니메이션, AI 이미지를 넣으면 자동 교체) + AI 장면 이미지 자동 연결 구조(직업·나이·이벤트·엔딩별)','그래픽 업그레이드: 움직이는 로비(밤하늘·흐르는 양주 스카이라인·걸어 다니는 재민이·떠다니는 사진·흐르는 인생 타임라인) + 시기별 배경 입자 + 이벤트 장면 배너 + 능력치 바/숫자 애니메이션 + 변화량 팝업 + 성공/실패 반응 연출','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)'];
 function info(){
   $('#main').innerHTML=`<div class="card"><h2>✨ 추가된 재미 요소 ${FEATURES.length}가지</h2><ol style="padding-left:18px;font-size:14px">${FEATURES.map(f=>`<li>${f}</li>`).join('')}</ol></div><button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW='title';render()};
@@ -1825,7 +1863,7 @@ function title(){
   $('#main').innerHTML=`<div class="lobby">
    <div class="sky"><div class="stars"></div><div class="moon"></div><span class="cloud" style="top:26px;animation-duration:34s">☁️</span><span class="cloud" style="top:76px;animation-duration:50s;animation-delay:-22s;font-size:26px">☁️</span></div>
    <div class="skyline">${skylineSVG()}</div>
-   <div class="lobby-in"><div class="orbit">${ph}</div><h1 class="logo">${logo}</h1>
+   <div class="lobby-in"><div class="hit-hero${SCN.lobby_beachball?' has-img':''}"><div class="hh-wrap"><img class="hh-img" src="${SCN.lobby_beachball||PH.face}" width="150" height="150" alt="비치볼에 맞는 재민"><div class="bball"></div><div class="hh-pow">퍽!</div><div class="hh-stars"><span>✨</span><span>⭐</span><span>💫</span></div></div></div><h1 class="logo">${logo}</h1>
     <p class="sub">📍 경기도 양주시 · 7살 재민이의 선택이 80살의 인생을 만든다</p>
     <div class="tl-strip"><div class="tl-in">${strip+strip}</div></div></div>
    <div class="ground"><div class="walker"><div class="say"><span>한 판만 더!</span><span>오늘은 S 가즈아</span><span>찬호야 신발!</span><span>하드 모드 실화냐</span></div><img src="${PH.face}" width="46" height="46" alt="재민"><div class="legs"><i></i><i></i></div></div></div>

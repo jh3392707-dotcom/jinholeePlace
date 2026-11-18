@@ -1,0 +1,1477 @@
+[
+ {
+  "key": "lobby_beachball",
+  "type": "lobby",
+  "priority": 1,
+  "title": "시작 화면: 비치볼에 맞는 재민",
+  "hint": "야외에서 날아온 비치볼에 머리를 맞아 놀란 재민, 상반신 중심, 정사각형"
+ },
+ {
+  "key": "age_child",
+  "type": "age",
+  "priority": 1,
+  "title": "7~12세 어린 시절 재민",
+  "hint": "7~12세 어린 시절 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "age_teen",
+  "type": "age",
+  "priority": 1,
+  "title": "13~18세 청소년 재민 (교복)",
+  "hint": "13~18세 청소년 재민 (교복), 정면 상반신, 정사각형"
+ },
+ {
+  "key": "age_old",
+  "type": "age",
+  "priority": 1,
+  "title": "65세 이상 노년 재민",
+  "hint": "65세 이상 노년 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_doctor",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 의사",
+  "hint": "의사 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_lawyer",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 변호사",
+  "hint": "변호사 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_dev",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 개발자",
+  "hint": "개발자 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_big",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 대기업 직원",
+  "hint": "대기업 직원 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_civil",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 공무원",
+  "hint": "공무원 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_teacher",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 교사",
+  "hint": "교사 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_sme",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 중소기업 직원",
+  "hint": "중소기업 직원 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_police",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 경찰/소방관",
+  "hint": "경찰/소방관 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_chef",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 요리사",
+  "hint": "요리사 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_tuber",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 유튜버",
+  "hint": "유튜버 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_star",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 연예인",
+  "hint": "연예인 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_athlete",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 프로 운동선수",
+  "hint": "프로 운동선수 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_ceo",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 창업가",
+  "hint": "창업가 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_soldier",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 직업군인",
+  "hint": "직업군인 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "job_none",
+  "type": "job",
+  "priority": 1,
+  "title": "직업: 백수",
+  "hint": "백수 복장과 소품을 갖춘 재민, 정면 상반신, 정사각형"
+ },
+ {
+  "key": "end_S",
+  "type": "ending",
+  "priority": 1,
+  "title": "S등급 엔딩: 최고의 인생",
+  "hint": "S등급 엔딩: 최고의 인생 분위기의 재민(노년), 정사각형"
+ },
+ {
+  "key": "end_A",
+  "type": "ending",
+  "priority": 1,
+  "title": "A등급 엔딩: 성공한 인생",
+  "hint": "A등급 엔딩: 성공한 인생 분위기의 재민(노년), 정사각형"
+ },
+ {
+  "key": "end_B",
+  "type": "ending",
+  "priority": 1,
+  "title": "B등급 엔딩: 괜찮은 인생",
+  "hint": "B등급 엔딩: 괜찮은 인생 분위기의 재민(노년), 정사각형"
+ },
+ {
+  "key": "end_C",
+  "type": "ending",
+  "priority": 1,
+  "title": "C등급 엔딩: 평범한 인생",
+  "hint": "C등급 엔딩: 평범한 인생 분위기의 재민(노년), 정사각형"
+ },
+ {
+  "key": "end_D",
+  "type": "ending",
+  "priority": 1,
+  "title": "D등급 엔딩: 고달픈 인생",
+  "hint": "D등급 엔딩: 고달픈 인생 분위기의 재민(노년), 정사각형"
+ },
+ {
+  "key": "ev_enter",
+  "type": "event",
+  "title": "🎒 초등학교 입학",
+  "priority": 2,
+  "hint": "커다란 책가방을 멘 초등학교 입학식의 재민"
+ },
+ {
+  "key": "ev_homework",
+  "type": "event",
+  "title": "📝 숙제 vs 게임",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_class",
+  "type": "event",
+  "title": "🗳️ 반장 선거",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_piggy",
+  "type": "event",
+  "title": "🐷 용돈 사용법",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_bully",
+  "type": "event",
+  "title": "😠 교실의 그림자",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_academy",
+  "type": "event",
+  "title": "🏫 방과 후의 선택",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_phone",
+  "type": "event",
+  "title": "📱 첫 스마트폰",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_love1",
+  "type": "event",
+  "title": "💘 가슴이 두근두근",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_teen",
+  "type": "event",
+  "title": "🌪️ 사춘기",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_cheat",
+  "type": "event",
+  "title": "📄 시험 중 유혹",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_club",
+  "type": "event",
+  "title": "🎸 동아리 선택",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_gamer",
+  "type": "event",
+  "title": "🎮 새벽 랭크 게임",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_hs",
+  "type": "event",
+  "title": "🏫 고등학교 진학",
+  "priority": 2,
+  "hint": "새 교복을 입고 신설 고등학교 정문 앞에 선 재민"
+ },
+ {
+  "key": "ev_scol",
+  "type": "event",
+  "title": "🎓 수능 결과",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_suneung",
+  "type": "event",
+  "title": "📖 수능",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_campus",
+  "type": "event",
+  "title": "🍻 캠퍼스 라이프",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_army",
+  "type": "event",
+  "title": "🪖 입영통지서",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_boot",
+  "type": "event",
+  "title": "🏕️ 훈련소 5주",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_unit",
+  "type": "event",
+  "title": "🏠 자대 배치",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_armymid",
+  "type": "event",
+  "title": "📅 병장이 되어가는 시간",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_armyhard",
+  "type": "event",
+  "title": "🌧️ 군 생활이 너무 힘들다",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "정신건강 위기 장면: 이미지 제작하지 않기"
+ },
+ {
+  "key": "ev_crisis",
+  "type": "event",
+  "title": "🆘 위기의 순간",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "정신건강 위기 장면: 이미지 제작하지 않기"
+ },
+ {
+  "key": "ev_discharge",
+  "type": "event",
+  "title": "🕊️ 의가사 전역 심사",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "정신건강 위기 장면: 이미지 제작하지 않기"
+ },
+ {
+  "key": "ev_armyend2",
+  "type": "event",
+  "title": "🌱 천천히, 다시",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "이모지 배너 유지 권장"
+ },
+ {
+  "key": "ev_junior",
+  "type": "event",
+  "title": "😡 후임의 하극상",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_fight",
+  "type": "event",
+  "title": "🥊 몸싸움",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_detention",
+  "type": "event",
+  "title": "🔒 영창",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_armyend",
+  "type": "event",
+  "title": "🎖️ 전역이 다가온다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_armyend_b",
+  "type": "event",
+  "title": "🎖️ 다시, 전역을 향해",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_recovery",
+  "type": "event",
+  "title": "🌤️ 마음 돌보기",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "이모지 배너 유지 권장"
+ },
+ {
+  "key": "ev_jobpick",
+  "type": "event",
+  "title": "💼 취업 시즌",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_graduate",
+  "type": "event",
+  "title": "🎓 졸업과 취업 준비",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_negot",
+  "type": "event",
+  "title": "💰 연봉 협상",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_negot2",
+  "type": "event",
+  "title": "💼 연봉 협상 시즌",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_promo",
+  "type": "event",
+  "title": "📈 승진 심사",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_offer",
+  "type": "event",
+  "title": "📞 헤드헌터의 전화",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_boss",
+  "type": "event",
+  "title": "😤 갑질 상사",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_layoff",
+  "type": "event",
+  "title": "📢 구조조정 바람",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_sidejob",
+  "type": "event",
+  "title": "🛍️ 부업 도전",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_invest",
+  "type": "event",
+  "title": "📊 재테크 시작?",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_house",
+  "type": "event",
+  "title": "🏠 내 집 마련",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_lotto",
+  "type": "event",
+  "title": "🎟️ 로또 한 장",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_scam",
+  "type": "event",
+  "title": "☎️ 모르는 번호",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_loan",
+  "type": "event",
+  "title": "🤝 친구의 보증 부탁",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_bizinv",
+  "type": "event",
+  "title": "🧑‍💼 사촌의 사업 투자 권유",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_gamble",
+  "type": "event",
+  "title": "🃏 지인의 달콤한 제안",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_quitgamble",
+  "type": "event",
+  "title": "🆘 도박을 끊을 수 있을까",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_startup",
+  "type": "event",
+  "title": "💡 대박 아이디어",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_youtube",
+  "type": "event",
+  "title": "📹 채널 개설",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_politics",
+  "type": "event",
+  "title": "🏛️ 정계의 러브콜",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_meet",
+  "type": "event",
+  "title": "🥰 소개팅",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_propose",
+  "type": "event",
+  "title": "💍 프러포즈",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_baby",
+  "type": "event",
+  "title": "👶 아이가 찾아왔다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_kidschool",
+  "type": "event",
+  "title": "🧒 자녀의 입시와 사춘기",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_divorce",
+  "type": "event",
+  "title": "💔 위기의 부부",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_petadopt",
+  "type": "event",
+  "title": "🐾 눈이 마주친 아이",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_travel",
+  "type": "event",
+  "title": "✈️ 여행 가고 싶다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_hobby",
+  "type": "event",
+  "title": "🎯 취미 찾기",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_reunion",
+  "type": "event",
+  "title": "🥂 동창회",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_mentor",
+  "type": "event",
+  "title": "🧙 귀인을 만나다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_wallet",
+  "type": "event",
+  "title": "👛 길에서 주운 지갑",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_lonely",
+  "type": "event",
+  "title": "🌙 외로운 밤",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_checkup",
+  "type": "event",
+  "title": "🩺 건강검진 결과",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_disease",
+  "type": "event",
+  "title": "🏥 큰 병이 찾아왔다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_accident",
+  "type": "event",
+  "title": "🚗 교통사고",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_midlife",
+  "type": "event",
+  "title": "🌅 중년의 위기",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_parent",
+  "type": "event",
+  "title": "👵 부모님의 병환",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_inherit",
+  "type": "event",
+  "title": "📜 유산 상속",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_era",
+  "type": "event",
+  "title": "📰 경제 위기 뉴스",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_boom",
+  "type": "event",
+  "title": "🚀 대세상승장",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_grand",
+  "type": "event",
+  "title": "👶 손주 탄생",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_memoir",
+  "type": "event",
+  "title": "📖 자서전",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_retire",
+  "type": "event",
+  "title": "🎉 정년 퇴임",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_athlete_end",
+  "type": "event",
+  "title": "🏅 은퇴 기로",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_will",
+  "type": "event",
+  "title": "📜 마지막 선택",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_f_jinho",
+  "type": "event",
+  "title": "🪖 육군장교 이진호",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_f_jinho2",
+  "type": "event",
+  "title": "🎖️ 이진호의 부탁",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_f_chanho",
+  "type": "event",
+  "title": "🏥 병원 코디네이터 이찬호",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_f_chanho2",
+  "type": "event",
+  "title": "💌 이찬호의 소개팅 주선",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_f_kyung",
+  "type": "event",
+  "title": "💆 물리치료사 김경연",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_f_kyung2",
+  "type": "event",
+  "title": "🏃 김경연의 건강 캠페인",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_f_semin",
+  "type": "event",
+  "title": "🚗 자동차연구원 박세민",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_f_semin2",
+  "type": "event",
+  "title": "🚙 차 살까 말까",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_f_all",
+  "type": "event",
+  "title": "🍻 사총사 모임",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_cult",
+  "type": "event",
+  "title": "⛪ 길에서 만난 친절한 사람들",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "특정 단체 관련: 이모지 배너 유지 권장"
+ },
+ {
+  "key": "ev_cult2",
+  "type": "event",
+  "title": "🚪 빠져나올 수 있을까",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "특정 단체 관련: 이모지 배너 유지 권장"
+ },
+ {
+  "key": "ev_mlm",
+  "type": "event",
+  "title": "💼 암웨이 사업 설명회",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_mlm2",
+  "type": "event",
+  "title": "📦 방 한가득 쌓인 제품",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_busan",
+  "type": "event",
+  "title": "🌊 여자친구를 따라 부산으로",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_claw",
+  "type": "event",
+  "title": "🧸 인형뽑기 5만 원",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_karaoke",
+  "type": "event",
+  "title": "🎤 코인노래방 100점 도전",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_ufo",
+  "type": "event",
+  "title": "🛸 한밤의 UFO",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_fortune",
+  "type": "event",
+  "title": "🔮 용한 점집",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_chicken",
+  "type": "event",
+  "title": "🍗 치킨집 창업 권유",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_stray",
+  "type": "event",
+  "title": "🐈 길고양이의 간택",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_elevator",
+  "type": "event",
+  "title": "🛗 엘리베이터 단둘이",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_gym",
+  "type": "event",
+  "title": "🏋️ 헬스장 1년권",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_yj_commute",
+  "type": "event",
+  "title": "🚇 덕정역 출퇴근 전쟁",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_yj_flower",
+  "type": "event",
+  "title": "🌸 나리공원 천일홍",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_yj_mountain",
+  "type": "event",
+  "title": "⛰️ 불곡산·감악산",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_yj_festival",
+  "type": "event",
+  "title": "🎭 양주별산대놀이",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_yj_jangheung",
+  "type": "event",
+  "title": "🏞️ 장흥 드라이브",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_yj_newtown",
+  "type": "event",
+  "title": "🏙️ 옥정·회천 신도시",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_treat",
+  "type": "event",
+  "title": "🍦 기분 좋은 날, 쏜다!",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_pepper",
+  "type": "event",
+  "title": "🫑 가방 속의 비밀",
+  "priority": 2,
+  "hint": "현관에서 가방을 열자 오이고추가 쏟아져 나와 당황한 재민"
+ },
+ {
+  "key": "ev_sausage",
+  "type": "event",
+  "title": "🌭 소시지 투척 사건",
+  "priority": 2,
+  "hint": "교실에서 친구가 던진 소시지가 천장에 맞고 얼굴로 떨어진 재민"
+ },
+ {
+  "key": "ev_egg",
+  "type": "event",
+  "title": "🥚 날달걀 세례",
+  "priority": 2,
+  "hint": "생일빵으로 날달걀이 머리에서 깨져 노른자가 흘러내리는 재민"
+ },
+ {
+  "key": "ev_pension",
+  "type": "event",
+  "title": "🏖️ 펜션 비치발리볼",
+  "priority": 2,
+  "hint": "펜션 마당에서 비치발리볼 공에 머리를 맞아 놀란 재민"
+ },
+ {
+  "key": "ev_cupnoodle",
+  "type": "event",
+  "title": "🍜 컵라면 대참사",
+  "priority": 2,
+  "hint": "컵라면 국물을 쏟아 화들짝 놀란 재민 (부상 묘사 없이 놀란 표정 위주)"
+ },
+ {
+  "key": "ev_chickenfry",
+  "type": "event",
+  "title": "🍗 치킨집 알바 대참사",
+  "priority": 2,
+  "hint": "치킨집 주방에서 앞치마를 입고 튀김기 앞에서 조심스럽게 일하는 재민"
+ },
+ {
+  "key": "ev_beom",
+  "type": "event",
+  "title": "🥊 전범수와의 한판",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_fart",
+  "type": "event",
+  "title": "💨 수업 시간의 대형 사고",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_crush_stare",
+  "type": "event",
+  "title": "👀 눈이 마주쳤다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_bus_sleep",
+  "type": "event",
+  "title": "🚌 종점까지 가버렸다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_yj_market",
+  "type": "event",
+  "title": "🥟 양주 시장 먹거리",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_delivery",
+  "type": "event",
+  "title": "🍕 배달이 잘못 왔다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_lostphone",
+  "type": "event",
+  "title": "📱 폰이 사라졌다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_scout",
+  "type": "event",
+  "title": "🎬 길거리 캐스팅",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_wedding",
+  "type": "event",
+  "title": "💒 친구 결혼식",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_camping",
+  "type": "event",
+  "title": "⛺ 캠핑 대참사",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_danggeun",
+  "type": "event",
+  "title": "🛒 당근마켓 거래",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_diet",
+  "type": "event",
+  "title": "🥗 다이어트 선언",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_airfryer",
+  "type": "event",
+  "title": "🍟 에어프라이어 파티",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_phonebill",
+  "type": "event",
+  "title": "💸 요금 폭탄",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_bugs",
+  "type": "event",
+  "title": "🪳 불청객 출몰",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_parentday",
+  "type": "event",
+  "title": "🌹 어버이날",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_streamfail",
+  "type": "event",
+  "title": "🎥 방송 사고",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_lottodream",
+  "type": "event",
+  "title": "🐷 돼지꿈을 꿨다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_ghost",
+  "type": "event",
+  "title": "👻 한밤중 이상한 소리",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_dance",
+  "type": "event",
+  "title": "🕺 댄스 챌린지",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_lend",
+  "type": "event",
+  "title": "💸 친구의 급한 부탁",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_lend2",
+  "type": "event",
+  "title": "📞 돈 받으러 가는 길",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_oversleep",
+  "type": "event",
+  "title": "⏰ 중요한 날 늦잠",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_rain",
+  "type": "event",
+  "title": "☔ 갑자기 쏟아진 소나기",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_subway",
+  "type": "event",
+  "title": "🚇 마지막 한 자리",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_gacha",
+  "type": "event",
+  "title": "🎰 게임 가챠",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_noise",
+  "type": "event",
+  "title": "🔊 층간소음 전쟁",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_rps",
+  "type": "event",
+  "title": "✊ 가위바위보 내기",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_foreigner",
+  "type": "event",
+  "title": "🌐 길 묻는 외국인",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_seat_belt",
+  "type": "event",
+  "title": "🍺 회식 자리 폭탄주",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_flat_tire",
+  "type": "event",
+  "title": "🛞 고속도로 위 펑크",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_jobretry",
+  "type": "event",
+  "title": "📄 다시 취업 도전",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_pt_baby",
+  "type": "event",
+  "title": "👶 설이 베이비시터 단기 알바",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_pt_conv",
+  "type": "event",
+  "title": "🏪 편의점 야간 알바",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_pt_cafe",
+  "type": "event",
+  "title": "☕ 카페 알바",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_pt_cargo",
+  "type": "event",
+  "title": "📦 택배 상하차",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_pt_tutor",
+  "type": "event",
+  "title": "📚 과외 알바",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_pt_rider",
+  "type": "event",
+  "title": "🛵 배달 라이더",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_hemo",
+  "type": "event",
+  "title": "😣 말 못 할 고통",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "민감한 건강 주제: 이모지 배너 유지 권장"
+ },
+ {
+  "key": "ev_hemo2",
+  "type": "event",
+  "title": "😖 방치의 대가",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "민감한 건강 주제: 이모지 배너 유지 권장"
+ },
+ {
+  "key": "ev_ch_miyeok",
+  "type": "event",
+  "title": "🍲 찬호표 특제 미역국",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_ch_locker",
+  "type": "event",
+  "title": "🧊 사물함에 눈이 내렸다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_ch_leftover",
+  "type": "event",
+  "title": "🍗 찬호의 잔반 처리반",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_ch_menu",
+  "type": "event",
+  "title": "🍽️ 오늘의 메뉴는 정해져 있다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_hg_rps",
+  "type": "event",
+  "title": "🚇 고등학교 졸업앨범 촬영 가는 길",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_hg_vending",
+  "type": "event",
+  "title": "☕ 회기역 승강장의 자판기",
+  "priority": 2,
+  "hint": "지하철 승강장 자판기 앞에서 동전을 들고 허둥대는 재민"
+ },
+ {
+  "key": "ev_hg_late",
+  "type": "event",
+  "title": "😅 \"커피는?\"",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_geoje_bag",
+  "type": "event",
+  "title": "🚇 거제도 가는 길, 지하철 안에서",
+  "priority": 2,
+  "hint": "지하철 안에서 속이 안 좋아 얼굴이 하얘져 비닐봉지를 든 재민"
+ },
+ {
+  "key": "ev_sj_alarm",
+  "type": "event",
+  "title": "⏰ 선재도의 밤, 끌 수 없는 알람",
+  "priority": 2,
+  "hint": "어두운 방에서 폰에서 울리는 알람을 끄려 애쓰는 재민"
+ },
+ {
+  "key": "ev_sj_taxi",
+  "type": "event",
+  "title": "🚕 선재도 이튿날 밤, 택시 안",
+  "priority": 2,
+  "hint": "택시 뒷좌석에서 창밖을 보며 속이 안 좋은 재민"
+ },
+ {
+  "key": "ev_pc_toilet",
+  "type": "event",
+  "title": "🚽 PC방 상가 화장실의 비명",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "화장실 장면은 이미지 제작 비권장(이모지 배너 유지)"
+ },
+ {
+  "key": "ev_pc_reveal",
+  "type": "event",
+  "title": "📱 단톡방에 올라온 사진",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "사진 촬영 사건: 이모지 배너 유지 권장"
+ },
+ {
+  "key": "ev_geoje_terminal",
+  "type": "event",
+  "title": "🃏 거제도 버스터미널, 훌라의 늪",
+  "priority": 2,
+  "hint": "버스터미널 대합실에서 짐을 챙기며 뒤를 돌아보는 재민"
+ },
+ {
+  "key": "ev_geoje_shoes",
+  "type": "event",
+  "title": "👟 보라색 뉴발란스는 어디에",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_geoje_hwe",
+  "type": "event",
+  "title": "🐟 거제도 횟집의 계산서",
+  "priority": 2,
+  "hint": "횟집 계산서를 보고 얼어붙은 재민"
+ },
+ {
+  "key": "ev_geoje_boiler",
+  "type": "event",
+  "title": "🔥 보일러의 습격",
+  "priority": 2,
+  "hint": "숙소 방에서 눌은 이불과 연기를 보고 당황한 재민"
+ },
+ {
+  "key": "ev_plantar",
+  "type": "event",
+  "title": "🦶 아침의 첫 발걸음",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_hemo_op",
+  "type": "event",
+  "title": "🏥 치핵 절제술 입원",
+  "priority": 9,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)",
+  "skip": "민감한 건강 주제: 이모지 배너 유지 권장"
+ },
+ {
+  "key": "ev_braces",
+  "type": "event",
+  "title": "🦷 치아 교정을 시작할까",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_confess_hk",
+  "type": "event",
+  "title": "💌 천하경에게 용기를 내서",
+  "priority": 2,
+  "hint": "꽃다발 대신 손편지를 들고 떨리는 표정의 재민"
+ },
+ {
+  "key": "ev_pc_jammin",
+  "type": "event",
+  "title": "🖥️ PC방 알바, \"잼민이\"의 습격",
+  "priority": 2,
+  "hint": "PC방 카운터에서 초등학생들에게 둘러싸인 재민"
+ },
+ {
+  "key": "ev_jh_jumi",
+  "type": "event",
+  "title": "🪖 진호의 고백 작전",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_ch_heeyeon",
+  "type": "event",
+  "title": "💘 찬호의 고백 작전",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_seunghyun_fight",
+  "type": "event",
+  "title": "🏫 복도에서 마주친 한승연",
+  "priority": 2,
+  "hint": "학교 복도에서 노트를 든 친구와 마주 선 재민"
+ },
+ {
+  "key": "ev_seoyelim_fight",
+  "type": "event",
+  "title": "🥐 매점 마지막 소시지빵",
+  "priority": 2,
+  "hint": "매점에서 소시지빵을 두고 대치하는 재민"
+ },
+ {
+  "key": "ev_jinho_hospital",
+  "type": "event",
+  "title": "🏥 진호의 병실",
+  "priority": 2,
+  "hint": "병실 침대 옆에서 베스킨라빈스 봉지를 든 재민"
+ },
+ {
+  "key": "ev_gy_yaja",
+  "type": "event",
+  "title": "📚 야자 시간의 정적",
+  "priority": 2,
+  "hint": "야간 자율학습 교실에서 책을 펴고 모른 척하는 재민"
+ },
+ {
+  "key": "ev_bs_baseball",
+  "type": "event",
+  "title": "⚾ 운동장 야구, 담장 밖으로 사라진 공",
+  "priority": 2,
+  "hint": "운동장 야구에서 담장 밖을 바라보는 재민"
+ },
+ {
+  "key": "ev_drive_mishap",
+  "type": "event",
+  "title": "🚗 20살의 첫 운전",
+  "priority": 2,
+  "hint": "첫 운전, 계기판 경고등과 연기 앞에서 당황한 재민 (운전석, 안전하게 정차한 상황)"
+ },
+ {
+  "key": "ev_pt_jayu_karaoke",
+  "type": "event",
+  "title": "🎤 자이노래방 알바의 밤, 낯익은 손님",
+  "priority": 2,
+  "hint": "노래방 카운터에서 알바 중인 재민"
+ },
+ {
+  "key": "ev_ch_baskin",
+  "type": "event",
+  "title": "📞 찬호의 전화, 베스킨라빈스",
+  "priority": 2,
+  "hint": "휴대폰 통화를 들고 한숨 쉬며 베스킨라빈스 매장 앞에 선 재민"
+ },
+ {
+  "key": "ev_ch_ring",
+  "type": "event",
+  "title": "💍 찬호네 집, 반짝이는 것",
+  "priority": 2,
+  "hint": "친구 집 거실에서 반짝이는 물건 앞에서 망설이는 재민"
+ },
+ {
+  "key": "ev_quiet",
+  "type": "event",
+  "title": "🍃 평범한 한 해",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_fire_sign",
+  "type": "event",
+  "title": "⚠️ 불길한 조짐",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ },
+ {
+  "key": "ev_bust",
+  "type": "event",
+  "title": "💥 결국 짤렸다",
+  "priority": 3,
+  "hint": "이 장면에 맞는 재민의 표정과 배경 (이벤트 제목 참고)"
+ }
+]
