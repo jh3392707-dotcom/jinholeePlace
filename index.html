@@ -2235,7 +2235,7 @@ function gaugeAnim(p,r,ok,cb){
   const pick=(arr,u)=>{const tot=arr.reduce((t,x)=>t+x.w,0);let acc=0;const target=u*tot;for(const x of arr){if(target<=acc+x.w)return x.x+(target-acc);acc+=x.w}const l=arr[arr.length-1];return l.x+l.w};
   const fin=ok?pick(gs,Math.min(.999,r/Math.max(p,1e-9))):pick(rs,Math.min(.999,(r-p)/Math.max(1-p,1e-9)));
   const o=document.createElement('div');o.id='gauge';
-  o.innerHTML=`<div class="gbox"><div class="gt">🎲 운명의 게이지</div><div class="gbar">${segs.map(x=>`<i class="gseg ${x.c}" style="left:${(x.x*100).toFixed(3)}%;width:${Math.max(.5,x.w*100).toFixed(3)}%"></i>`).join('')}<b class="gn"></b></div><div class="gs">초록 칸에 멈추면 성공! (초록 칸을 모두 합친 성공 구간 ${Math.max(1,Math.round(p*100))}%)</div></div>`;
+  o.innerHTML=`<div class="gbox"><div class="gt">🎲 운명의 게이지</div><div class="gbar">${segs.map(x=>`<i class="gseg ${x.c}" style="left:${(x.x*100).toFixed(3)}%;width:${Math.max(.5,x.w*100).toFixed(3)}%"></i>`).join('')}<b class="gn"></b></div><div class="gs">초록 칸에 멈추면 성공!</div></div>`;
   document.body.appendChild(o);
   const n=o.querySelector('.gn');n.style.left='0%';void n.offsetWidth;
   const hop=(pct,ms,ease)=>{n.style.transition=`left ${ms}ms ${ease||'linear'}`;n.style.left=pct+'%'};
