@@ -2423,7 +2423,7 @@ function gaugeAnim(p,r,ok,cb){
   const endAt=(sw.length*240+1200)/SP;
   setTimeout(()=>sfx('glock'),endAt-80);
   setTimeout(()=>{const g=o.querySelector('.gs');if(g)g.innerHTML=ok?'<b style="color:var(--ok);font-size:26px">✅ 성공!!</b>':'<b style="color:var(--bad);font-size:26px">❌ 실패...</b>';sfx(ok?'gwin':'glose');o.classList.add(ok?'win':'lose')},endAt);
-  setTimeout(()=>{o.remove();cb()},endAt+400);
+  setTimeout(()=>{o.remove();cb()},endAt+800);
 }
 /* 9) 연타 미니게임: 4초 동안 연타해서 성공률 최대 +15% */
 /* ===== 미니게임: 물건 피하기 ===== */
