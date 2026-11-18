@@ -2612,7 +2612,7 @@ function startEscape(done){
     extra:'<div class="fgauge"><i id="fgi"></i><span id="fgt">문까지 0%</span></div>'});
   const {g,W,H,cv,el}=sh,spr=mgSprite('casual','face');
   let beats=[],nextB=1.2,grp=4,rest=0,bpm=118,t=0,prog=0,strikes=0,run=false,raf=0,last=0,over=false,sayT=0,chopA=0,flash=0,pop=[];
-  const sched=()=>{while(nextB<t+2.4){const bi=60/bpm;if(rest>0){rest--;nextB+=bi;if(rest===0){grp=ri(3,6);bpm=Math.min(158,bpm+ri(-6,10))}continue}beats.push({t:nextB,hit:false});nextB+=bi;grp--;if(grp<=0)rest=ri(2,4)}};
+  const sched=()=>{while(nextB<t+2.4){const bi=60/bpm;if(rest>0){rest--;nextB+=bi;if(rest===0){grp=ri(3,6);bpm=Math.min(158,bpm+ri(-6,10))}continue}beats.push({t:nextB,hit:false});nextB+=bi*(.74+Math.random()*.52);grp--;if(grp<=0)rest=ri(2,4)}};
   const tap=()=>{if(!run||sayT>0)return;
     let b=null,bd=1;for(const x of beats){if(x.hit)continue;const d=Math.abs(x.t-t);if(d<bd){bd=d;b=x}}
     if(b&&bd<WIN){b.hit=true;prog=Math.min(100,prog+4.3);sfx('chop');pop.push({x:HX,y:410,a:1,txt:bd<.05?'PERFECT':'GOOD'})}
