@@ -320,6 +320,104 @@ td,th{border-color:#e0c690}
 .hh-img{border-color:#fff;box-shadow:0 0 0 4px var(--wood),0 10px 0 #0003}
 .pc{border-color:#fff}
 .say span{border:2px solid var(--wood)}
+
+/* ===== 캐릭터 만들기(메이플 캐릭터 생성 화면풍) ===== */
+.mc{position:relative;margin:10px 0;border:6px solid #6b3f17;border-radius:18px;background:#f6e6b8;padding:10px;box-shadow:inset 0 0 0 3px #d8b36a,0 6px 0 #0003;overflow:hidden}
+.mc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:linear-gradient(90deg,#00000022,transparent);pointer-events:none}
+.mc-tabs{display:flex;gap:6px;margin-bottom:8px}
+.mc-tab{flex:1;background:linear-gradient(#8a5a28,#5e3a14);border:2px solid #3a220a;border-radius:8px;color:#ffe9b0;padding:3px 10px;font-size:15px;line-height:1.15;box-shadow:inset 0 1px 0 #ffffff44}
+.mc-tab small,.mc-tab b{display:block;font-size:10px;color:#e6c98a;font-family:system-ui,sans-serif}
+.mc-tab b{font-size:14px;color:#fff;font-family:inherit}
+.mc-scene{position:relative;height:400px;border:3px solid #3a220a;border-radius:10px;overflow:hidden;background:linear-gradient(#3fa0ff 0%,#8dd2ff 60%,#d7f2ff 100%)}
+.mcc{position:absolute;font-size:44px;opacity:.95;animation:cloudm linear infinite}.mcc.c1{top:14px;animation-duration:40s}.mcc.c2{top:80px;animation-duration:60s;animation-delay:-25s;font-size:34px}
+.mc-mush{position:absolute;right:6%;top:6px;width:150px;height:150px}
+.mc-mush .cap{position:absolute;left:0;top:0;width:150px;height:62px;border-radius:75px 75px 12px 12px/62px 62px 12px 12px;background:radial-gradient(circle at 25% 40%,#fff 0 7px,transparent 8px),radial-gradient(circle at 60% 30%,#fff 0 9px,transparent 10px),radial-gradient(circle at 82% 50%,#fff 0 6px,transparent 7px),linear-gradient(#ffb04a,#f07a00);border:3px solid #9a4c00;box-shadow:inset 0 -8px 0 #00000018}
+.mc-mush .stem{position:absolute;left:52px;top:58px;width:46px;height:120px;border-radius:8px;background:linear-gradient(90deg,#f0d9a0,#fff1c8,#e5c987);border:3px solid #9a6a2a}
+.mc-plat{position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(#7bd44a 0 14px,#8a5a28 14px);border-top:4px solid #3f8a22}
+.mc-plat::after{content:"";position:absolute;left:0;right:0;top:14px;bottom:0;background:repeating-linear-gradient(90deg,#0000 0 28px,#00000022 28px 30px)}
+.mc-char{position:absolute;right:12px;bottom:96px;width:96px;z-index:3}
+.mc-char img{width:96px;height:96px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 3px #6b3f17}
+.mc-shadow{position:absolute;left:20px;top:22px;width:84px;height:12px;border-radius:50%;background:#0004;filter:blur(2px)}
+.mc-scroll{position:absolute;left:10px;top:14px;width:56%;z-index:2;background:linear-gradient(90deg,#e8d9a8,#fdf3cf 12%,#fdf3cf 88%,#e8d9a8);border:2px solid #8a6a38;border-radius:6px;padding:8px 10px;color:#3d2a12;box-shadow:0 4px 0 #0003}
+.mc-scroll .r{display:flex;justify-content:space-between;gap:8px;font-size:13px;border-bottom:1px dotted #b79a5c;padding:2px 0;line-height:1.25}
+.mc-scroll .r span{color:#8a5a28;white-space:nowrap}.mc-scroll .r b{font-weight:400;text-align:right;font-family:"Noto Sans KR",sans-serif;font-size:12px}
+.mc-cands{position:absolute;left:12px;bottom:34px;z-index:3;display:flex;gap:6px}
+.mc-cands button{width:52px;padding:2px 0;background:linear-gradient(#fff,#ffe9a8);border:2px solid #6b3f17;border-radius:8px;font-size:22px;line-height:1.1;cursor:pointer;box-shadow:0 2px 0 #6b3f17;font-family:inherit}
+.mc-cands button small{display:block;font-size:10px;color:#6a4720}
+.mc-cands button.on{background:linear-gradient(#ffd24a,#ff9f1c);transform:translateY(-4px)}
+.mc-cands button.good{outline:2px solid #4fc22b}
+.mc-sign{margin-top:10px;background:linear-gradient(#a8662a,#7a4a1c);border:3px solid #3a220a;border-radius:10px;padding:8px;box-shadow:inset 0 0 0 2px #d99a52}
+.mc-board{background:#5b3512;border:2px solid #2a1706;border-radius:6px;padding:6px 8px}
+.mc-nl{display:flex;justify-content:space-between;align-items:center;color:#ffe9b0;font-size:14px;margin-bottom:4px}
+.mc-chk{background:linear-gradient(#ffd24a,#d98200);border:2px solid #3a220a;border-radius:6px;color:#fff;font-size:11px;padding:1px 8px;cursor:pointer;font-family:inherit}
+.mc-board input{background:#2e1a07;color:#ffe9b0;border:2px solid #8a5a28;font-size:17px;padding:6px 8px}
+.mc-stats{margin-top:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mc-stats button{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(#fff6d8,#f1dca0);border:2px solid #3a220a;border-radius:8px;padding:4px 10px;font-size:15px;color:#4a2f14;cursor:pointer;font-family:inherit}
+.mc-stats button b{font-weight:400;color:#c25a00}
+.mc-stats button.on{background:linear-gradient(#ffe27a,#ffb100);box-shadow:0 0 0 2px #fff6}
+.mc-stats .mc-gen{grid-column:span 1;display:block;text-align:center;background:linear-gradient(#ffb04a,#e56a00);color:#fff;text-shadow:1px 1px 0 #8a3b00;font-size:13px;line-height:1.1}
+.mc-gen small{display:block;font-size:10px;text-shadow:none}
+.mc-gen:disabled{filter:grayscale(.8);cursor:not-allowed}
+.mc-note{margin-top:6px;font-size:12px;color:#ffe9b0;font-family:"Noto Sans KR",sans-serif}
+.mc-rb{display:block;margin-top:6px;font-size:12px;color:#ffe9b0;font-family:"Noto Sans KR",sans-serif}
+.mc-btns{position:relative;z-index:2;display:flex;gap:8px;margin-top:10px}
+.mc-btns button{flex:1;font-size:22px;padding:8px 0;border:3px solid #3a220a;border-radius:10px;cursor:pointer;font-family:inherit;box-shadow:0 4px 0 #3a220a,inset 0 2px 0 #fff6;letter-spacing:6px}
+.mc-btns button:active{transform:translateY(3px);box-shadow:0 1px 0 #3a220a}
+.mc-ok{background:linear-gradient(#ffd24a,#ff8a00);color:#fff;text-shadow:1px 1px 0 #8a4b00,-1px -1px 0 #8a4b00}
+.mc-no{background:linear-gradient(#e8d9b8,#b79a6a);color:#4a2f14}
+.mc-leaf{position:absolute;right:-8px;bottom:-22px;z-index:0;font-size:60px;transform:rotate(-20deg);pointer-events:none;filter:drop-shadow(0 4px 0 #0003)}
+
+/* ===== 시작 화면(메이플 로그인 화면풍) ===== */
+.lg{position:relative;margin:10px 0;border:6px solid #6b3f17;border-radius:18px;background:#f6e6b8;padding:8px 8px 6px;box-shadow:inset 0 0 0 3px #d8b36a,0 6px 0 #0003;overflow:hidden}
+.lg-top{display:flex;justify-content:space-between;font-size:10px;color:#6a4720;font-family:system-ui,sans-serif;padding:0 6px 4px}
+.lg-scene{position:relative;height:640px;border:3px solid #3a220a;border-radius:10px;overflow:hidden;isolation:isolate;background:linear-gradient(#a8e8a0,#4fa84a 35%,#2f7d3a 75%,#1f5a2a)}
+.lg-rays{position:absolute;inset:0;z-index:0;background:repeating-linear-gradient(115deg,#ffffff00 0 40px,#ffffff30 40px 70px,#ffffff00 70px 120px);animation:rays 9s ease-in-out infinite alternate;pointer-events:none}
+@keyframes rays{from{opacity:.35;transform:translateX(-10px)}to{opacity:.9;transform:translateX(14px)}}
+.tk{position:absolute;top:-10px;bottom:90px;z-index:0;background:repeating-linear-gradient(90deg,#0000 0 9px,#00000018 9px 11px),linear-gradient(90deg,#6b4a22,#9a6e36 40%,#7a5428);border-radius:10px 10px 4px 4px;box-shadow:inset -8px 0 0 #0003}
+.tk.t1{left:-22px;width:92px;transform:rotate(-2deg)}.tk.t2{left:96px;width:54px;opacity:.85}.tk.t3{right:-30px;width:86px;transform:rotate(3deg)}
+.lg-canopy{position:absolute;left:-20px;right:-20px;top:-30px;height:150px;z-index:0;background:radial-gradient(90px 60px at 10% 40%,#1e7a2e,transparent 70%),radial-gradient(110px 70px at 40% 20%,#2e9a3a,transparent 70%),radial-gradient(100px 60px at 75% 35%,#1e7a2e,transparent 70%),radial-gradient(90px 60px at 100% 10%,#2e9a3a,transparent 70%)}
+.lg-bigleaf{position:absolute;right:-4px;top:6px;z-index:1;font-size:120px;line-height:1;transform:rotate(14deg);filter:drop-shadow(0 6px 0 #0004) hue-rotate(-8deg) saturate(1.3);animation:sway 5s ease-in-out infinite;pointer-events:none}
+@keyframes sway{50%{transform:rotate(4deg) translateY(6px)}}
+.lg-logo{position:relative;z-index:2;margin:18px 0 0 14px;text-align:left;font-size:44px;line-height:1.05;color:#fff;text-shadow:-3px -3px 0 #3a5a1a,3px -3px 0 #3a5a1a,-3px 3px 0 #3a5a1a,3px 3px 0 #3a5a1a,0 6px 0 #2a4010;letter-spacing:2px;max-width:70%}
+.lg-logo small{display:block;margin-top:6px;font-size:13px;letter-spacing:1px;text-shadow:-1px -1px 0 #3a5a1a,1px 1px 0 #3a5a1a,1px -1px 0 #3a5a1a,-1px 1px 0 #3a5a1a}
+.lg-hero{position:absolute;z-index:2;left:0;right:0;top:170px}
+.lg-grass{position:absolute;left:0;right:0;bottom:0;height:200px;z-index:1;background:radial-gradient(120px 60px at 15% 0,#9be863 98%,transparent),radial-gradient(160px 70px at 55% 0,#86d84e 98%,transparent),radial-gradient(130px 60px at 95% 0,#9be863 98%,transparent),linear-gradient(transparent 30px,#5cbb34 30px,#3d9422)}
+.lg-mush{position:absolute;z-index:2;pointer-events:none}
+.lg-mush.m1{left:6px;bottom:230px;width:96px;height:96px;transform:scale(.8);transform-origin:left bottom}
+.lg-mush.m2{left:84px;bottom:224px;width:64px;height:70px;transform:scale(.7);transform-origin:left bottom;filter:hue-rotate(40deg)}
+.lg-mush .cap{position:absolute;left:0;top:0;width:96px;height:44px;border-radius:48px 48px 10px 10px/44px 44px 10px 10px;background:radial-gradient(circle at 25% 45%,#fff 0 6px,transparent 7px),radial-gradient(circle at 62% 30%,#fff 0 7px,transparent 8px),linear-gradient(#ffb04a,#f07a00);border:3px solid #9a4c00}
+.lg-mush .stem{position:absolute;left:30px;top:40px;width:36px;height:56px;border-radius:6px;background:linear-gradient(90deg,#f0d9a0,#fff1c8,#e5c987);border:3px solid #9a6a2a}
+.lg-sign{position:absolute;z-index:4;left:7%;right:7%;bottom:14px}
+.lg-board{background:linear-gradient(#b0702e,#7a4a1c);border:4px solid #3a220a;border-radius:10px;padding:8px;box-shadow:inset 0 0 0 2px #d99a52,0 6px 0 #0004}
+.lg-line{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#5b3512;border:2px solid #2a1706;border-radius:6px;padding:4px 10px;color:#ffe9b0;font-size:15px;margin-bottom:8px}
+.lg-line i{font-style:normal;font-size:11px;color:#d9b878;font-family:"Noto Sans KR",sans-serif}
+.lg-go{display:block;width:100%;font-family:inherit;font-size:26px;letter-spacing:4px;color:#fff;text-shadow:1px 1px 0 #8a4b00,-1px -1px 0 #8a4b00,1px -1px 0 #8a4b00,-1px 1px 0 #8a4b00;background:linear-gradient(#ffd24a,#ff8a00);border:3px solid #3a220a;border-radius:10px;padding:8px;cursor:pointer;box-shadow:0 4px 0 #3a220a,inset 0 2px 0 #fff8;animation:glowb 2.2s ease-in-out infinite}
+@keyframes glowb{50%{filter:brightness(1.12)}}
+.lg-go:active,.lg-cont:active,.lg-three button:active{transform:translateY(3px);box-shadow:none}
+.lg-cont{display:block;width:100%;margin-top:7px;font-family:inherit;font-size:16px;color:#4a2f14;background:linear-gradient(#fff,#ffe9a8);border:3px solid #3a220a;border-radius:10px;padding:6px;cursor:pointer;box-shadow:0 3px 0 #3a220a}
+.lg-three{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.lg-three button{font-family:inherit;font-size:14px;color:#ffe9b0;background:linear-gradient(#8a5a28,#5e3a14);border:3px solid #3a220a;border-radius:10px;padding:8px 2px;cursor:pointer;box-shadow:0 3px 0 #2a1706,inset 0 1px 0 #ffffff44}
+.lg-post{position:absolute;left:14%;top:100%;width:16px;height:60px;background:linear-gradient(90deg,#5e3a14,#8a5a28,#5e3a14);border:2px solid #3a220a}.lg-post.r{left:auto;right:14%}
+.lg-leaf{position:absolute;right:-18px;bottom:-44px;z-index:5;font-size:72px;transform:rotate(-24deg);pointer-events:none;filter:drop-shadow(0 4px 0 #0004)}
+.lg-foot{text-align:center;font-size:12px;color:#6a4720;padding:6px 4px 2px;font-family:"Noto Sans KR",sans-serif}.lg-foot span{font-size:10px;opacity:.8}
+.lg .hit-hero{margin-top:0}
+.lg .mons{z-index:3;bottom:216px}
+.lg-strip{margin-top:0}
+:root[data-theme=dark] .lg-scene{filter:brightness(.55) saturate(1.1)}
+
+/* 페이퍼돌 캐릭터 */
+.pdw{position:relative;flex:none;margin-top:12px;--jc:#ffd166}
+.pdx{position:relative;display:inline-block;filter:drop-shadow(0 4px 0 #0003)}
+.pd{position:relative;display:flex;flex-direction:column;align-items:center;animation:bob 2.4s ease-in-out infinite}
+.pdh{width:var(--hs);height:var(--hs);background-size:185%;background-position:50% 18%;background-repeat:no-repeat;background-color:#e8c9a0;border-radius:44% 44% 40% 40%;border:3px solid #fff;box-shadow:0 0 0 2.5px #3a220a;position:relative;z-index:2}
+.pd.old .pdh{filter:grayscale(.5) sepia(.15) brightness(1.05)}
+.pdb{display:block;margin-top:calc(var(--hs)*-.1);position:relative;z-index:1}
+.pdx .hat{position:absolute;top:-22px;left:50%;transform:translateX(-50%) rotate(-6deg);font-size:calc(var(--hs)*.42);z-index:3;filter:drop-shadow(0 2px 2px #0006)}
+.pdx .prop{position:absolute;right:-14px;bottom:4px;font-size:26px;z-index:3;background:#fff8;border:2px solid var(--jc);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center}
+.hh-wrap{height:auto}
+.hh-wrap .hhb{position:relative;display:block;margin:-18px auto 0;z-index:1;pointer-events:none}
+.mc-char .pd{animation:none}.mc-shadow{display:none}
+.card .hero{align-items:flex-end}
 </style>
 </head>
 <body>
@@ -399,7 +497,19 @@ const SFX={
   levelup:()=>{[523,659,784,1046,1318,1568].forEach((f,i)=>tone(f,.28,'triangle',.1,i*.07));tone(1046,.9,'sine',.08,.5);noise(.6,.05,.1,'highpass',6000,9000)},
   cheer:()=>{noise(1.2,.1,0,'bandpass',1500,2500)},
 };
-const sfx=n=>{if(!sndOn)return;try{(SFX[n]||SFX.tap)()}catch(e){}};
+/* 사용자 효과음 파일: assets/sfx/<이름>.mp3 (예: levelup.mp3)가 있으면 합성음 대신 재생, 없으면 합성음 */
+const SFXFILE={},SFX_SLOTS=new Set(['levelup']);
+function sfx(n){
+  if(!sndOn)return;
+  try{
+    if(SFXFILE[n]!==false&&!FAST&&SFX_SLOTS.has(n)){
+      let a=SFXFILE[n];
+      if(!a){a=new Audio('assets/sfx/'+n+'.mp3');a.preload='auto';a.addEventListener('error',()=>{SFXFILE[n]=false},{once:true});SFXFILE[n]=a}
+      if(a&&a!==false&&!a.error){a.currentTime=0;a.volume=.8;const pr=a.play();if(pr&&pr.catch)pr.catch(()=>{if(SFXFILE[n]===a&&a.error)SFXFILE[n]=false;(SFX[n]||SFX.tap)()});return}
+    }
+    (SFX[n]||SFX.tap)()
+  }catch(e){}
+}
 const sGood=()=>sfx('good'),sBad=()=>sfx('bad'),sTap=()=>sfx('tap');
 /* 이벤트 내용에 맞는 효과음 고르기 */
 function eventSfx(title,text,ok){
@@ -456,7 +566,7 @@ const BGMF={};
 const FILE={cur:null,au:null,key:null};
 const BGM_ALIAS={old:'senior',end:'senior',kid:'title'}; /* 파일이 없는 구간은 다른 곡을 이어서 사용 */
 function bgmFileFor(mode){ /* title: 시작·캐릭터 생성·7세 / school: 8세 입학 때 1회(6초) / 이후 teen·young·mid·senior(65세~, 결과 화면 포함) / clan: 클랜전 이벤트 */
-  if(mode==='kid'){if(S&&S.age>7)return null;return BGMF.title||BGMF.main||null}
+  if(mode==='kid')return BGMF.title||BGMF.main||null
   if(mode==='school')return null;
   return BGMF[mode]||BGMF[BGM_ALIAS[mode]]||BGMF.main||null}
 let schoolPlayed=false;
@@ -1351,7 +1461,14 @@ g('🎯 저격총을 잡고 에이스를 노린다',.3,[{soc:6,hap:8,chr:3,f:['c
 g('🛡️ 진호의 작전대로 정면 돌파한다',.35,[{soc:5,hap:6,int:2},'진호의 "지금이야!" 소리와 함께 여섯 명이 동시에 돌진했다. 상대 클랜은 당황했고 작전은 기막히게 들어맞았다. 클랜전 승리! 진호는 육군장교 소질이 있다며 의기양양했고 재민이는 그 뒤에서 마지막 한 명을 정리했다.'],[{hap:-3,sts:4,soc:-1},'작전은 훌륭했는데 경완이 길을 잘못 들었고 세민이 뒤에서 팀킬을 했다. 순식간에 전멸. 진호가 "아니 왜 그쪽으로 가는데!"라고 소리쳤고 클랜 채팅창은 서로를 탓하는 글로 도배됐다. 야자째고 클랜 창설 후 첫 내분이었다.']),
 g('📣 마이크 잡고 응원만 한다',.4,[{soc:6,chr:3,hap:5},'재민이의 마이크 응원이 팀 사기를 폭발시켰다. "할 수 있다! 야자도 째고 왔는데 못 이길 게 뭐가 있어!" 오히려 분위기는 달아올라 클랜전을 이겼다. 승리의 8할은 재민이의 목소리였다. 상대 클랜은 "저 마이크 누구야" 하며 경악했다.'],[{soc:-2,hap:-2,sts:3},'너무 크게 외치는 바람에 PC방 사장님이 달려왔다. "너희 몇 학년 몇 반이야? 야자는 안 하고?" 클랜전은 중단됐고 일곱 명은 줄줄이 귀가 조치됐다. 야자째고 클랜의 첫 클랜전은 3분 만에 막을 내렸다.']),
 g('🏃 담임 순찰이 뜨자 먼저 도망친다',.45,[{hap:3,soc:-2,int:1},'PC방 창밖으로 담임 선생님의 차가 보이자 재민이는 번개처럼 뒷문으로 도망쳤다. 친구들은 뒤에서 "재민아!!" 하고 외쳤지만 재민이는 이미 모퉁이를 돌고 있었다. 나중에 안 사실이지만 담임 선생님은 치킨을 사러 온 것이었다. 눈치 하나는 인정.'],[{hap:-5,sts:6,soc:-3},'도망치다가 하필 순찰 중이던 담임 선생님과 정면으로 마주쳤다. 책가방에서는 헤드셋이 굴러 떨어졌다. "야자는?" 대답할 말이 없었다. 재민이는 그날 밤 교무실에서 클랜 이름 [야자째고]의 의미에 대해 장문의 반성문을 썼다.']),
-],{w:3});
+],{w:150});
+/* --- 성인이 되어 밤샘 PC방, 피파온라인3 (BGM: assets/bgm/fifa.mp3) --- */
+ev('fifa_pc',20,27,'⚽ 성인이 된 우리, 밤샘 PC방 피파온라인3','성인이 되고 처음으로 눈치 안 보고 PC방 야간 정액을 끊었다. 진호, 찬호, 경연, 세민, 범수, 경완이 나란히 앉았다. 오늘의 게임은 피파온라인3. 옆자리 간식 값 걸린 리그전이 시작됐다. 시계는 새벽 두 시. 컵라면 국물은 식었고 마우스 클릭 소리만 요란하다. 재민이는 어떻게 나설까?',[
+g('🏆 에이스 선수 풀 장착, 진호와 결승 한판',.25,[{hap:10,soc:5,chr:2,f:['fifa_win']},'연장전 후반 추가시간, 재민이의 크로스가 그대로 골문에 꽂혔다! 헤드셋 너머로 진호가 "아 미친!!" 하고 소리를 질렀고 PC방 알바생이 조용히 하라고 찾아왔다. 우승 상품은 찬호가 쏘는 컵라면. 새벽 네 시 PC방에서 재민이는 이 세상 가장 행복한 사람이었다.'],[{hap:-5,sts:5,soc:-1},'1:0으로 앞서다 종료 직전 진호가 마지막 한 방을 넣었다. 재민이는 의자에서 일어나 소리를 질렀고 키보드를 내려치려다 PC방 사장님과 눈이 마주쳤다. 그 후 조용히 앉았다. 진호는 일주일 내내 이 결과를 이야기할 예정이다.']),
+g('🔄 현질로 레전드 선수를 뽑는다',.12,[{hap:12,m:-100,soc:3},'만 원 현질로 팩을 열자 화면이 황금빛으로 번쩍였다. 레전드 선수가 나왔다! 친구들은 일제히 조용해졌다가 "야 재민 형 어디서 샀어?"를 연발했다. 오늘만큼은 재민이가 PC방의 왕이었다. 통장 잔고는 조용히 눈물을 흘렸지만 행복은 돈으로 살 수 있었다.'],[{hap:-8,m:-300,sts:6},'3만 원을 태웠는데 나온 건 벤치 멤버만 한 무더기. 옆에서 범수가 "그럴 줄 알았다"며 헛기침을 했다. 경연은 "재민아 그만해"를 열 번 말했고 재민이는 열한 번째 팩을 열었다. 새벽 세 시, 재민이의 월세 계획이 PC방에서 증발했다.']),
+g('📱 감독 지시 훈수만 두는 전술가',.4,[{int:2,soc:5,hap:5},'"4-2-3-1로 바꿔! 지금 측면이 비었어!" 재민이의 훈수를 들은 세민이가 3:1로 역전했다. 친구들은 "재민이 말이 맞네"라며 감탄했다. 정작 본인은 한 번도 안 뛰었지만 승리 수당은 재민이도 받았다. 훈수의 승리다.'],[{soc:-3,hap:-3,sts:3},'재민이의 훈수를 따른 경완이 어이없는 실점을 했다. "누가 이렇게 하래!" 경완의 외침과 함께 모든 시선이 재민이에게 쏠렸다. 이후 재민이는 키보드를 만지는 것만으로도 눈치를 봤다. 훈수 값은 컵라면 두 개.']),
+g('🛌 5시에 먼저 퇴근한다',.45,[{hap:3,str:2,sts:-3},'"난 먼저 간다." 재민이는 새벽 다섯 시 뒷문을 열고 나왔다. 해가 뜨는 거리는 놀랄 만큼 상쾌했다. 집에 도착해 이불을 덮자마자 꿀잠. 친구들은 아침 아홉 시까지 남아서 점심까지 먹었다는 후문. 재민이는 아무도 모르는 승자가 됐다.'],[{hap:-4,sts:5,soc:-2},'먼저 가려다 이미 지갑을 PC방에 두고 온 것을 깨달았다. 돌아가 보니 친구들은 재민이 자리에서 재민이 계정으로 재민이 선수를 굴리고 있었다. 결과는 5연패. 재민이의 계정 전적이 순식간에 박살났다.']),
+],{w:150});
 /* --- 야자 시간: 경연의 의도치 않은 신호 (재민이는 평소 행실 때문에 80% 의심받는다) --- */
 const SUSPECT_P=.8;
 ev('gy_yaja',16,18,'📚 야자 시간의 정적','야간 자율학습 시간. 조용한 교실에 연필 소리만 사각사각 울린다. 경연이 책상에 엎드려 곤히 자고 있다. 그런데 갑자기 교실의 정적을 가르며 "뿌우웅—" 하는 소리가 울려 퍼졌다. 온 반이 일제히 고개를 들었다. 범인은 경연이다. 하지만 정작 경연은 꿈속에서 아직 깨지 않았다. 재민이는 경연의 옆자리에 앉아 있다. 그리고 재민이에게는 불행한 전과가 있다. 평소 행실 때문에, 이런 일이 생기면 반 아이들은 80% 확률로 재민이를 의심한다.',[
@@ -1793,7 +1910,8 @@ function nickName(){
 }
 function updateNick(){const nn=nickName();if(nn!==S.nick){if(S.nick)S.newNick=nn;S.nick=nn}}
 /* 10) 시기별 배경 */
-function eventBgm(){const id=S&&(S.cur||(S.res&&S.res.id));return id==='clan_war'&&BGMF.clan?'clan':null}
+const EVENT_BGM={clan_war:'clan',fifa_pc:'fifa'};
+function eventBgm(){const id=S&&(S.cur||(S.res&&S.res.id));const k=EVENT_BGM[id];return k&&BGMF[k]?k:null}
 function applyStage(){if(!S)return;const a=S.age;setBgm(eventBgm()||stageMode(a));document.body.dataset.stage=a<13?'kid':a<19?'teen':a<30?'young':a<50?'mid':a<65?'senior':'old';setAmbient(a<13?'bubble':a<19?'petal':a<30?'firefly':a<50?'dust':a<65?'leaf':'snow')}
 /* 5) 컨페티 */
 function confetti(n){
@@ -1982,6 +2100,69 @@ function photoKey(){
   if(!S.job||S.job==='none')return 'main';
   return 'face';
 }
+/* ===== 재민이 캐릭터: 머리=재민이 사진, 몸=자체 제작 치비 SVG(직업별 옷) ===== */
+const SK='#f7d2a8',OL='#3a220a';
+const OUTFIT={
+  none:{top:'#ffffff',bot:'#8fc7ff',shoe:SK,sl:0,x:'tank'},
+  student:{top:'#f4f6ff',bot:'#2b3a7a',shoe:'#fff',sl:1,x:'tie:#e8433d'},
+  casual:{top:'#7a8cd6',bot:'#3a5a9a',shoe:'#fff',sl:1,x:'hood'},
+  doctor:{top:'#ffffff',bot:'#5a7a9a',shoe:'#ddd',sl:1,x:'coat'},
+  lawyer:{top:'#2a2f4a',bot:'#2a2f4a',shoe:'#111',sl:1,x:'tie:#e8433d'},
+  dev:{top:'#4a4f5c',bot:'#3a5a9a',shoe:'#fff',sl:1,x:'hood'},
+  big:{top:'#4a5568',bot:'#4a5568',shoe:'#111',sl:1,x:'tie:#3d8be8'},
+  civil:{top:'#bfe3ff',bot:'#6a7080',shoe:'#333',sl:1,x:'tie:#2a3a7a'},
+  teacher:{top:'#e8d2a8',bot:'#6a5a40',shoe:'#5a3a1a',sl:1,x:'tie:#c25a00'},
+  sme:{top:'#e8eefc',bot:'#6a7080',shoe:'#333',sl:1,x:'tie:#888'},
+  police:{top:'#2a3a7a',bot:'#2a3a7a',shoe:'#111',sl:1,x:'badge'},
+  chef:{top:'#ffffff',bot:'#3a3a3a',shoe:'#333',sl:1,x:'apron'},
+  tuber:{top:'#8a5ad6',bot:'#3a3a4a',shoe:'#fff',sl:1,x:'hood'},
+  star:{top:'#ffcf3a',bot:'#c23a8a',shoe:'#fff',sl:1,x:'sparkle'},
+  athlete:{top:'#e8433d',bot:'#e8433d',shoe:'#fff',sl:0,x:'stripe'},
+  ceo:{top:'#1c2030',bot:'#1c2030',shoe:'#111',sl:1,x:'tie:#ffcf3a'},
+  soldier:{top:'#6d8b4a',bot:'#6d8b4a',shoe:'#3a2a1a',sl:1,x:'camo'},
+  nurse:{top:'#ffd6e6',bot:'#ffd6e6',shoe:'#fff',sl:0,x:'badge'},
+  farmer:{top:'#d8c070',bot:'#3a5a9a',shoe:'#6a4a2a',sl:1,x:'apron'},
+  retired:{top:'#c8b48a',bot:'#6a5a40',shoe:'#5a3a1a',sl:1,x:'vest'},
+};
+function outfitFor(){
+  if(!S)return OUTFIT.none;
+  if(S.flags&&S.flags.retired&&!S.job)return OUTFIT.retired;
+  if(S.job==='none')return OUTFIT.none;
+  if(S.job){const o=OUTFIT[S.job];if(o)return o;const jv=JV[S.job];return {top:jv?jv.c:'#7a8cd6',bot:'#3a4a6a',shoe:'#fff',sl:1,x:'tie:#fff'}}
+  return S.age<19?OUTFIT.student:OUTFIT.casual;
+}
+function bodySVG(o,w){
+  const t=o.top,b=o.bot,sh=o.shoe,sl=o.sl;
+  let ex='',coat='';
+  const x=o.x||'';
+  if(x.startsWith('tie:'))ex=`<path d="M30 10l-3 5 3 14 3-14z" fill="${x.slice(4)}" stroke="${OL}" stroke-width="1"/><path d="M24 8l6 6 6-6" fill="#fff" stroke="${OL}" stroke-width="1"/>`;
+  if(x==='coat')coat=`<path d="M16 9h28l2 35H14z" fill="#fff" stroke="${OL}" stroke-width="1.3"/><path d="M30 9v35" stroke="#bbb" stroke-width="1"/><path d="M24 9l6 12 6-12" fill="#bfe3ff" stroke="${OL}" stroke-width="1"/><path d="M24 12q-4 12 2 16" fill="none" stroke="#555" stroke-width="1.5"/><circle cx="26" cy="28" r="2" fill="#aaa" stroke="#555" stroke-width=".8"/>`;
+  if(x==='apron')ex=`<path d="M20 12h20l2 24H18z" fill="${t==='#ffffff'?'#e8eefc':'#fff'}" stroke="${OL}" stroke-width="1"/>`;
+  if(x==='camo')ex=`<circle cx="22" cy="16" r="3" fill="#4a6a2a"/><circle cx="36" cy="22" r="3.5" fill="#8a6a3a"/><circle cx="26" cy="28" r="3" fill="#4a6a2a"/>`;
+  if(x==='stripe')ex=`<path d="M16 17h28M16 21h28" stroke="#fff" stroke-width="2"/>`;
+  if(x==='badge')ex=`<circle cx="36" cy="16" r="3" fill="#ffd24a" stroke="${OL}" stroke-width=".8"/>`;
+  if(x==='sparkle')ex=`<path d="M22 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1zM36 22l1 2 2 1-2 1-1 2-1-2-2-1 2-1z" fill="#fff"/>`;
+  if(x==='hood')ex=`<path d="M22 8q8 6 16 0" fill="none" stroke="${OL}" stroke-width="1.2"/><rect x="26" y="20" width="8" height="8" rx="2" fill="#0002"/>`;
+  if(x==='vest')ex=`<path d="M18 10h8v26h-8zM34 10h8v26h-8z" fill="#8a7a50" stroke="${OL}" stroke-width="1"/>`;
+  const armC=sl?t:SK;
+  const long=(x==='coat')?'':'';
+  return `<svg class="pdb" viewBox="0 0 60 60" width="${w}" height="${w}" aria-hidden="true">
+   <ellipse cx="30" cy="58" rx="16" ry="2.5" fill="#0003"/>
+   <rect x="19" y="38" width="8" height="15" rx="3" fill="${SK}" stroke="${OL}" stroke-width="1.2"/><rect x="33" y="38" width="8" height="15" rx="3" fill="${SK}" stroke="${OL}" stroke-width="1.2"/>
+   <rect x="17.5" y="49" width="11" height="7" rx="3" fill="${sh}" stroke="${OL}" stroke-width="1.2"/><rect x="31.5" y="49" width="11" height="7" rx="3" fill="${sh}" stroke="${OL}" stroke-width="1.2"/>
+   <rect x="18" y="32" width="24" height="${(b===o.top||o.x==='coat')?14:11}" rx="3" fill="${b}" stroke="${OL}" stroke-width="1.2"/>
+   <rect x="9" y="11" width="8" height="19" rx="4" fill="${armC}" stroke="${OL}" stroke-width="1.2"/><rect x="43" y="11" width="8" height="19" rx="4" fill="${armC}" stroke="${OL}" stroke-width="1.2"/>
+   ${sl?'':`<rect x="9" y="22" width="8" height="8" rx="4" fill="${SK}"/><rect x="43" y="22" width="8" height="8" rx="4" fill="${SK}"/>`}
+   <circle cx="13" cy="31" r="3.4" fill="${SK}" stroke="${OL}" stroke-width="1"/><circle cx="47" cy="31" r="3.4" fill="${SK}" stroke="${OL}" stroke-width="1"/>
+   <rect x="16" y="9" width="28" height="26" rx="5" fill="${t}" stroke="${OL}" stroke-width="1.2"/>
+   ${ex}${coat}</svg>`;
+}
+/* 머리(사진)+몸 조합. size=머리 크기(px) */
+function charHTML(size,srcOverride,opts){
+  opts=opts||{};
+  const o=opts.outfit||outfitFor(),old=S&&S.age>=55,w=Math.round(size*.86);
+  return `<div class="pd${old?' old':''}" style="--hs:${size}px;width:${size}px"><div class="pdh" role="img" aria-label="재민" style="background-image:url('${srcOverride||avatarSrc()}')"></div>${bodySVG(o,w)}</div>`;
+}
 function avatar(size){
   size=size||104;const a=S.age;
   const jv=S.job&&JV[S.job]?JV[S.job]:null;
@@ -1989,7 +2170,10 @@ function avatar(size){
   let hat=jv?jv.hat:(a>=19?'🎓':''),prop=jv&&S.job!=='none'?jv.prop:(S.flags.retired?'🏖️':jv?jv.prop:'🎒');
   if(S.flags.retired&&!S.job)prop='🏖️';
   const old=a>=55;
-  return `<div class="avp${old?' old':''}" style="--jc:${col};width:${size}px;height:${size}px"><img src="${avatarSrc()}" alt="재민" width="${size}" height="${size}">${hat?`<span class="hat">${hat}</span>`:''}${old?`<span class="gray">🦳</span>`:''}<span class="prop">${prop}</span></div>`;
+  const src=avatarSrc();
+  if(!/^assets\/scenes\//.test(src)){const hs=Math.round(size*.78);
+    return `<div class="pdw" style="--jc:${col}"><div class="pdx">${charHTML(hs,src)}${hat?`<span class="hat">${hat}</span>`:''}<span class="prop">${prop}</span></div></div>`}
+  return `<div class="avp${old?' old':''}" style="--jc:${col};width:${size}px;height:${size}px"><img src="${src}" alt="재민" width="${size}" height="${size}">${hat?`<span class="hat">${hat}</span>`:''}${old?`<span class="gray">🦳</span>`:''}<span class="prop">${prop}</span></div>`;
 }
 function statBar(k){const v=Math.round(S[k]);return `<div class="st" data-k="${k}">${LB[k]} <b>${v}</b><div class="bar"><i class="${k==='sts'?'sts':''}" style="width:${v}%"></i></div></div>`}
 function header(){
@@ -2109,7 +2293,7 @@ function rankView(){
   <button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW=S&&S.over?'play':'title';render()};
 }
-const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 S·A·B·C·D 5단계(상위 3% / 7% / 20% / 35% / 35%) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','시스템① 운명의 게이지: 도전할 때마다 바늘이 움직여 성공/실패가 갈리는 연출','시스템② 행운 게이지(천장): 실패가 쌓일수록 다음 도전 성공률 최대 +25%','시스템③ 아이템: 행운의 부적·영양제·되감기 티켓 (이벤트에서 획득, 도전 전에 사용)','시스템④ 연속 성공 콤보: 불꽃 애니메이션 + 최고 콤보 점수 보너스','시스템⑤ 컨페티·도장 쾅·점수 카운트업 연출(대성공·A/B 인증)','시스템⑥ 인생 그래프: 재산·행복 추이가 애니메이션으로 그려짐','시스템⑦ 동창회 순위: 가상 동창 5명과 재산 비교, 실시간 순위·결과 막대 그래프','시스템⑧ 실시간 별명: 상태에 따라 별명이 바뀌고 팝업(백수 재민, 호구 재민, 천재 재민 등)','시스템⑨ 연타 미니게임: 4초 연타로 성공률 최대 +15%','시스템⑩ 시기별 배경 연출 + 인생 하이라이트 리플레이(타임라인 애니메이션 재생)','찬호 시리즈 4종: 미역국에 꿀떡 · 사물함 스티로폼 가루 · 남은 음식 몰아주기 · 재민이 메뉴는 절대 안 시키기','회기역 자판기 커피 사건 3부작(진호·찬호·경연·세민·범수 전원 등장: 고등학교 졸업앨범 촬영 → 뭘 내도 100% 지는 가위바위보 → 자판기 앞 30초 → "커피는?") + 별명 "회기역 커피 재민"','거제도 가는 지하철에서 "비닐봉지 있는 사람 있어요?!"를 외치는 이벤트(친구 다섯 명 전원 외면) + 별명 "비닐봉지 재민"','선재도 여행 시리즈: 끄래야 끌 수 없는 "재민!" 음성 알람 → 이튿날 밤 택시에서 또 비닐봉지','PC방 상가 화장실 사건: 문 위로 폰이 쑥 올라온다 → 범인은 사실 찬호','거제도 돌아오는 길: 터미널에서 찬호가 훌라에 빠져 보라색 뉴발란스를 놓고 오는 이벤트 + 버스 안 후속','거제도 여행 연쇄: 지하철 → 횟집 바가지 → 보일러(0~10을 분으로 착각해 이불·장판 태움) → 버스터미널','건강 이벤트: 족저근막염 · 치핵 절제 입원 · 치아 교정(철제/투명)','천하경에게 고백하는 이벤트(20세)','PC방 알바 "형 이름은 왜 잼민이에요?" 이벤트(초등학생 습격) + 별명 "잼민이 형 재민"','재민이가 진호의 주미 고백 작전을 돕는 이벤트','재민이가 찬호의 희연 고백 작전을 돕는 이벤트','학교에서 한승연과 싸우는 이벤트(필기 노트 국물 자국 사건, 말싸움)','학교에서 서예림과 매점 마지막 소시지빵을 두고 싸우는 이벤트','진호 병문안: 오른쪽 세 번째 갈비뼈를 제거한 진호에게 경완·찬호·재민이 베스킨라빈스를 들고 가는 이벤트','야자 시간에 엎드려 자던 경연이 방귀 뀌는 이벤트(재민이는 평소 행실 때문에 의심받을 확률 80%) + 별명 "방귀 용의자 재민"','고등학교 야구: 찬호가 일부러 공을 담장 밖으로 넘겨 범수에게 라면과 하와이안블루를 시키는 이벤트','20살 첫 운전: 사이드 브레이크를 안 내리고 헤드라이트도 안 켜고 달리는 이벤트 + 별명 "사이드 브레이크 재민"','자이노래방 알바 이벤트: 포천 한샘 기숙학원에서 재수하다 도망친 진호가 돈을 빌려 달라고 찾아옴 + 별명 "자이노래방 알바 재민"','가끔 찬호가 전화해서 베스킨라빈스 하프갤런을 사 달라고 하는 이벤트(거절해도 높은 확률로 사 주게 됨, 반복) + 별명 "찬호의 베스킨 은행 재민"','재민이 음성 녹음: 이벤트 중 가끔 재생, "끌 수 없는 알람" 이벤트에서는 계속 반복(🔊 버튼으로 끌 수 있음)','찬호네 집에서 찬호의 반지를 몰래 가져가는 이벤트(들키지 않으려 숨기면 불리, 솔직하게 돌려주면 유리) + 별명 "반지 사건 재민"','시작 화면: 비치볼에 맞는 재민이(날아온 공에 퍽! 맞는 애니메이션, AI 이미지를 넣으면 자동 교체) + AI 장면 이미지 자동 연결 구조(직업·나이·이벤트·엔딩별)','그래픽 업그레이드: 움직이는 로비(밤하늘·흐르는 양주 스카이라인·걸어 다니는 재민이·떠다니는 사진·흐르는 인생 타임라인) + 시기별 배경 입자 + 이벤트 장면 배너 + 능력치 바/숫자 애니메이션 + 변화량 팝업 + 성공/실패 반응 연출','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)','사운드 대폭 강화: 나이대별 자동 배경음악(🎵 버튼으로 끄기) + 효과음 30여 종(퍽·화상 지글·방귀·사이렌·동전·하트·해고 경보·등급별 팡파르), 시작 화면 비치볼 "퍽!" 소리 동기화','메이플스토리풍 전면 리뉴얼(자체 제작 UI): 따뜻한 나무 테두리 창·NPC 퀘스트 대화창·HP/MP 게이지·Lv.나이 배지·MISS/CRITICAL/LEVEL UP 연출·헤네시스풍 낮 로비(달팽이·주황버섯·슬라임, 단풍잎), 🌙 버튼으로 밤 맵 전환','나이대별 BGM(메이플 곡): 시작·캐릭터 생성·7세 / 8세 입학 징글 / 13~18세 / 19~29세 / 30~49세 / 50세~·결과 화면, 곡이 없는 구간은 자동 합성 음악(assets/bgm 폴더에 넣고 tools/prepare_bgm.py)','새 이벤트: 야자 째고 만든 클랜 [야자째고]의 클랜전(16~18세, 친구 6명 총출동, 서든어택 메인 테마가 흐름)'];
+const FEATURES=['시작 후보 3명 중 선택(불리한 출발 80% : 좋은 출발 20%, 아싸형·불우한 환경 위주)','집중 육성 능력치 2개','태어난 집안(금수저/평범/흙수저)','숨은 재능 8종(천재, 강골, 행운아, 불운의 아이 등)','오늘의 운세(날짜별 확률 보정)','하드 난이도 고정(성공률 대폭 하향: 전체 ×0.75 -8%, 관련 능력치가 낮으면 더 불리, 스트레스 ×1.4, 지출 ×1.3)','재미있게 공부한다(머리가 안 따라주면 실패) 등 능력치 의존 도전 선택지','정상 만기 전역도 확률 도전(실패하면 적응 위기 → 도움 요청 → 의가사 루트)','환생 포인트로 능력치 보너스','7~80세 나이별 아바타 변화','시즌(해)마다 스트레스·행복 자동 변동','확률 도전 선택지(성공률 표시)','능력치에 따른 성공률 보정','학원/동아리/연애 등 성장기 이벤트 15종','수능 결과 → 대학 선택 → 재수','군대 이벤트(카투사 도전)','대표 직업 14종 + 백수(의사·변호사·개발자·대기업·공무원·교사·중소기업·경찰/소방·직업군인·요리사·유튜버·연예인·운동선수·창업가), 능력·학력 요건 잠금','입사 연봉 협상 미니게임','정기 연봉 협상(성과/이직 카드)','승진 심사와 직급 체계','이직 제안','갑질 상사/구조조정','가변 소득 직업(유튜버·연예인·창업가 등)','운동선수 전성기·은퇴 기로','부업 이벤트','주식/코인 투자(변동성 시뮬)','경제 위기·대세상승장 이벤트','내 집 마련(영끌)','로또(2% 당첨)','보이스피싱','빚보증 / 사촌의 투자 권유','도박 중독과 단도박 이벤트','창업 대박 아이디어','유튜브 채널 개설','국회의원 출마(히든 루트)','소개팅 → 연애 → 프러포즈 → 결혼','자녀 시스템과 육아·입시','이혼 위기','반려동물 입양','여행/취미/동창회 이벤트','건강검진·큰 병·교통사고','번아웃 3회 시 과로 엔딩','유산 상속','부모님 간병','정년퇴임과 연금','손주 탄생','마지막 선택(기부/가족/탕진)','24개 업적과 도감','엔딩 칭호 16종(성공·평범·망한 인생)','과거로 돌아가기(되감기 1회)','등급 S·A·B·C·D 5단계(상위 3% / 7% / 20% / 35% / 35%) + 점수 항목별 그래프','인생 이야기 타임라인','로컬 랭킹 TOP20','결과 공유 텍스트 복사','자동 저장·이어하기·파일 내보내기/가져오기','효과음 & 라이트/다크 테마','키보드 단축키(1~4, Enter)','실명 친구 4인(이진호·이찬호·김경연·박세민) 사귐/거절 이벤트와 후속 이벤트','친구 둘 이상 사귀면 사총사 모임 발생','신천지 포교 → 탈퇴 시도 연계 이벤트','암웨이(다단계) 가입 → 재고 처리 연계 이벤트','여자친구를 따라 부산으로 이사 이벤트','인형뽑기·코인노래방·UFO·점집·치킨집·헬스장 등 소소한 선택지','군 복무 연쇄 이벤트(훈련소→자대→중반→전역)','군 적응 위기 시 도움 요청 선택지와 상담전화 안내','의가사 전역 루트와 전역 후 마음 돌보기 이벤트','후임 하극상 → 몸싸움 → 징계/영창 연쇄 이벤트','경기도 양주시 배경 이벤트(덕정역 출퇴근·나리공원·불곡산·별산대놀이·장흥·옥정/회천 신도시)','기분 좋아서 쏘다가 지갑 털리는 이벤트(하프갤런·피자·치킨)','몸개그 해프닝(오이고추 가방·소시지·날달걀·비치발리볼·방귀)','화상 흉터 이벤트(컵라면·치킨 튀김 알바)','전범수와의 말싸움 이벤트','같은 반 친구와 눈 마주치는 순한 짝사랑 이벤트','재민이 사진이 모든 화면에 등장(로고·시작·캐릭터 만들기·7세부터 80세까지·결과)하고 직업·나이·기분·상황에 따라 사진과 모자/소품/테두리 변화','일하다 잘리는 스토리(직업을 가진 사람의 약 80%): 불길한 조짐 → 대처 선택 → 해고(폐업·권고사직·슬럼프·징계 등) → 재기/정리/빚 버티기','친구에게 돈 빌려주기(100만/500만/3000만) + 못 받은 돈 독촉 후속 이벤트','모든 선택지가 확률 도전(성공하면 원래 효과, 실패하면 역효과) · 창의적 초저확률 선택지(공을 피한다 1% 등)','늦잠·소나기·지하철 자리·가챠·층간소음·회식 폭탄주·타이어 펑크 등 신규 해프닝 8종','취업도 확률 도전(성공률 약 55%, 낮은 능력치면 더 낮음) · 실패하면 백수, 이후 재취업 도전 이벤트 · 약 80%가 백수로 사는 하드 난이도','아르바이트 이벤트(설이 베이비시터 단기알바 월급 160, 편의점·카페·택배·과외·배달 등)','모든 좋은 선택지는 극악 확률(약 15%)','치질(항문이 아픈) 스토리: 병원/좌욕/참기 선택 → 방치하면 수술 후속 이벤트','고교는 어떤 선택이든 덕현고등학교(1회) 입학 · 수능 후 서정대학교 식품영양학과(합격률 85%) 선택지','결과 멘트 자극적·웃기게 전면 개편(상황별 실패 멘트 50여 종 + 결과마다 💬 해설 한마디 + 성공 멘트 110여 개 재작성)','파산 기준 완화(빚 5억) · 백수 생활비 완화(40세부터, 부담 절반 이하) · 체력 노화 속도 완화로 80세 완주 비율 상승','오픈 이벤트: S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 / B등급 인증 → 혹한기 훈련 열외 (시작 화면 배너 + 결과 인증 카드·도장 코드)','시스템① 운명의 게이지: 도전할 때마다 바늘이 움직여 성공/실패가 갈리는 연출','시스템② 행운 게이지(천장): 실패가 쌓일수록 다음 도전 성공률 최대 +25%','시스템③ 아이템: 행운의 부적·영양제·되감기 티켓 (이벤트에서 획득, 도전 전에 사용)','시스템④ 연속 성공 콤보: 불꽃 애니메이션 + 최고 콤보 점수 보너스','시스템⑤ 컨페티·도장 쾅·점수 카운트업 연출(대성공·A/B 인증)','시스템⑥ 인생 그래프: 재산·행복 추이가 애니메이션으로 그려짐','시스템⑦ 동창회 순위: 가상 동창 5명과 재산 비교, 실시간 순위·결과 막대 그래프','시스템⑧ 실시간 별명: 상태에 따라 별명이 바뀌고 팝업(백수 재민, 호구 재민, 천재 재민 등)','시스템⑨ 연타 미니게임: 4초 연타로 성공률 최대 +15%','시스템⑩ 시기별 배경 연출 + 인생 하이라이트 리플레이(타임라인 애니메이션 재생)','찬호 시리즈 4종: 미역국에 꿀떡 · 사물함 스티로폼 가루 · 남은 음식 몰아주기 · 재민이 메뉴는 절대 안 시키기','회기역 자판기 커피 사건 3부작(진호·찬호·경연·세민·범수 전원 등장: 고등학교 졸업앨범 촬영 → 뭘 내도 100% 지는 가위바위보 → 자판기 앞 30초 → "커피는?") + 별명 "회기역 커피 재민"','거제도 가는 지하철에서 "비닐봉지 있는 사람 있어요?!"를 외치는 이벤트(친구 다섯 명 전원 외면) + 별명 "비닐봉지 재민"','선재도 여행 시리즈: 끄래야 끌 수 없는 "재민!" 음성 알람 → 이튿날 밤 택시에서 또 비닐봉지','PC방 상가 화장실 사건: 문 위로 폰이 쑥 올라온다 → 범인은 사실 찬호','거제도 돌아오는 길: 터미널에서 찬호가 훌라에 빠져 보라색 뉴발란스를 놓고 오는 이벤트 + 버스 안 후속','거제도 여행 연쇄: 지하철 → 횟집 바가지 → 보일러(0~10을 분으로 착각해 이불·장판 태움) → 버스터미널','건강 이벤트: 족저근막염 · 치핵 절제 입원 · 치아 교정(철제/투명)','천하경에게 고백하는 이벤트(20세)','PC방 알바 "형 이름은 왜 잼민이에요?" 이벤트(초등학생 습격) + 별명 "잼민이 형 재민"','재민이가 진호의 주미 고백 작전을 돕는 이벤트','재민이가 찬호의 희연 고백 작전을 돕는 이벤트','학교에서 한승연과 싸우는 이벤트(필기 노트 국물 자국 사건, 말싸움)','학교에서 서예림과 매점 마지막 소시지빵을 두고 싸우는 이벤트','진호 병문안: 오른쪽 세 번째 갈비뼈를 제거한 진호에게 경완·찬호·재민이 베스킨라빈스를 들고 가는 이벤트','야자 시간에 엎드려 자던 경연이 방귀 뀌는 이벤트(재민이는 평소 행실 때문에 의심받을 확률 80%) + 별명 "방귀 용의자 재민"','고등학교 야구: 찬호가 일부러 공을 담장 밖으로 넘겨 범수에게 라면과 하와이안블루를 시키는 이벤트','20살 첫 운전: 사이드 브레이크를 안 내리고 헤드라이트도 안 켜고 달리는 이벤트 + 별명 "사이드 브레이크 재민"','자이노래방 알바 이벤트: 포천 한샘 기숙학원에서 재수하다 도망친 진호가 돈을 빌려 달라고 찾아옴 + 별명 "자이노래방 알바 재민"','가끔 찬호가 전화해서 베스킨라빈스 하프갤런을 사 달라고 하는 이벤트(거절해도 높은 확률로 사 주게 됨, 반복) + 별명 "찬호의 베스킨 은행 재민"','재민이 음성 녹음: 이벤트 중 가끔 재생, "끌 수 없는 알람" 이벤트에서는 계속 반복(🔊 버튼으로 끌 수 있음)','찬호네 집에서 찬호의 반지를 몰래 가져가는 이벤트(들키지 않으려 숨기면 불리, 솔직하게 돌려주면 유리) + 별명 "반지 사건 재민"','시작 화면: 비치볼에 맞는 재민이(날아온 공에 퍽! 맞는 애니메이션, AI 이미지를 넣으면 자동 교체) + AI 장면 이미지 자동 연결 구조(직업·나이·이벤트·엔딩별)','그래픽 업그레이드: 움직이는 로비(밤하늘·흐르는 양주 스카이라인·걸어 다니는 재민이·떠다니는 사진·흐르는 인생 타임라인) + 시기별 배경 입자 + 이벤트 장면 배너 + 능력치 바/숫자 애니메이션 + 변화량 팝업 + 성공/실패 반응 연출','일상 코미디 이벤트 2탄 18종(종점 버스·배달 오배송·폰 분실·길거리 캐스팅·결혼식·캠핑·당근마켓·다이어트·바퀴벌레·방송 사고·돼지꿈 등)','사운드 대폭 강화: 나이대별 자동 배경음악(🎵 버튼으로 끄기) + 효과음 30여 종(퍽·화상 지글·방귀·사이렌·동전·하트·해고 경보·등급별 팡파르), 시작 화면 비치볼 "퍽!" 소리 동기화','메이플스토리풍 전면 리뉴얼(자체 제작 UI): 따뜻한 나무 테두리 창·NPC 퀘스트 대화창·HP/MP 게이지·Lv.나이 배지·MISS/CRITICAL/LEVEL UP 연출·헤네시스풍 낮 로비(달팽이·주황버섯·슬라임, 단풍잎), 🌙 버튼으로 밤 맵 전환','메이플 캐릭터 생성 화면풍 재민이 만들기(후보 3명·이름 CHECK·스탯 집중 육성·GENERATE 리롤)','메이플 로그인 화면풍 시작 화면(숲 배경·나무 간판 메뉴)','재민이 캐릭터: 머리는 재민이 사진, 몸은 직업별 치비 SVG(의사 가운·정장·군복·요리사 앞치마 등 20종 옷)','나이대별 BGM(메이플 곡, 끊김 없이): 시작~12세(8세 입학 징글) / 13~18세 / 19~29세 / 30~49세 / 50세~·결과 화면, 이벤트별 곡(클랜전·피파) + 레벨업(나이 증가) 효과음 파일 슬롯(assets/sfx/levelup.mp3)','새 이벤트: 성인이 되어 밤샘 PC방 피파온라인3(20~27세, 전용 BGM)','새 이벤트: 야자 째고 만든 클랜 [야자째고]의 클랜전(16~18세, 친구 6명 총출동, 서든어택 메인 테마가 흐름)'];
 function info(){
   $('#main').innerHTML=`<div class="card"><h2>✨ 추가된 재미 요소 ${FEATURES.length}가지</h2><ol style="padding-left:18px;font-size:14px">${FEATURES.map(f=>`<li>${f}</li>`).join('')}</ol></div><button class="btn pri" id="back">◀ 돌아가기</button>`;
   $('#back').onclick=()=>{VIEW='title';render()};
@@ -2128,25 +2312,34 @@ function title(){
   const logo=Array.from('재민이 키우기').map((c,i)=>c===' '?'<span class="sp"> </span>':`<span style="--i:${i}">${c}</span>`).join('');
   const ph=['main','joy','cool','hike','tired'].map((k,i)=>`<img class="pc" style="--i:${i};--r:${[-8,5,-3,7,-6][i]}deg" src="${PH[k]}" alt="재민" width="68" height="68">`).join('');
   const strip=['🧒 7세 입학','🏫 16세 덕현고(1회)','📖 19세 수능','🪖 21세 입대','💼 23세 취업','🚇 24세 거제도 여행','💍 결혼?','🏖️ 80세 인생 결산'].join('  ➜  ')+'  ➜  ';
-  $('#main').innerHTML=`<div class="lobby">
-   <div class="sky"><div class="stars"></div><div class="moon"></div><span class="cloud" style="top:26px;animation-duration:34s">☁️</span><span class="cloud" style="top:76px;animation-duration:50s;animation-delay:-22s;font-size:26px">☁️</span></div>
-   <div class="skyline">${skylineSVG()}</div><div class="hills"></div><div class="mons"><span>🐌</span><span>🍄</span><span>🟢</span><span>🍄</span></div>
-   <div class="lobby-in"><div class="hit-hero${SCN.lobby_beachball?' has-img':''}"><div class="hh-wrap"><img class="hh-img" src="${SCN.lobby_beachball||PH.face}" width="150" height="150" alt="비치볼에 맞는 재민"><div class="bball"></div><div class="hh-pow">퍽!</div><div class="hh-stars"><span>✨</span><span>⭐</span><span>💫</span></div></div></div><h1 class="logo">${logo}</h1>
-    <p class="sub">📍 경기도 양주시 · 7살 재민이의 선택이 80살의 인생을 만든다</p>
-    <div class="tl-strip"><div class="tl-in">${strip+strip}</div></div></div>
-   <div class="ground"><div class="walker"><div class="say"><span>한 판만 더!</span><span>오늘은 S 가즈아</span><span>찬호야 신발!</span><span>하드 모드 실화냐</span></div><img src="${PH.face}" width="46" height="46" alt="재민"><div class="legs"><i></i><i></i></div></div></div>
+  $('#main').innerHTML=`<div class="lg">
+   <div class="lg-top"><span>장시간의 게임이용은 건강을 해칠 수 있습니다.</span><span>Ver. 1.2.65</span></div>
+   <div class="lg-scene">
+    <div class="lg-rays"></div><i class="tk t1"></i><i class="tk t2"></i><i class="tk t3"></i><div class="lg-canopy"></div>
+    <div class="lg-bigleaf">🍁</div>
+    <h1 class="lg-logo">${logo}<small>Jaemin Story · 양주시 서버</small></h1>
+    <div class="lg-hero"><div class="hit-hero${SCN.lobby_beachball?' has-img':''}"><div class="hh-wrap"><img class="hh-img" src="${SCN.lobby_beachball||PH.face}" width="150" height="150" alt="비치볼에 맞는 재민"><div class="bball"></div><div class="hh-pow">퍽!</div><div class="hh-stars"><span>✨</span><span>⭐</span><span>💫</span></div>${SCN.lobby_beachball?'':bodySVG(OUTFIT.none,112).replace('class="pdb"','class="pdb hhb"')}</div></div></div>
+    <div class="lg-grass"></div>
+    <div class="lg-mush m1"><i class="cap"></i><i class="stem"></i></div><div class="lg-mush m2"><i class="cap"></i><i class="stem"></i></div>
+    <div class="mons"><span>🐌</span><span>🍄</span><span>🟢</span><span>🍄</span></div>
+    <div class="lg-sign"><div class="lg-board">
+      <div class="lg-line"><span>${esc(sv&&sv.v?sv.name:'재 민')}</span><i>${sv&&sv.v?sv.age+'세에서 이어가기':'새로운 인생을 시작하세요'}</i></div>
+      <button class="lg-go" id="nw">새 인생 시작</button>
+      ${sv&&sv.v?`<button class="lg-cont" id="cont">▶ 이어하기 (${esc(sv.name)} · ${sv.age}세)</button>`:''}
+      <div class="lg-three"><button id="rk">랭킹·업적</button><button id="inf">재미 요소</button><button id="ld">불러오기</button></div>
+     </div><div class="lg-post"></div><div class="lg-post r"></div></div>
+    <div class="lg-leaf">🍁</div>
+   </div>
+   <div class="lg-foot">📍 경기도 양주시 · 7살 재민이의 선택이 80살의 인생을 만든다<br><span>© 재민이 키우기 (친구들과 즐기는 팬메이드)</span></div>
   </div>
+  <div class="tl-strip lg-strip"><div class="tl-in">${strip+strip}</div></div>
   <div class="card center"><p style="margin:2px 0">🔮 오늘의 운세: <b>${f[0]}</b> ${f[1]}<br><span class="mut">${f[3]}</span></p>
   <p class="mut" style="margin:6px 0 0">직업도, 연봉도, 점수도 모두 당신의 선택!</p></div>
   <div class="evt"><h3>🎉 재민이 게임 오픈 이벤트!</h3>
    <p>최종 등급을 <b>인증</b>하면 선물이 팡팡!</p>
    <span class="rw">🏆 S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 🍦</span>
    <span class="rw">🅱️ B등급 인증 → 혹한기 훈련 열외</span>
-   <p class="mut">결과 화면의 인증 카드를 캡처해서 재민이에게 보여 주세요.</p></div>
-  <button class="btn pri glow" id="nw">🎮 새 인생 시작</button>
-  ${sv&&sv.v?`<button class="btn" id="cont">▶ 이어하기 (${esc(sv.name)} · ${sv.age}세)</button>`:''}
-  <div class="row"><button class="btn c" id="rk">🏅 랭킹/업적</button><button class="btn c" id="inf">✨ 재미 요소</button></div>
-  <div class="row"><button class="btn c" id="ld">📂 저장 불러오기</button></div>`;
+   <p class="mut">결과 화면의 인증 카드를 캡처해서 재민이에게 보여 주세요.</p></div>`;
   $('#nw').onclick=()=>{VIEW='create';create()};
   const ct=$('#cont');if(ct)ct.onclick=()=>{S=sv;ensure(S);S.diff='hell';VIEW='play';SNAP=null;render()};
   $('#rk').onclick=()=>{VIEW='rank';rankView()};$('#inf').onclick=()=>{VIEW='info';info()};$('#ld').onclick=importSave;
@@ -2154,22 +2347,31 @@ function title(){
 let CANDS=[],CSEL=0,FOC=[],DF='hell',REB=false,NM='재민',REROLL=2;
 function create(){
   if(!CANDS.length||CANDS.length!==3)CANDS=[pickCand(),pickCand(),pickCand()];
-  const f=fortune(),pts=META.pts,k=Math.min(10,Math.floor(pts/4));
-  $('#main').innerHTML=`<div class="card"><div style="display:flex;justify-content:center;margin-bottom:8px"><img src="${PH.face}" alt="재민" width="110" height="110" style="border-radius:20px;border:4px solid var(--ac);object-fit:cover"></div><h2>🧬 재민이 만들기</h2><div class="mut">이름</div><input type="text" id="nm" maxlength="8" value="${esc(NM)}">
-  <p class="mut" style="margin-top:12px">후보를 고르세요. 대부분 불리한 출발(인기 없는 성향·불우한 환경)이고, 좋은 출발은 드물어요. 이 불리함을 뒤집는 게 목표!</p>
-  ${CANDS.map((c,i)=>`<button class="choice" data-c="${i}" style="${i===CSEL?'border-color:var(--ac)':''}"><b>${c.ae} ${c.arch}</b> <span class="tag" style="color:${c.good?'var(--ok)':'var(--bad)'}">${c.good?'✨ 좋은 출발':'😢 불리한 출발'}</span> ${BG[c.bg].e} ${BG[c.bg].n} · ${TRAITS[c.trait].e} ${TRAITS[c.trait].n}<small>지능 ${c.v[0]} · 체력 ${c.v[1]} · 인성 ${c.v[2]} · 매력 ${c.v[3]} · 인맥 ${c.v[4]}</small><small>${TRAITS[c.trait].d} / ${BG[c.bg].tx}</small></button>`).join('')}
-  <button class="btn c" id="rr">🎲 후보 다시 뽑기 (${REROLL}회 남음)</button>
-  <div class="mut" style="margin-top:8px">집중 육성 (최대 2개, +8)</div><div class="chips">${STATS.map(s=>`<button class="chip" data-f="${s}" style="border:1px solid var(--bd);cursor:pointer;color:${FOC.includes(s)?'var(--ac)':'var(--tx)'}">${FOC.includes(s)?'✔ ':''}${LB[s]}</button>`).join('')}</div>
-  <div class="mut" style="margin-top:8px">난이도: <b style="color:var(--bad)">🔥 하드 (고정)</b> · ${DIFF.hell.d}</div>
-  ${k>0?`<label style="display:block;margin-top:8px"><input type="checkbox" id="rb" ${REB?'checked':''}> 환생 보너스 사용 (포인트 ${pts} → 능력치 전체 +${k}, ${k*4}pt 소모)</label>`:`<div class="mut" style="margin-top:8px">환생 포인트 ${pts} (4pt당 능력치 +1 보너스)</div>`}
-  </div><button class="btn pri" id="go">🚀 인생 시작</button><button class="btn c" id="bk">◀ 돌아가기</button>`;
-  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{NM=$('#nm').value;CSEL=+b.dataset.c;create()});
-  document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{NM=$('#nm').value;const s=b.dataset.f;FOC=FOC.includes(s)?FOC.filter(x=>x!==s):FOC.concat(s).slice(-2);create()});
-  document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{NM=$('#nm').value;DF=b.dataset.d;create()});
-  $('#rr').onclick=()=>{if(REROLL>0){NM=$('#nm').value;REROLL--;CANDS=[pickCand(),pickCand(),pickCand()];create()}};
+  const f=fortune(),pts=META.pts,k=Math.min(10,Math.floor(pts/4)),c=CANDS[CSEL],bg=BG[c.bg],tr=TRAITS[c.trait];
+  const rows=[['원 형',`${c.ae} ${c.arch}`],['집 안',`${bg.e} ${bg.n}`],['성 향',`${tr.e} ${tr.n}`],['출 발',c.good?'✨ 좋은 출발':'😢 불리한 출발'],['난이도','🔥 하드']];
+  const sv=['지능','체력','인성','매력','인맥'];
+  $('#main').innerHTML=`<div class="mc">
+  <div class="mc-tabs"><div class="mc-tab">✔ 캐릭터만들기<small>CHARACTER CREATE</small></div><div class="mc-tab">선택한 월드<b>양주시 CH.1</b></div></div>
+  <div class="mc-scene"><span class="mcc c1">☁️</span><span class="mcc c2">☁️</span>
+   <div class="mc-mush"><i class="cap"></i><i class="stem"></i></div>
+   <div class="mc-plat"><div class="mc-char">${charHTML(84,PH.face,{outfit:OUTFIT.student})}</div><div class="mc-shadow"></div></div>
+   <div class="mc-scroll">${rows.map(r=>`<div class="r"><span>${r[0]}</span><b>${esc(r[1])}</b></div>`).join('')}</div>
+   <div class="mc-cands">${CANDS.map((x,i)=>`<button data-c="${i}" class="${i===CSEL?'on':''}${x.good?' good':''}">${x.ae}<small>후보 ${i+1}</small></button>`).join('')}</div>
+  </div>
+  <div class="mc-sign"><div class="mc-board"><div class="mc-nl">캐릭터이름 <button id="chk" class="mc-chk">CHECK</button></div><input type="text" id="nm" maxlength="8" value="${esc(NM)}"></div>
+   <div class="mc-stats">${STATS.map((st,i)=>`<button data-f="${st}" class="${FOC.includes(st)?'on':''}"><span>${LB[st]}</span><b>${c.v[i]}${FOC.includes(st)?'+8':''}</b></button>`).join('')}
+    <button id="rr" class="mc-gen" ${REROLL>0?'':'disabled'}>GENERATE!!<small>🎲 ${REROLL}회 남음</small></button></div>
+   <div class="mc-note">${esc(tr.d)} · ${esc(bg.tx)}</div><div class="mc-note">스탯을 눌러 <b>집중 육성</b>(최대 2개, +8). 후보는 대부분 불리한 출발이에요.</div>
+   ${k>0?`<label class="mc-rb"><input type="checkbox" id="rb" ${REB?'checked':''}> 환생 보너스 (포인트 ${pts} → 전체 +${k}, ${k*4}pt 소모)</label>`:`<div class="mc-note">환생 포인트 ${pts} (4pt당 능력치 +1)</div>`}
+   <div class="mc-btns"><button id="go" class="mc-ok">확 인</button><button id="bk" class="mc-no">취 소</button></div>
+  </div><div class="mc-leaf">🍁</div></div>`;
+  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{NM=$('#nm').value;CSEL=+b.dataset.c;sfx('pop');create()});
+  document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{NM=$('#nm').value;const st=b.dataset.f;FOC=FOC.includes(st)?FOC.filter(x=>x!==st):FOC.concat(st).slice(-2);sfx('tap');create()});
+  $('#chk').onclick=()=>{const v=$('#nm').value.trim();toast(v?'✅ 사용 가능한 이름이에요!':'이름을 입력해 주세요');};
+  $('#rr').onclick=()=>{if(REROLL>0){NM=$('#nm').value;REROLL--;CANDS=[pickCand(),pickCand(),pickCand()];CSEL=0;sfx('coin');create()}};
   const rb=$('#rb');if(rb)rb.onchange=()=>REB=rb.checked;
   $('#go').onclick=()=>{NM=($('#nm').value||'재민').trim()||'재민';const rbv=rb?rb.checked:false;
-    newState(CANDS[CSEL],NM,FOC,{diff:DF,fort:f,rebirth:rbv});REROLL=2;CANDS=[];FOC=[];VIEW='play';SNAP=null;save();beep(700,.15);render()};
+    newState(CANDS[CSEL],NM,FOC,{diff:DF,fort:f,rebirth:rbv});REROLL=2;CSEL=0;CANDS=[];FOC=[];VIEW='play';SNAP=null;save();sfx('levelup');render()};
   $('#bk').onclick=()=>{VIEW='title';render()};
 }
 /* ===== save io ===== */
