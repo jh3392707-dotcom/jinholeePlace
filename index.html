@@ -909,7 +909,7 @@ mp:{n:'국회의원',e:'🏛️',req:{},edu:0,hid:1,base:15000,g:.02,st:4,hp:0,r
 none:{n:'백수',e:'🛋️',req:{},edu:0,base:0,g:0,st:-2,hp:0,ranks:['무직'],d:'일단 쉬자. 부모님 눈치는 덤'}
 };
 const EDU=['고졸','전문대/지방대','일반 대학','명문대'];
-const BG={gold:{n:'금수저 가정',e:'💎',m:12000,tx:'부모님이 든든한 지원군'},mid:{n:'평범한 가정',e:'🏠',m:2000,tx:'특별할 것 없는 보통의 출발'},poor:{n:'흙수저 가정',e:'🥔',m:-1500,tx:'학자금 대출과 함께하는 시작'},shop:{n:'자영업 집안',e:'🏪',m:1200,tx:'부모님 가게에서 어깨너머로 장사를 배움'},single:{n:'한부모 가정',e:'👩‍👦',m:-600,tx:'일찍 철이 든 씩씩한 출발'},rural:{n:'양주 시골집',e:'🌾',m:300,tx:'논밭과 개울이 놀이터였던 어린 시절'},twin:{n:'대가족 집안',e:'👨‍👩‍👧‍👦',m:500,tx:'식구가 많아 늘 북적북적'}};
+const BG={gold:{n:'금수저 가정',e:'💎',m:12000,tx:'부모님이 든든한 지원군'},mid:{n:'평범한 가정',e:'🏠',m:2000,tx:'특별할 것 없는 보통의 출발'},jai7:{n:'양주자이7단지 가정',e:'🏢',m:3000,tx:'아파트 단지 놀이터에서 자란 어린 시절'},poor:{n:'흙수저 가정',e:'🥔',m:-1500,tx:'학자금 대출과 함께하는 시작'},shop:{n:'자영업 집안',e:'🏪',m:1200,tx:'부모님 가게에서 어깨너머로 장사를 배움'},single:{n:'한부모 가정',e:'👩‍👦',m:-600,tx:'일찍 철이 든 씩씩한 출발'},rural:{n:'양주 시골집',e:'🌾',m:300,tx:'논밭과 개울이 놀이터였던 어린 시절'},twin:{n:'대가족 집안',e:'👨‍👩‍👧‍👦',m:500,tx:'식구가 많아 늘 북적북적'}};
 const TRAITS_NEW_PLACEHOLDER=0;
 const TRAITS={
 genius:{n:'천재 기질',e:'🧠',d:'지능이 오를 때 +30%'},
@@ -1928,7 +1928,7 @@ function pickCand(){
   const GOODT=['genius','strongbody','lucky','charming','latebloom','frugal','sharp','mentalrock'];
   const BADT=['spender','unlucky','glass','clumsy','gamer','foodie','nightowl','spender'];
   const a=gA?pick(ARCH):pick(BADARCH);
-  const bg=gB?(Math.random()<.04?'gold':pick(['mid','mid','shop'])):pick(['poor','single','rural','twin','poor','single']);
+  const bg=gB?(Math.random()<.04?'gold':pick(['mid','mid','jai7','shop'])):pick(['poor','single','rural','twin','poor','single']);
   let trait=gT?pick(GOODT):pick(BADT);
   if(trait==='genius'&&(a.n==='공부형'||a.n==='발명가형'))trait='sharp';
   if(bg==='gold'&&(trait==='lucky'||trait==='genius'))trait='frugal';
