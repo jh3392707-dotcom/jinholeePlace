@@ -469,6 +469,7 @@ canvas.spr{display:block;image-rendering:pixelated;image-rendering:crisp-edges;f
 .dgt #dgtime{background:#ff8a00;color:#fff;border:2px solid var(--wood);border-radius:8px;padding:0 10px}
 #dgc{display:block;width:100%;height:auto;border:3px solid var(--wood);border-radius:10px;touch-action:none;background:#59b6ff}
 .dgov{position:absolute;left:12px;right:12px;top:60px;bottom:16px;border-radius:10px;background:#000a;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:12px}
+.dgov .dgr{margin:8px 0 2px;padding:6px 8px;background:#fff3c8;border:2px solid #e0b040;border-radius:10px;color:#6a3a00;font-size:12.5px;line-height:1.45}
 .dgov h3{margin:0;font-size:26px;color:#ffd24a;text-shadow:2px 2px 0 #8a4b00}.dgov p{margin:0;font-size:14px;font-family:"Noto Sans KR",sans-serif;line-height:1.5}
 .dgov .btn{width:80%}
 
@@ -2479,7 +2480,7 @@ function startDodge(done,cfg){
   const o=document.createElement('div');o.id='dodge';
   o.innerHTML=`<div class="dgb"><div class="dgt"><b>${cfg.hud||'🎯 물건 피하기'}</b><span id="dglife">❤❤❤</span><span id="dgtime">28</span></div>
    <canvas id="dgc" width="${W}" height="${H}"></canvas>
-   <div class="dgov" id="dgov"><h3>${TITLE}</h3>${MINI_INTRO?`<p class="dgi">${MINI_INTRO}</p>`:''}<p>${SUB}<br>손가락(마우스)으로 좌우로 움직이거나 ← → 키로 피하세요.<br>목숨은 ❤ 3개, 28초 버티면 끝!</p><button class="btn pri" id="dgstart">시작!</button></div></div>`;
+   <div class="dgov" id="dgov"><h3>${TITLE}</h3>${MINI_INTRO?`<p class="dgi">${MINI_INTRO}</p>`:''}<p>${SUB}<br>손가락(마우스)으로 좌우로 움직이거나 ← → 키로 피하세요.<br>목숨은 ❤ 3개, 28초 버티면 끝!</p><p class="dgr">🏅 <b>보상 안내</b> · 맞은 횟수가 적을수록 결과가 좋아져요 (0대 최고, 1대 · 2대 · 3대 이상 순)</p><button class="btn pri" id="dgstart">시작!</button></div></div>`;
   document.body.appendChild(o);
   const cv=document.getElementById('dgc'),g=cv.getContext('2d');
   const mk=(hk)=>{const c=document.createElement('canvas');c.width=SPW*K;c.height=FULLH*K;
@@ -2577,7 +2578,7 @@ function mgShell(o){
   const W=360,H=520,el=document.createElement('div');el.id='dodge';
   el.innerHTML=`<div class="dgb"><div class="dgt"><b>${o.hud}</b><span id="dglife">${o.life||''}</span><span id="dgtime">${o.time||''}</span></div>
    <canvas id="dgc" width="${W}" height="${H}"></canvas>${o.extra||''}
-   <div class="dgov" id="dgov"><h3>${o.title}</h3>${MINI_INTRO?`<p class="dgi">${MINI_INTRO}</p>`:''}<p>${o.desc}</p><button class="btn pri" id="dgstart">시작!</button></div></div>`;
+   <div class="dgov" id="dgov"><h3>${o.title}</h3>${MINI_INTRO?`<p class="dgi">${MINI_INTRO}</p>`:''}<p>${o.desc}</p><p class="dgr">🏅 <b>보상 안내</b> · 이기면 실수 0번 🥇 퍼펙트 <b>×1.7</b> · 1번 🥈 훌륭 <b>×1.3</b> · 그 외 🥉 기본 보상</p><button class="btn pri" id="dgstart">시작!</button></div></div>`;
   document.body.appendChild(el);
   const cv=el.querySelector('#dgc'),g=cv.getContext('2d');
   const sh={el,cv,g,W,H,over:false,
@@ -2920,7 +2921,7 @@ function startFart(done){
    <canvas id="dgc" width="${W}" height="${H}"></canvas>
    <div class="fgauge"><i id="fgi"></i><span id="fgt">뿡 게이지 0%</span></div>
    <button id="fbtn" class="fbtn">💨 누르는 동안 뿡!</button>
-   <div class="dgov" id="dgov"><h3>경연이의 비밀 작전! 재민이는 망잡이</h3>${MINI_INTRO?`<p class="dgi">${MINI_INTRO}</p>`:''}<p>버튼을 <b>누르고 있으면</b> 경연이가 방구를 뀌어요 💨<br>선생님이 <b>뒤돌아보면 바로 손을 떼고</b> 자는 척 😴<br>다시 칠판을 보면 또 뿡뿡!<br>${DUR}초 안에 게이지 100% 채우기, 2번 들키면 끝!</p><button class="btn pri" id="dgstart">시작!</button></div></div>`;
+   <div class="dgov" id="dgov"><h3>경연이의 비밀 작전! 재민이는 망잡이</h3>${MINI_INTRO?`<p class="dgi">${MINI_INTRO}</p>`:''}<p>버튼을 <b>누르고 있으면</b> 경연이가 방구를 뀌어요 💨<br>선생님이 <b>뒤돌아보면 바로 손을 떼고</b> 자는 척 😴<br>다시 칠판을 보면 또 뿡뿡!<br>${DUR}초 안에 게이지 100% 채우기, 2번 들키면 끝!</p><p class="dgr">🏅 <b>보상 안내</b> · 이기면 실수 0번 🥇 퍼펙트 <b>×1.7</b> · 1번 🥈 훌륭 <b>×1.3</b> · 그 외 🥉 기본 보상</p><button class="btn pri" id="dgstart">시작!</button></div></div>`;
   document.body.appendChild(o);
   const cv=document.getElementById('dgc'),g=cv.getContext('2d'),fbtn=document.getElementById('fbtn');
   const mk=()=>{const c=document.createElement('canvas');c.width=SPW*K;c.height=FULLH*K;let ok=outfitKeyFor();if(ok[0]==='_'){const jv=JV[ok.slice(1)];OUTFIT[ok]={top:jv?jv.c:'#7a8cd6',bot:'#3a4a6a',shoe:'#fff',sl:1,x:'tie:#ffffff'}}drawBody(c,OUTFIT.student,BODYY);const im=imgFor(HEADS.face,()=>{});if(im&&im.naturalWidth)drawHead(c,im,false,'face');return c};
