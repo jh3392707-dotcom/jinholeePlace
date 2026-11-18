@@ -3566,14 +3566,12 @@ function title(){
   <div class="tl-strip lg-strip"><div class="tl-in">${strip+strip}</div></div>
   <div class="card center"><p style="margin:2px 0">🔮 오늘의 운세: <b>${f[0]}</b> ${f[1]}<br><span class="mut">${f[3]}</span></p>
   <p class="mut" style="margin:6px 0 0">직업도, 연봉도, 점수도 모두 당신의 선택!</p></div>
-  <div class="evt" style="border-color:#c0392b"><h3>🧪 미니게임 테스트 (임시)</h3><p>10종 미니게임을 바로 해볼 수 있어요</p><button class="btn pri" id="mgtest">🎮 미니게임 열기</button></div>
-    <div class="evt"><h3>🎉 재민이 게임 오픈 이벤트!</h3>
+  <div class="evt"><h3>🎉 재민이 게임 오픈 이벤트!</h3>
    <p>최종 등급을 <b>인증</b>하면 선물이 팡팡!</p>
    <span class="rw">🏆 S·A등급 인증 → 혹한기 훈련 열외 + 베스킨라빈스 하프갤런 🍦</span>
    <span class="rw">🅱️ B등급 인증 → 혹한기 훈련 열외</span>
    <p class="mut">결과 화면의 인증 카드를 캡처해서 재민이에게 보여 주세요.</p></div>`;
   $('#nw').onclick=()=>{VIEW='create';create()};
-  {const mt=$('#mgtest');if(mt)mt.onclick=()=>{sfx('tap');openMinigames()}}
   const ct=$('#cont');if(ct)ct.onclick=()=>{S=sv;ensure(S);S.diff='hell';VIEW='play';SNAP=null;render()};
   $('#rk').onclick=()=>{VIEW='rank';rankView()};$('#achb').onclick=()=>{VIEW='ach';achView()};$('#ld').onclick=importSave;
 }
