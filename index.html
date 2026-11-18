@@ -255,6 +255,7 @@ header h1::after{content:" 🍁";font-size:18px}
   box-shadow:inset 0 0 0 2px #fff9,inset 0 -6px 0 #0000000d,0 5px 0 #0003;position:relative}
 :root[data-theme=dark] .card,:root[data-theme=dark] .evt{background:linear-gradient(#34408a,var(--card));box-shadow:inset 0 0 0 2px #fff2,0 5px 0 #0005}
 .card.ev{padding-top:22px}
+.card.ev .agewm{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:84px;font-weight:900;line-height:1;color:#c25a00;opacity:.09;pointer-events:none;user-select:none;z-index:0;letter-spacing:-2px}.card.ev>*:not(.agewm){position:relative;z-index:1}
 .card.ev::before{content:"QUEST!";position:absolute;left:12px;top:-12px;background:linear-gradient(#ffd45a,#ff9f1c);color:#fff;font-size:13px;padding:1px 12px 0;border:2px solid var(--wood);border-radius:10px;text-shadow:1px 1px 0 #8a4b00;letter-spacing:1px}
 .evt h3,h2{color:var(--ac);text-shadow:1px 1px 0 #fff8}
 :root[data-theme=dark] h2,:root[data-theme=dark] .evt h3{text-shadow:1px 1px 0 #0006}
@@ -541,22 +542,20 @@ canvas.spr{image-rendering:auto}
 .hdr .st{font-size:12px}.hdr .st b{font-size:13px}.hdr .st .bar{height:7px}
 .hdr .pdx .prop{width:26px;height:26px;font-size:15px}
 .hdr .hl2{font-size:11.5px}
-/* 상태창: 캐릭터는 가로 1/6, 나머지 5/6에 나이·이름·능력치를 크고 꽉 차게 */
-.hdr .hero{gap:8px;align-items:flex-start}
-.hdr .hero>.pdw{flex:0 0 16.66%;width:16.66%;max-width:16.66%}
+/* 상태창: 캐릭터를 크게(발 밑에는 아무것도 없음), 오른쪽 모든 글씨는 같은 크기로 */
+.hdr .hero{gap:10px;align-items:stretch}
+.hdr .hero>.pdw{flex:0 0 27%;width:27%;max-width:27%;display:flex;align-items:center;justify-content:center;margin:0}
 .hdr .hero>.pdw canvas.spr{width:100%!important;height:auto!important}
-.hdr .hmain{flex:1;min-width:0}
-.hdr .hl1{gap:7px;font-size:26px;line-height:1.15}
-.hdr .hl1 .lvl{font-size:24px}
-.hdr .hl1 .nick{font-size:13px;padding:2px 9px}
-.hdr .hl2{font-size:12px;line-height:1.6;margin:2px 0 4px}.hdr .hl2 .tag{font-size:11px;padding:0 6px;margin:0 2px 0 0}
-.hdr .stats{grid-template-columns:repeat(4,1fr);gap:7px 8px;margin-top:6px}
-.hdr .st{font-size:13px;font-weight:700;white-space:nowrap}.hdr .st b{font-size:16px}
-@media(max-width:390px){.hdr .st{font-size:11.5px;letter-spacing:-.4px}.hdr .st b{font-size:14.5px}.hdr .hl1{font-size:23px}.hdr .hl1 .lvl{font-size:21px}.hdr .pill{font-size:12.5px;padding:2px 7px}.hdr .hl2,.hdr .hl2 .tag{font-size:11px}}.hdr .st .bar{height:9px;border-radius:5px}
-.hdr .money{margin-top:6px;gap:5px}.hdr .pill{font-size:14px;font-weight:800;padding:2px 9px;border-width:2px;color:#3a2410}
-.hdr .hl2{font-size:13px;font-weight:700;color:#4a3320}.hdr .hl2 .tag{font-size:12px;font-weight:800;padding:0 6px;margin:0 2px 0 0;color:#3a2410;border-width:1.5px}
-.hdr .hl1 b{color:#2a1608}.hdr .st{color:#2a1608}.hdr .st b{color:#b84a00}
-
+.hdr .pdx .prop,.hdr .pdw .prop,.hdr .hero .prop{display:none!important}
+.hdr .hmain{flex:1;min-width:0;font-size:14px;font-weight:800;color:#2a1608}
+.hdr .hl1,.hdr .hl1 b,.hdr .hl1 .lvl,.hdr .hl1 .nick,.hdr .hl2,.hdr .hl2 .tag,.hdr .st,.hdr .st b,.hdr .pill{font-size:14px!important;line-height:1.3;font-weight:800}
+.hdr .hl1{gap:6px;margin-bottom:4px;flex-wrap:wrap;white-space:normal}
+.hdr .hl1 .lvl{padding:1px 9px;margin:0;border-radius:8px}
+.hdr .hl1 .nick{padding:1px 8px}
+.hdr .hl2{margin:0 0 5px;color:#4a3320}.hdr .hl2 .tag{padding:0 6px;margin:0 2px 2px 0;color:#3a2410}
+.hdr .stats{grid-template-columns:repeat(2,1fr);gap:3px 10px;margin-top:3px}
+.hdr .st{white-space:nowrap}.hdr .st b{color:#b84a00}.hdr .st .bar{height:6px;border-radius:4px;margin-top:0}
+.hdr .money{margin-top:5px;gap:4px;flex-wrap:wrap}.hdr .pill{padding:2px 9px;border-width:2px;color:#3a2410}
 
 .fgauge{position:relative;height:22px;margin:6px 2px 2px;background:#5a3a1a;border:2px solid var(--wood);border-radius:12px;overflow:hidden}
 .fgauge i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(#c9f27a,#6bbf2a)}
@@ -3341,8 +3340,8 @@ function header(){
   return `<div class="card hdr"><div class="hero">${avatar(112)}
   <div class="hmain"><div class="hl1"><span class="lvl">${S.age}세</span><b>${esc(S.name)}</b> <span class="nick${nickPop?' pop':''}">${esc(S.nick||'')}</span></div>
   <div class="hl2 mut">${S.flags.army&&!S.flags.served?'🪖 군 복무 중':j?`${j.e} ${j.n} · ${j.ranks[S.rank]||''}`:'학생'}${S.married?' · 💍':''}${S.kids?' · 👶'+S.kids:''}${S.pet?' · 🐾':''} <span class="tag">${bg.e} ${bg.n}</span><span class="tag">${tr.e} ${tr.n}</span>${S.age<=12?'<span class="tag">🏫 삼숭초</span>':S.age<=15?'<span class="tag">🏫 삼숭중</span>':''}${S.flags.deokhyun?'<span class="tag">🏫 덕현고</span>':''}${S.flags.seojeong?'<span class="tag">🎓 서정대</span>':''}</div>
-  <div class="stats">${STATS.concat(['hap','sts']).map(statBar).join('')}</div></div></div>
-  <div class="money"><span class="pill" data-k="m">💰 ${fmt(S.m)}</span>${S.inv>0?`<span class="pill">📈 ${fmt(S.inv)}</span>`:''}<span class="pill">💼 ${fmt(S.s)}</span><span class="pill">🎓 ${EDU[S.edu]}</span>${S.age>=25&&S.mates?`<span class="pill rk">🏫 ${classRank()}/6위</span>`:''}<span class="pill lkp" title="연속 실패 보정(행운 게이지)">🍀 ${lk}${(S.combo||0)>=2?` 🔥${S.combo}`:''}</span></div></div>`;
+  <div class="stats">${STATS.concat(['hap','sts']).map(statBar).join('')}</div>
+  <div class="money"><span class="pill" data-k="m">💰 ${fmt(S.m)}</span>${S.inv>0?`<span class="pill">📈 ${fmt(S.inv)}</span>`:''}<span class="pill">💼 ${fmt(S.s)}</span><span class="pill">🎓 ${EDU[S.edu]}</span>${S.age>=25&&S.mates?`<span class="pill rk">🏫 ${classRank()}/6위</span>`:''}<span class="pill lkp" title="연속 실패 보정(행운 게이지)">🍀 ${lk}${(S.combo||0)>=2?` 🔥${S.combo}`:''}</span></div></div></div></div>`;
 }
 function render(){
   const m=$('#main');
@@ -3358,7 +3357,7 @@ function render(){
   if(S.newAch.length){h+=`<div class="card" style="border-color:var(--ac)">🏆 업적 달성: ${S.newAch.join(', ')}</div>`;S.newAch=[]}
   if(S.res){
     const r=S.res;
-    h+=`<div class="card ev">${sceneHTML(EV[r.id],r.ok)}<h2>${r.t}</h2><p><span class="tag">${esc(r.pk)}</span></p><p>${r.ok===true?'✅ 성공! ':r.ok===false?'❌ 실패... ':''}${esc(r.m)}</p>
+    h+=`<div class="card ev"><div class="agewm">${S.age}세</div>${sceneHTML(EV[r.id],r.ok)}<h2>${r.t}</h2><p><span class="tag">${esc(r.pk)}</span></p><p>${r.ok===true?'✅ 성공! ':r.ok===false?'❌ 실패... ':''}${esc(r.m)}</p>
     ${r.p!=null?`<div class="mut">성공 확률 ${Math.round(r.p*100)}%</div>`:''}
     ${r.combo>=2&&r.ok?`<div class="combo">🔥 ${r.combo}연속 성공!</div>`:''}
     ${r.drop?`<div class="drop">🎁 아이템 획득: ${ITEMS[r.drop].e} ${ITEMS[r.drop].n} — ${ITEMS[r.drop].d}</div>`:''}
@@ -3369,7 +3368,7 @@ function render(){
     ${SNAP&&(!S.rewound||(S.items&&S.items.ticket>0))?`<button class="btn c" id="rew">⏪ 과거로 돌아가기 (${!S.rewound?'무료 1회':'🎟️ 티켓 사용'})</button>`:''}</div>`;
   }else if(S.cur){
     const e=EV[S.cur],chs=getChoices(e);
-    h+=`<div class="card ev${e.sur?' sur':''}">${sceneHTML(e)}<h2>${e.title}${e.sur?'<span class="sur-tag">🚨 돌발</span>':''}</h2><p>${esc(getText(e))}</p>`;
+    h+=`<div class="card ev${e.sur?' sur':''}"><div class="agewm">${S.age}세</div>${sceneHTML(e)}<h2>${e.title}${e.sur?'<span class="sur-tag">🚨 돌발</span>':''}</h2><p>${esc(getText(e))}</p>`;
     if(chs.some(c=>c.p!=null)){
       const it=S.items;
       h+=`<div class="itemrow">${['charm','tonic'].map(k=>it[k]>0?`<button class="ib" data-it="${k}" title="${ITEMS[k].d}">${ITEMS[k].e} ${ITEMS[k].n} ×${it[k]}</button>`:'').join('')}${S.charmOn?'<span class="tag">🧿 적용 중 +20%</span>':''}${S.tapBonus?`<span class="tag">🔥 연타 +${Math.round(S.tapBonus*100)}%</span>`:(S.tapKey===S.cur+'@'+S.age?'':'<button class="ib" id="tapb">🔥 연타로 확률↑</button>')}${it.ticket?`<span class="tag">🎟️ 되감기 티켓 ×${it.ticket}</span>`:''}</div>`;
