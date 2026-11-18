@@ -3273,7 +3273,7 @@ function calc(){
   let pen=S.over==='bankrupt'?-80:S.over==='health'?-70:S.over==='karoshi'?-90:0;
   const parts=[['재산',wealth,250],['연봉',inc,100],['행복',hap,150],['능력',abil,100],['가족',fam,110],['업적',ach,100],['콤보',Math.min(60,(S.maxCombo||0)*10),60],['스트레스',stp,0],['엔딩',pen,0]];
   const total=Math.round(parts.reduce((p,x)=>p+x[1],0));
-  const grade=total>=385?'S':total>=252?'A':total>=158?'B':total>=102?'C':'D'; /* 목표 비율 S3 : A7 : B20 : C35 : D35 (자동 플레이 기준 보정) */
+  const grade=total>=484?'S':total>=313?'A':total>=204?'B':total>=169?'C':'D'; /* 목표 비율 S3 : A7 : B20 : C35 : D35 (자동 플레이 기준 보정) */
   return {total,grade,parts};
 }
 function ending(){
