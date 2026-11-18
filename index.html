@@ -78,7 +78,7 @@ body[data-stage=old]::before{background-image:linear-gradient(135deg,#6a4a2a44,#
 .gbox{width:100%;max-width:460px;background:var(--card);border:3px solid var(--ac);border-radius:20px;padding:22px;text-align:center}
 .gt{font-size:24px;font-weight:800;color:var(--ac);margin-bottom:16px}
 .gbar{position:relative;height:30px;background:var(--bad);border-radius:15px;margin:22px 0 14px;opacity:.95}
-.gbar .gz{position:absolute;left:0;top:0;bottom:0;background:var(--ok);border-radius:15px 0 0 15px;min-width:6px}
+.gbar .gz{position:absolute;right:0;top:0;bottom:0;background:var(--ok);border-radius:0 15px 15px 0;min-width:6px}
 .gbar .gn{position:absolute;top:-9px;left:0;width:6px;height:48px;margin-left:-3px;background:#fff;border-radius:3px;box-shadow:0 0 12px #fff;transition:left 1.25s cubic-bezier(.12,.85,.2,1)}
 .gs{font-size:19px;min-height:30px;margin-top:6px}
 #gauge.win .gbox{animation:pop .5s}#gauge.lose .gbox{animation:shake .5s}
@@ -1137,10 +1137,10 @@ function confetti(n){
 function gaugeAnim(p,r,ok,cb){
   if(reduced()){cb();return}
   const o=document.createElement('div');o.id='gauge';
-  o.innerHTML=`<div class="gbox"><div class="gt">🎲 운명의 게이지</div><div class="gbar"><i class="gz" style="width:${Math.max(.8,p*100)}%"></i><b class="gn"></b></div><div class="gs">성공 구간 ${Math.max(1,Math.round(p*100))}% · 바늘이 초록 구간에 멈추면 성공!</div></div>`;
+  o.innerHTML=`<div class="gbox"><div class="gt">🎲 운명의 게이지</div><div class="gbar"><i class="gz" style="width:${Math.max(.8,p*100)}%"></i><b class="gn"></b></div><div class="gs">성공 구간 ${Math.max(1,Math.round(p*100))}% · 바늘이 오른쪽 초록 구간에 멈추면 성공!</div></div>`;
   document.body.appendChild(o);
   const n=o.querySelector('.gn');void n.offsetWidth;
-  requestAnimationFrame(()=>{n.style.left=(r*100)+'%'});
+  requestAnimationFrame(()=>{n.style.left=((1-r)*100)+'%'});
   let k=0;const tk=setInterval(()=>{beep(300+k*40,.03);if(++k>9)clearInterval(tk)},110);
   setTimeout(()=>{const g=o.querySelector('.gs');if(g)g.innerHTML=ok?'<b style="color:var(--ok);font-size:26px">✅ 성공!!</b>':'<b style="color:var(--bad);font-size:26px">❌ 실패...</b>';o.classList.add(ok?'win':'lose')},1350);
   setTimeout(()=>{o.remove();cb()},1950);
