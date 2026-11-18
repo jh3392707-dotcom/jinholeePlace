@@ -970,7 +970,7 @@ const ACH=[
 ['clanace','🎯 클랜전 에이스','클랜전에서 에이스를 잡았다',()=>S.flags.clan_ace],
 ['fifawin','⚽ 피파 우승자','밤샘 PC방 피파 결승에서 이겼다',()=>S.flags.fifa_win],
 ['shop1','🏪 찬호네 첫 손님','찬호 가게에서 첫 계산을 했다',()=>(S.flags.shopN||0)>=1],
-['shop5','💸 찬호의 VIP','찬호 가게에 3번 불려 갔다',()=>(S.flags.shopN||0)>=3],
+['shop5','💸 찬호의 VIP','찬호 가게에 2번 불려 갔다',()=>(S.flags.shopN||0)>=2],
 ['shop10','🧾 도망의 달인','찬호 가게에서 2번 도망 성공',()=>(S.flags.shopEsc||0)>=2],
 ['japan','🚇 일본 지하철 낙오자','일본 여행 중 혼자 열차를 놓쳤다',()=>S.seen&&S.seen.japan_lost!=null],
 ['jinhoangry','🔥 진호의 분노 체험','진호가 여행 3일 전 화를 냈다',()=>S.seen&&S.seen.jinho_angry!=null],
@@ -1094,7 +1094,7 @@ ev('ch_shop',29,58,'🏪 찬호의 가게, 인생은 아름다워',S=>{const n=S
 {t:'🚻 "화장실 다녀올게" 하고 슬쩍 일어난다',fx:{},m:'',mini:8,force:'"화장실 다녀올게!" 큰소리로 말하고 일어섰다. 하지만 재민이의 발은 화장실이 아니라 출구를 향하고 있다. 찬호의 도마질 소리가 난다. 그 소리에 맞춰 발걸음을 숨겨야 한다!',fn:S=>{S.flags.shopN=(S.flags.shopN||0)+1;S.flags.shopNext=S.age+1;
   if(DODGE.win){S.flags.shopEsc=(S.flags.shopEsc||0)+1;return [{hap:7,soc:-1,sts:-3,f:['shop_escape']},'"화장실"로 위장해 출구까지 살금살금! 문을 열고 나온 순간 재민이는 자유를 얻었다. 찬호가 한참 뒤에야 "재민아 화장실 길다?" 하고 카톡을 보냈다.']}
   return [{m:-10,sts:3,hap:-3,soc:1},'"화장실 가는 길이 왜 문 쪽이냐" 찬호가 눈을 가늘게 떴다. 도망은 실패했고 10만 원은 두 배의 눈치와 함께 나갔다.']}}
-],{w:14,c:S=>S.age>=29&&(S.flags.shopN||0)<3,sur:1,rep:9});
+],{w:14,c:S=>S.age>=29&&(S.flags.shopN||0)<2,sur:1,rep:9});
 /* --- 이교현에게 고백하고 까이는 이벤트 --- */
 ev('confess_gh',18,19,'💘 이교현에게 용기를 내서','재민이는 이교현에게 오랫동안 마음이 있었다. 오늘은 큰맘 먹고 고백하기로 했다. 손은 떨리고 심장은 두근거린다. 어떤 방식으로 마음을 전할까?',[
 c('📞 직접 만나서 고백한다',{hap:-6,sts:4,chr:3},'"교현아, 나... 너 좋아해." 이교현은 잠시 말이 없다가 부드럽게 웃었다. "재민아, 고마워. 그런데 나는 널 친구로만 생각해 왔어." 깔끔하게 까였다. 하지만 이교현은 끝까지 다정했고 용기 낸 것만은 인정받았다.',{noRisk:1}),
@@ -2062,7 +2062,7 @@ function eligible(){
 function chooseEvent(){
   for(const e of EVL){if(e.at!=null&&S.age>=e.at&&!S.seen[e.id]&&S.age<=e.b+(e.id==='retire'?0:3)){S.seen[e.id]=S.age;if(e.c&&!e.c(S))continue;return e.id}}
   /* 찬호의 가게: 첫 호출 뒤에는 매년(1주 느낌으로) 꾸준히 불려 나감, 최대 10번 */
-  if((S.flags.shopN||0)>0&&(S.flags.shopN||0)<3&&S.age>=(S.flags.shopNext||0)+2&&S.age<=62&&S.cur!=='ch_shop'&&!S.seen['ch_shop@'+S.age]){S.seen['ch_shop@'+S.age]=1;return 'ch_shop'}
+  if((S.flags.shopN||0)>0&&(S.flags.shopN||0)<2&&S.age>=(S.flags.shopNext||0)+2&&S.age<=62&&S.cur!=='ch_shop'&&!S.seen['ch_shop@'+S.age]){S.seen['ch_shop@'+S.age]=1;return 'ch_shop'}
   const pool=eligible();
   if(!pool.length||Math.random()<.08)return 'quiet';
   const tot=pool.reduce((p,e)=>p+e.w,0);let r=Math.random()*tot;
