@@ -674,17 +674,17 @@ const SFX={
   whoosh:()=>noise(.35,.1,0,'bandpass',400,3000),
   fail:()=>{[392,370,349,311].forEach((f,i)=>tone(f,i<3?.26:.7,'sawtooth',.08,i*.28));tone(311,.7,'sawtooth',.05,.84,277)},
   sizzle:()=>{noise(.9,.12,0,'highpass',3500,6000);for(let i=0;i<6;i++)noise(.03,.2,i*.12+Math.random()*.05,'highpass',2500)},
-  fart:()=>{const v=(Math.random()*3)|0;
+  fart:()=>{const v=(Math.random()*3)|0; /* 방구 소리 2배 */
     if(v===0){ /* 길고 우렁찬 한 방 */
-      tone(78,.9,'sawtooth',.2,0,48);tone(71,.9,'square',.08,.02,44);noise(.8,.1,0,'lowpass',380,120);
-      for(let i=0;i<14;i++)tone(120+i*3,.05,'sawtooth',.05,i*.06+.05)}
+      tone(78,.9,'sawtooth',.4,0,48);tone(71,.9,'square',.16,.02,44);noise(.8,.2,0,'lowpass',380,120);
+      for(let i=0;i<14;i++)tone(120+i*3,.05,'sawtooth',.1,i*.06+.05)}
     else if(v===1){ /* 뿡뿡 연속 */
-      [0,.17,.34,.58].forEach((t,i)=>{tone(120-i*12,.14,'sawtooth',.18,t,70-i*6);noise(.12,.08,t,'lowpass',420,160)})}
+      [0,.17,.34,.58].forEach((t,i)=>{tone(120-i*12,.14,'sawtooth',.36,t,70-i*6);noise(.12,.16,t,'lowpass',420,160)})}
     else{ /* 삐~익 새는 소리 + 뿌직 */
-      tone(420,.55,'sine',.05,0,160);tone(90,.5,'sawtooth',.16,.12,52);noise(.55,.12,.05,'bandpass',700,250);
-      [0,.1,.2,.3].forEach(t=>noise(.06,.16,.4+t,'lowpass',250))}
+      tone(420,.55,'sine',.1,0,160);tone(90,.5,'sawtooth',.32,.12,52);noise(.55,.24,.05,'bandpass',700,250);
+      [0,.1,.2,.3].forEach(t=>noise(.06,.32,.4+t,'lowpass',250))}
   },
-  fartsm:()=>{tone(130,.18,'sawtooth',.1,0,78);noise(.16,.06,0,'lowpass',380,160)},
+  fartsm:()=>{tone(130,.18,'sawtooth',.2,0,78);noise(.16,.12,0,'lowpass',380,160)},
   siren:()=>{for(let i=0;i<4;i++){tone(700,.25,'square',.05,i*.5,950);tone(950,.25,'square',.05,i*.5+.25,700)}},
   fire:()=>{tone(150,.45,'square',.12);tone(110,.7,'square',.12,.4);noise(.3,.06,0,'lowpass',400)},
   heart:()=>{tone(784,.15,'sine',.11);tone(988,.15,'sine',.11,.12);tone(1175,.4,'sine',.1,.24)},
@@ -2641,7 +2641,7 @@ function fartStart(){
     const o=c.createOscillator(),o2=c.createOscillator(),l=c.createOscillator(),lg=c.createGain(),g=c.createGain(),f=c.createBiquadFilter();
     o.type='sawtooth';o2.type='square';o.frequency.value=84;o2.frequency.value=79;l.frequency.value=22;lg.gain.value=14;
     l.connect(lg);lg.connect(o.frequency);lg.connect(o2.frequency);f.type='lowpass';f.frequency.value=420;
-    g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.22,c.currentTime+.05);
+    g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.44,c.currentTime+.05);
     o.connect(f);o2.connect(f);f.connect(g);g.connect(SG);o.start();o2.start();l.start();
     FARTL.o={o,o2,l,g,f}}catch(e){}
 }
