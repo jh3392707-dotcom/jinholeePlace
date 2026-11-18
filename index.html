@@ -2687,8 +2687,15 @@ function startSubway(done){
     g.fillStyle='#e8c84a';g.fillRect(0,GY+4,W,8);g.fillStyle='#b7bcc8';g.fillRect(0,GY+12,W,H-GY-12);g.fillStyle='#9aa0ae';for(let i=0;i<10;i++){const x=((i*48-t*sp)%(W+48)+W+48)%(W+48)-24;g.fillRect(x,GY+28,26,3)}
     // 열차
     const dp=Math.min(1,dist/100);let tx=96+(1-dp)*154;const door=dep<0?1:Math.max(0,1-dep/.9);if(dep>.9)tx+=Math.pow(dep-.9,2)*420;
-    g.fillStyle='#e8eef8';g.fillRect(tx,GY-150,260,150);g.fillStyle='#2a6fd6';g.fillRect(tx,GY-40,260,16);g.fillStyle='#3a4a6a';g.fillRect(tx+20,GY-130,50*door+6,90);g.fillRect(tx+120,GY-130,50*door+6,90);g.font='16px "Jua",sans-serif';g.fillStyle='#2a3a5a';g.textAlign='left';g.fillText(dep>.9?'열차가 떠납니다...':dep>=0?'문이 닫힙니다!!':'탑승 구간',tx+8,GY-146);
-    {const cx=tx+48,top=GY-92;g.fillStyle='#4a5f9a';g.fillRect(cx-13,top+28,26,42);g.fillStyle='#2a3350';g.fillRect(cx-11,top+70,9,22);g.fillRect(cx+2,top+70,9,22);if(!chanhoFace(g,cx,top+4,54,true)){g.font='40px sans-serif';g.fillStyle='#000';g.textAlign='center';g.fillText('😝',cx,top+22)}g.font='12px "Jua",sans-serif';g.textAlign='center';g.fillStyle='#fff';g.strokeStyle='#000';g.lineWidth=3;const sy=dep>=0?'재민아!! 문 닫힌다!!':'재민아 빨리!';g.strokeText('찬호: '+sy,cx,top-34);g.fillText('찬호: '+sy,cx,top-34)}
+    g.fillStyle='#e8eef8';g.fillRect(tx,GY-150,260,150);g.fillStyle='#2a6fd6';g.fillRect(tx,GY-40,260,16);
+    g.font='16px "Jua",sans-serif';g.fillStyle='#2a3a5a';g.textAlign='left';g.fillText(dep>.9?'열차가 떠납니다...':dep>=0?'문이 닫힙니다!!':'탑승 구간',tx+8,GY-146);
+    /* 승차 문 2개: 안쪽(어두운 객실)에 찬호가 서 있고, 문짝이 양쪽에서 닫히며 찬호를 가린다 */
+    const DX=[tx+18,tx+120],DW=64,DY=GY-132,DH=96;
+    DX.forEach((x0,di)=>{g.fillStyle='#2a3550';g.fillRect(x0,DY,DW,DH);
+      if(di===0){g.save();g.beginPath();g.rect(x0,DY,DW,DH);g.clip();const cx=x0+DW/2,top=GY-92;g.fillStyle='#4a5f9a';g.fillRect(cx-13,top+28,26,42);g.fillStyle='#2a3350';g.fillRect(cx-11,top+70,9,22);g.fillRect(cx+2,top+70,9,22);if(!chanhoFace(g,cx,top+4,54,true)){g.font='40px sans-serif';g.fillStyle='#000';g.textAlign='center';g.fillText('😝',cx,top+22)}g.restore()}
+      const cw=DW/2*(1-door);if(cw>0){g.fillStyle='#c9d3e8';g.fillRect(x0,DY,cw,DH);g.fillRect(x0+DW-cw,DY,cw,DH);g.fillStyle='#8896b4';g.fillRect(x0+cw-2,DY,2,DH);g.fillRect(x0+DW-cw,DY,2,DH)}
+      g.strokeStyle='#5a6a8a';g.lineWidth=2;g.strokeRect(x0,DY,DW,DH)});
+    if(door>.3){const cx=DX[0]+DW/2;g.font='12px "Jua",sans-serif';g.textAlign='center';g.fillStyle='#fff';g.strokeStyle='#000';g.lineWidth=3;const sy=dep>=0?'재민아!! 문 닫힌다!!':'재민아 빨리!';g.strokeText('찬호: '+sy,cx,GY-158);g.fillText('찬호: '+sy,cx,GY-158)}
     obs.forEach(o=>{g.font=Math.max(34,o.h)+'px sans-serif';g.textAlign='left';g.fillStyle='#000';g.fillText(o.e,o.x-4,GY+2)});
     g.imageSmoothingEnabled=false;const sw=SPW*1.7,sh2=FULLH*1.7;if(flash>0&&Math.floor(flash*20)%2)g.globalAlpha=.4;g.drawImage(spr.c,0,0,SPW*K,FULLH*K,56,GY-sh2+8+y,sw,sh2);g.globalAlpha=1;
     g.fillStyle='#e8433d';g.fillRect(12,H-18,(dist/100)*(W-24),8);g.strokeStyle='#3a220a';g.lineWidth=2;g.strokeRect(12,H-18,W-24,8);g.font='12px "Jua",sans-serif';g.fillStyle='#4a2f14';g.textAlign='center';g.fillText('터치하면 점프!',W/2,H-26);
@@ -2777,6 +2784,19 @@ function startSA(done){
 }
 
 /* ===== 미니게임: 피파온라인3 승부차기 ===== */
+/* 진짜 축구공: 흰 바탕 + 검은 오각형 + 이음선 + 입체감 */
+function soccerBall(g,r){
+  g.save();g.beginPath();g.arc(0,0,r,0,7);g.clip();
+  const gr=g.createRadialGradient(-r*.35,-r*.4,r*.1,0,0,r);gr.addColorStop(0,'#ffffff');gr.addColorStop(.7,'#f4f5f8');gr.addColorStop(1,'#c9ced8');g.fillStyle=gr;g.fillRect(-r,-r,r*2,r*2);
+  const pent=(cx,cy,pr,rot)=>{g.beginPath();for(let i=0;i<5;i++){const a=rot+i*Math.PI*2/5;const x=cx+Math.cos(a)*pr,y=cy+Math.sin(a)*pr;i?g.lineTo(x,y):g.moveTo(x,y)}g.closePath()};
+  g.strokeStyle='#9aa0ac';g.lineWidth=1.2;g.fillStyle='#1a1d24';
+  const cr=r*.34;
+  for(let i=0;i<5;i++){const a=-Math.PI/2+i*Math.PI*2/5;const vx=Math.cos(a)*cr,vy=Math.sin(a)*cr,ox=Math.cos(a)*r*.98,oy=Math.sin(a)*r*.98;g.beginPath();g.moveTo(vx,vy);g.lineTo(Math.cos(a)*r*.62,Math.sin(a)*r*.62);g.stroke();
+    const b=a+Math.PI*2/10;g.beginPath();g.moveTo(Math.cos(a)*r*.62,Math.sin(a)*r*.62);g.lineTo(Math.cos(b)*r*.78,Math.sin(b)*r*.78);g.stroke();
+    pent(Math.cos(b)*r*1.06,Math.sin(b)*r*1.06,r*.4,b+Math.PI);g.fill()}
+  pent(0,0,cr,-Math.PI/2);g.fill();
+  g.restore();g.beginPath();g.arc(0,0,r,0,7);g.lineWidth=1.6;g.strokeStyle='#7d8492';g.stroke();
+}
 function startPK(done){
   const KICKS=5,NEED=3;
   const sh=mgShell({hud:'⚽ 피파온라인3 승부차기',life:'0 : 0',time:'1/5',title:'결승전 승부차기!',done,
@@ -2820,7 +2840,7 @@ function startPK(done){
     if(phase==='aim'){g.strokeStyle='#ffd24a';g.lineWidth=3;g.beginPath();g.arc(ax,(GY0+GY1)/2,18,0,7);g.moveTo(ax-26,(GY0+GY1)/2);g.lineTo(ax+26,(GY0+GY1)/2);g.moveTo(ax,(GY0+GY1)/2-26);g.lineTo(ax,(GY0+GY1)/2+26);g.stroke()}
     if(phase==='power'||phase==='aim'){const bx=W-40,by=250,bh=190;g.fillStyle='#3a220a';g.fillRect(bx-3,by-3,26,bh+6);const seg=[[0,.34,'#e8433d'],[.34,.62,'#ffd24a'],[.62,.84,'#4fc22b'],[.84,1,'#e8433d']];seg.forEach(([a,b,c])=>{g.fillStyle=c;g.fillRect(bx,by+bh-b*bh,20,(b-a)*bh)});
       if(phase==='power'){g.fillStyle='#fff';g.fillRect(bx-8,by+bh-pw*bh-3,36,6)}g.font='11px "Jua",sans-serif';g.fillStyle='#fff';g.textAlign='center';g.fillText('파워',bx+10,by-8)}
-    g.font=(phase==='shoot'?34-ball.s*0:34)+'px sans-serif';g.textAlign='center';g.fillStyle='#000';const sc=phase==='shoot'?1-.5*Math.min(1,anim):1;g.save();g.translate(ball.x,ball.y);g.scale(sc,sc);g.fillStyle='#ffffff';g.beginPath();g.arc(0,0,15,0,7);g.fill();g.lineWidth=2;g.strokeStyle='#b8bec8';g.stroke();g.restore();
+    g.font=(phase==='shoot'?34-ball.s*0:34)+'px sans-serif';g.textAlign='center';g.fillStyle='#000';const sc=phase==='shoot'?1-.5*Math.min(1,anim):1;g.save();g.translate(ball.x,ball.y);g.scale(sc,sc);soccerBall(g,16);g.restore();
     g.imageSmoothingEnabled=false;g.drawImage(spr.c,0,0,SPW*K,FULLH*K,40,400,SPW*1.9,FULLH*1.9);
     g.font='13px "Jua",sans-serif';g.fillStyle='#fff';g.textAlign='left';g.fillText('결과: '+res.map(x=>x?'⚽':'❌').join(' ')+' '+'⬜ '.repeat(KICKS-res.length),12,H-14);
     g.textAlign='center';g.font='15px "Jua",sans-serif';g.fillStyle='#fff';g.fillText(phase==='aim'?'터치! 조준을 멈춰요':phase==='power'?'터치! 초록 구간에서 멈춰요':'',W/2,250);
