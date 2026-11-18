@@ -550,6 +550,7 @@ canvas.spr{image-rendering:auto}
 .hdr .hmain{flex:1;min-width:0;font-size:13px;font-weight:800;color:#2a1608}
 .hdr .hl1,.hdr .hl1 b,.hdr .hl1 .lvl,.hdr .hl1 .nick,.hdr .hl2,.hdr .hl2 .tag,.hdr .st,.hdr .st b,.hdr .pill{font-size:13px!important;letter-spacing:-.3px;line-height:1.3;font-weight:800}
 .hdr .hl1{gap:6px;margin-bottom:4px;flex-wrap:wrap;white-space:normal}
+.hdr .hl1 .lvl{font-size:24px!important;padding:2px 12px!important;border-width:2.5px!important;letter-spacing:.5px}
 .hdr .hl1 .lvl{padding:1px 9px;margin:0;border-radius:8px}
 .hdr .hl1 .nick{padding:1px 8px}
 .hdr .hl2{margin:0 0 5px;color:#4a3320}.hdr .hl2 .tag{padding:0 6px;margin:0 2px 2px 0;color:#3a2410}
@@ -2837,7 +2838,7 @@ function startPK(done){
   function kick(){
     sfx('kick');
     // 키퍼: 조준을 읽고 방향 선택(55%)
-    const read=Math.random()<.55,side=read?(lockX<180?-1:1):(Math.random()<.5?-1:1),mid=!read&&Math.random()<.18;
+    const read=Math.random()<.55,cz=Math.abs(lockX-180)<=38,side=read?(lockX<180?-1:1):(Math.random()<.5?-1:1),mid=cz?Math.random()<.65:(!read&&Math.random()<.18);
     keeper.target=mid?180:180+side*82;keeper.h=0;
     const x=lockX,wide=x<GX0+6||x>GX1-6,over_=power>.84,weak=power<.34,strong=power>=.62&&power<=.84;
     const cover=strong?30:weak?60:46;
@@ -2845,7 +2846,7 @@ function startPK(done){
     outcome=wide?'wide':over_?'over':saved?'saved':'goal';
     ball.s=0;ball.fx=x;ball.fy=over_?GY0-40:wide?GY0+50:(strong?GY0+18:GY0+(1-Math.min(1,power*1.15))*70+30);anim=0}
   function nextKick(){res.push(outcome==='goal');if(outcome==='goal')goals++;
-    const left=KICKS-res.length;if(goals>=NEED||goals+left<NEED||res.length>=KICKS){end();return}
+    if(res.length>=KICKS){end();return}
     k++;phase='aim';ax=GX0;aDir=1;aSpeed=290+k*30;ball={x:180,y:440,s:0};keeper={x:180,dive:0,target:180,h:0};sh.time((k+1)+'/'+KICKS);outcome=null;say=''}
   function start(){run=true;last=performance.now();ax=GX0;sfx('whistle');raf=requestAnimationFrame(loop)}
   function loop(now){
