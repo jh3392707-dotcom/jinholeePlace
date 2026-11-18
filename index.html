@@ -541,6 +541,20 @@ canvas.spr{image-rendering:auto}
 .hdr .st{font-size:12px}.hdr .st b{font-size:13px}.hdr .st .bar{height:7px}
 .hdr .pdx .prop{width:26px;height:26px;font-size:15px}
 .hdr .hl2{font-size:11.5px}
+/* 상태창: 캐릭터는 가로 1/6, 나머지 5/6에 나이·이름·능력치를 크고 꽉 차게 */
+.hdr .hero{gap:8px;align-items:flex-start}
+.hdr .hero>.pdw{flex:0 0 16.66%;width:16.66%;max-width:16.66%}
+.hdr .hero>.pdw canvas.spr{width:100%!important;height:auto!important}
+.hdr .hmain{flex:1;min-width:0}
+.hdr .hl1{gap:7px;font-size:26px;line-height:1.15}
+.hdr .hl1 .lvl{font-size:24px}
+.hdr .hl1 .nick{font-size:13px;padding:2px 9px}
+.hdr .hl2{font-size:12px;line-height:1.6;margin:2px 0 4px}.hdr .hl2 .tag{font-size:11px;padding:0 6px;margin:0 2px 0 0}
+.hdr .stats{grid-template-columns:repeat(4,1fr);gap:7px 8px;margin-top:6px}
+.hdr .st{font-size:13px;font-weight:700;white-space:nowrap}.hdr .st b{font-size:16px}
+@media(max-width:390px){.hdr .st{font-size:11.5px;letter-spacing:-.4px}.hdr .st b{font-size:14.5px}.hdr .hl1{font-size:23px}.hdr .hl1 .lvl{font-size:21px}.hdr .pill{font-size:12px;padding:2px 8px}}.hdr .st .bar{height:9px;border-radius:5px}
+.hdr .money{margin-top:7px}.hdr .pill{font-size:13px;padding:2px 10px}
+
 
 .fgauge{position:relative;height:22px;margin:6px 2px 2px;background:#5a3a1a;border:2px solid var(--wood);border-radius:12px;overflow:hidden}
 .fgauge i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(#c9f27a,#6bbf2a)}
