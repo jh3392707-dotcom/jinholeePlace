@@ -2415,7 +2415,7 @@ function gaugeAnim(p,r,ok,cb){
   const n=o.querySelector('.gn');n.style.left='0%';void n.offsetWidth;
   const hop=(pct,ms,ease)=>{n.style.transition=`left ${ms}ms ${ease||'linear'}`;n.style.left=pct+'%'};
   const sw=[92,6,78,22,60,34];let t=0;
-  const SP=1.5; /* 속도 배율 */
+  const SP=.75; /* 속도 배율 */
   sw.forEach((v,i)=>{setTimeout(()=>{hop(v,210/SP);sfx('gsweep')},(i*240+30)/SP)});
   setTimeout(()=>{hop((fin*100).toFixed(2),1100/SP,'cubic-bezier(.1,.8,.2,1)');sfx('gdrum')},(sw.length*240+30)/SP);
   /* 심장 박동: 점점 빨라짐 + 바늘이 멈출 때 딸깍 */
