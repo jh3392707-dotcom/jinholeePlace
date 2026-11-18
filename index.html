@@ -543,19 +543,19 @@ canvas.spr{image-rendering:auto}
 .hdr .pdx .prop{width:26px;height:26px;font-size:15px}
 .hdr .hl2{font-size:11.5px}
 /* 상태창: 캐릭터를 크게(발 밑에는 아무것도 없음), 오른쪽 모든 글씨는 같은 크기로 */
-.hdr .hero{gap:10px;align-items:stretch}
+.hdr .hero{gap:10px;align-items:stretch;min-height:226px}
 .hdr .hero>.pdw{flex:0 0 27%;width:27%;max-width:27%;display:flex;align-items:center;justify-content:center;margin:0}
 .hdr .hero>.pdw canvas.spr{width:100%!important;height:auto!important}
 .hdr .pdx .prop,.hdr .pdw .prop,.hdr .hero .prop{display:none!important}
-.hdr .hmain{flex:1;min-width:0;font-size:15px;display:flex;flex-direction:column;justify-content:space-between;font-weight:800;color:#2a1608}
-.hdr .hl1,.hdr .hl1 b,.hdr .hl1 .lvl,.hdr .hl1 .nick,.hdr .hl2,.hdr .hl2 .tag,.hdr .st,.hdr .st b,.hdr .pill{font-size:15px!important;letter-spacing:-.4px;line-height:1.3;font-weight:800}
+.hdr .hmain{flex:1;min-width:0;font-size:var(--hf,15px);display:flex;flex-direction:column;justify-content:space-between;font-weight:800;color:#2a1608}
+.hdr .hl1,.hdr .hl1 b,.hdr .hl1 .lvl,.hdr .hl1 .nick,.hdr .hl2,.hdr .hl2 .tag,.hdr .st,.hdr .st b,.hdr .pill{font-size:var(--hf,15px)!important;letter-spacing:-.4px;line-height:1.3;font-weight:800}
 .hdr .hl1{gap:6px;margin-bottom:0;flex-wrap:wrap;white-space:normal}
 .hdr .hl1 .lvl{padding:1px 9px;margin:0;border-radius:8px}
 .hdr .hl1 .nick{padding:1px 8px}
 .hdr .hl2{margin:0 0 5px;color:#4a3320}.hdr .hl2 .tag{padding:0 6px;margin:0 2px 2px 0;color:#3a2410}
 .hdr .stats{grid-template-columns:repeat(3,1fr);gap:3px 8px;margin-top:3px}
 .hdr .stats .st:last-child{grid-column:1/-1}.hdr .st{white-space:nowrap}.hdr .st b{color:#b84a00}.hdr .st .bar{height:6px;border-radius:4px;margin-top:0}
-.hdr .money{margin-top:5px;gap:4px;flex-wrap:wrap}.hdr .pill{padding:2px 9px;border-width:2px;color:#3a2410}
+.hdr .money{margin-top:5px;gap:4px;flex-wrap:wrap}.hdr .money .pill{flex:1 1 auto;text-align:center;justify-content:center}.hdr .pill{padding:2px 9px;border-width:2px;color:#3a2410}
 
 .fgauge{position:relative;height:22px;margin:6px 2px 2px;background:#5a3a1a;border:2px solid var(--wood);border-radius:12px;overflow:hidden}
 .fgauge i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(#c9f27a,#6bbf2a)}
@@ -3352,6 +3352,17 @@ function header(){
   <div class="stats">${STATS.concat(['hap','sts']).map(statBar).join('')}</div>
   <div class="money"><span class="pill" data-k="m">💰 ${fmt(S.m)}</span>${S.inv>0?`<span class="pill">📈 ${fmt(S.inv)}</span>`:''}<span class="pill">💼 ${fmt(S.s)}</span><span class="pill">🎓 ${EDU[S.edu]}</span>${S.age>=25&&S.mates?`<span class="pill rk">🏫 ${classRank()}/6위</span>`:''}<span class="pill lkp" title="연속 실패 보정(행운 게이지)">🍀 ${lk}${(S.combo||0)>=2?` 🔥${S.combo}`:''}</span></div></div></div></div>`;
 }
+/* 상태창: 캐릭터 높이(카드 크기)는 그대로 두고, 오른쪽 글자를 칸이 꽉 차는 가장 큰 크기로 자동 맞춤 (모든 글자 같은 크기) */
+function fitHdr(){
+  const hm=document.querySelector('.hdr .hmain');if(!hm)return;
+  const hero=hm.parentElement,cv=hero.querySelector('canvas');
+  const H=Math.max((cv?cv.offsetHeight:150)+6,parseFloat(getComputedStyle(hero).minHeight)||0);
+  hm.style.alignSelf='flex-start';let best=12;
+  for(let f=30;f>=12;f-=.25){hm.style.setProperty('--hf',f+'px');
+    if(hm.offsetHeight<=H&&hm.scrollWidth<=hm.clientWidth+1){best=f;break}}
+  hm.style.setProperty('--hf',best+'px');hm.style.alignSelf='';
+}
+addEventListener('resize',()=>{try{fitHdr()}catch(e){}});
 function render(){
   const m=$('#main');
   if(!S||VIEW==='title'){return title()}
@@ -3387,7 +3398,7 @@ function render(){
     h+=`</div>`;
   }
   h+=`<div class="row"><button class="btn c" id="bSave">💾 내보내기</button><button class="btn c" id="bLoad">📂 불러오기</button><button class="btn c" id="bHome">🏠 처음</button></div>`;
-  m.innerHTML=h;
+  m.innerHTML=h;try{fitHdr()}catch(e){}
   m.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{sTap();choose(+b.dataset.i)});
   const nx=$('#next');if(nx)nx.onclick=()=>{sfx('whoosh');S.res=null;SNAP=SNAP;if(S.over){S.cur=null;render();return}advance();if(S.over)S.res=null;save();render()};
   m.querySelectorAll('.ib[data-it]').forEach(b=>b.onclick=()=>{const k=b.dataset.it;ensure(S);if(!(S.items[k]>0))return;if(k==='charm'){if(S.charmOn)return;S.items.charm--;S.charmOn=1;toast('🧿 행운의 부적 발동! 다음 도전 +20%')}else if(k==='tonic'){S.items.tonic--;apply({sts:-20,hap:5});toast('💊 영양제 복용! 스트레스 -20')}beep(700,.1);save();render()});
