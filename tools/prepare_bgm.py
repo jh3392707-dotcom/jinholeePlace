@@ -14,4 +14,6 @@ files=sorted(p.name for p in d.iterdir() if p.suffix.lower() in {".mp3",".ogg","
 (d/"manifest.js").write_text("window.BGM_MANIFEST="+json.dumps(files,ensure_ascii=False)+";\n",encoding="utf8")
 tot=sum((d/f).stat().st_size for f in files)/1048576
 print("BGM",len(files),"개:",", ".join(files) or "(없음 - 자동 합성 음악 사용)",f"/ {tot:.1f}MB")
-if tot>12: print("⚠ 12MB가 넘어요. 공유 링크(아티팩트)는 전체 16MB 제한이라 mp3 비트레이트를 줄이는 게 좋아요.")
+big=[f for f in files if (d/f).stat().st_size>14*1048576]
+if big: print("⚠ 15MB가 넘는 파일은 공유 링크에 올릴 수 없어요:", ", ".join(big))
+if tot>100: print("⚠ 전체 100MB가 넘어요. 줄이는 게 좋아요.")
