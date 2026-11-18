@@ -26,8 +26,8 @@ for k,(x0,y0,x1,y1) in RECT.items():
     pass
     rgba=cv2.cvtColor(big,cv2.COLOR_BGR2BGRA);rgba[:,:,3]=mask
     ys,xs=np.where(mask>0);rgba=rgba[ys.min():ys.max()+1,xs.min():xs.max()+1]
-    hh,ww=rgba.shape[:2];sc=88/max(hh,ww)
+    hh,ww=rgba.shape[:2];sc=176/max(hh,ww)
     rgba=cv2.resize(rgba,(max(1,int(ww*sc)),max(1,int(hh*sc))),interpolation=cv2.INTER_AREA)
-    canvas=np.zeros((96,96,4),np.uint8);oy=96-rgba.shape[0]-4;ox=(96-rgba.shape[1])//2
+    canvas=np.zeros((192,192,4),np.uint8);oy=192-rgba.shape[0]-8;ox=(192-rgba.shape[1])//2
     canvas[oy:oy+rgba.shape[0],ox:ox+rgba.shape[1]]=rgba
     cv2.imwrite(str(OUT/f"{k}.png"),canvas);print(k,rgba.shape)
