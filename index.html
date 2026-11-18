@@ -1907,7 +1907,7 @@ const PH={face:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAcFBQYFB
 /* ===== state ===== */
 let S=null,SNAP=null,VIEW='title';
 function newState(cand,name,focus,opt){
-  const s={name,age:7,v:1,int:cand.v[0],str:cand.v[1],chr:cand.v[2],cha:cand.v[3],soc:cand.v[4],hap:60,sts:10,m:BG[cand.bg].m,inv:0,risk:1,s:0,peakS:0,job:null,rank:0,edu:1,bg:cand.bg,trait:cand.trait,arch:cand.arch,
+  const s={name,age:7,v:1,int:cand.v[0],str:cand.v[1],chr:cand.v[2],cha:cand.v[3],soc:cand.v[4],hap:cand.good?68:56,sts:10,m:BG[cand.bg].m,inv:0,risk:1,s:0,peakS:0,job:null,rank:0,edu:1,bg:cand.bg,trait:cand.trait,arch:cand.arch,
    married:0,kids:0,pet:0,pension:0,flags:{bg:cand.bg},seen:{},log:[],queue:[],cur:'enter',res:null,rewound:false,burn:0,runAch:{},diff:opt.diff,luck:0,over:null,boost:0,newAch:[]};
   focus.forEach(k=>s[k]=clamp(s[k]+8));
   if(opt.rebirth){const k=Math.min(10,Math.floor(META.pts/4));if(k>0){META.pts-=k*4;saveMeta();STATS.forEach(x=>s[x]=clamp(s[x]+k));s.boost=k}}
@@ -1921,15 +1921,19 @@ const save=()=>{if(S&&!S.over)lsSet('jmk_save',S)};
 const BADARCH=[{n:'아싸형',e:'🥶',v:[55,45,52,28,30]},{n:'소심형',e:'😶',v:[50,38,58,30,34]},{n:'허약형',e:'🤒',v:[52,28,52,38,40]},{n:'사고뭉치형',e:'🤪',v:[40,52,35,42,45]},{n:'까칠형',e:'😾',v:[52,48,38,32,36]},{n:'집돌이형',e:'🏠',v:[56,34,55,26,29]},{n:'눈치제로형',e:'🫥',v:[48,45,50,30,22]},{n:'우울형',e:'☔',v:[50,36,55,30,32]}];
 /* 후보 구성: 8할은 불리한 출발(인기 없는 성향 또는 불우한 환경), 2할만 좋은 출발 */
 function pickCand(){
-  /* 8할은 불리한 출발(인기 없는 성향 또는 불우한 환경), 2할만 좋은 출발. 원형·집안·성향을 폭넓게 섞어 매번 다른 재민이가 나온다 */
-  const good=Math.random()<.12;let a,bg,trait;
+  /* 원형·집안·성향·출발 4가지 중 '좋은 것'의 개수를 먼저 뽑는다: 0개 25% / 1개 35% / 2개 25% / 3개 11% / 4개 4%. 어느 항목이 좋은지는 무작위 */
+  const r=Math.random(),k=r<.25?0:r<.60?1:r<.85?2:r<.96?3:4;
+  const idx=[0,1,2,3].sort(()=>Math.random()-.5).slice(0,k);
+  const gA=idx.includes(0),gB=idx.includes(1),gT=idx.includes(2),gS=idx.includes(3);
   const GOODT=['genius','strongbody','lucky','charming','latebloom','frugal','sharp','mentalrock'];
-  const BADT=['spender','unlucky','glass','clumsy','gamer','foodie','nightowl','latebloom','spender'];
-  if(good){a=pick(ARCH);bg=pick(['gold','mid','mid','shop','twin','rural','mid','shop','twin','rural','mid','rural']);trait=pick(GOODT);if(trait==='genius'&&(a.n==='공부형'||a.n==='발명가형'))trait='lucky';if(bg==='gold'&&(trait==='lucky'||trait==='genius'))trait='frugal'}
-  else if(Math.random()<.5){a=pick(BADARCH);bg=pick(['poor','single','mid','rural','twin','poor']);trait=pick(BADT)}
-  else{a=pick(ARCH.concat(BADARCH));bg=pick(['poor','single','poor','rural','shop']);trait=pick(BADT.concat(['frugal','charming']))}
+  const BADT=['spender','unlucky','glass','clumsy','gamer','foodie','nightowl','spender'];
+  const a=gA?pick(ARCH):pick(BADARCH);
+  const bg=gB?(Math.random()<.04?'gold':pick(['mid','mid','shop'])):pick(['poor','single','rural','twin','poor','single']);
+  let trait=gT?pick(GOODT):pick(BADT);
+  if(trait==='genius'&&(a.n==='공부형'||a.n==='발명가형'))trait='sharp';
+  if(bg==='gold'&&(trait==='lucky'||trait==='genius'))trait='frugal';
   const v=a.v.map(x=>x+ri(-5,5));const tgt=a.v.reduce((p,q)=>p+q,0);v[ri(0,4)]+=tgt-v.reduce((p,q)=>p+q,0);
-  return {arch:a.n,ae:a.e,v:v.map(x=>Math.max(5,Math.min(62,x))),bg,trait,good};
+  return {arch:a.n,ae:a.e,v:v.map(x=>Math.max(5,Math.min(62,x))),bg,trait,good:gS,goods:k};
 }
 
 /* ===== effects ===== */
@@ -3527,7 +3531,7 @@ function create(){
   if(!CANDS.length||CANDS.length!==1)CANDS=[pickCand()];
   CSEL=0;
   const f=fortune(),pts=META.pts,k=Math.min(10,Math.floor(pts/4)),c=CANDS[0],bg=BG[c.bg],tr=TRAITS[c.trait];
-  const rows=[['원 형',`${c.ae} ${c.arch}`],['집 안',`${bg.e} ${bg.n}`],['성 향',`${tr.e} ${tr.n}`],['출 발',c.good?'✨ 좋은 출발':'😢 불리한 출발']];
+  const rows=[['원 형',`${c.ae} ${c.arch}`],['집 안',`${bg.e} ${bg.n}`],['성 향',`${tr.e} ${tr.n}`],['출 발',c.good?'✨ 좋은 출발':'😢 평범한 출발']];
   const total=c.v.reduce((x,y)=>x+y,0);
   $('#main').innerHTML=`<div class="mc">
   <div class="mc-tabs"><div class="mc-tab">✔ 캐릭터만들기<small>CHARACTER CREATE</small></div><div class="mc-tab">선택한 월드<b>양주시 CH.1</b></div></div>
@@ -3541,7 +3545,7 @@ function create(){
   <div class="mc-sign"><div class="mc-board"><div class="mc-nl">캐릭터이름 <button id="chk" class="mc-chk">CHECK</button></div><input type="text" id="nm" maxlength="8" value="${esc(NM)}"></div>
    <div class="mc-stats">${STATS.map((st,i)=>`<button data-f="${st}" class="${FOC.includes(st)?'on':''}"><span>${LB[st]}</span><b>${c.v[i]}${FOC.includes(st)?'+8':''}</b></button>`).join('')}
     <div class="mc-sum"><span>합계</span><b>${total}</b></div></div>
-   <div class="mc-note">${esc(tr.d)} · ${esc(bg.tx)}</div><div class="mc-note">스탯을 눌러 <b>집중 육성</b>(최대 2개, +8). 주사위는 최대 5번, 대부분 불리한 출발이에요.</div>
+   <div class="mc-note">${esc(tr.d)} · ${esc(bg.tx)}</div><div class="mc-note">스탯을 눌러 <b>집중 육성</b>(최대 2개, +8). 주사위는 최대 5번, 좋은 항목 개수는 운이에요 (0~4개).</div>
    ${k>0?`<label class="mc-rb"><input type="checkbox" id="rb" ${REB?'checked':''}> 환생 보너스 (포인트 ${pts} → 전체 +${k}, ${k*4}pt 소모)</label>`:`<div class="mc-note">환생 포인트 ${pts} (4pt당 능력치 +1)</div>`}
    <div class="mc-btns"><button id="go" class="mc-ok">확 인</button><button id="bk" class="mc-no">취 소</button></div>
   </div><div class="mc-leaf">🍁</div></div>`;
