@@ -909,7 +909,7 @@ mp:{n:'국회의원',e:'🏛️',req:{},edu:0,hid:1,base:15000,g:.02,st:4,hp:0,r
 none:{n:'백수',e:'🛋️',req:{},edu:0,base:0,g:0,st:-2,hp:0,ranks:['무직'],d:'일단 쉬자. 부모님 눈치는 덤'}
 };
 const EDU=['고졸','전문대/지방대','일반 대학','명문대'];
-const BG={gold:{n:'금수저 가정',e:'💎',m:30000,tx:'부모님이 든든한 지원군'},mid:{n:'평범한 가정',e:'🏠',m:2000,tx:'특별할 것 없는 보통의 출발'},poor:{n:'흙수저 가정',e:'🥔',m:-1500,tx:'학자금 대출과 함께하는 시작'},shop:{n:'자영업 집안',e:'🏪',m:1200,tx:'부모님 가게에서 어깨너머로 장사를 배움'},single:{n:'한부모 가정',e:'👩‍👦',m:-600,tx:'일찍 철이 든 씩씩한 출발'},rural:{n:'양주 시골집',e:'🌾',m:300,tx:'논밭과 개울이 놀이터였던 어린 시절'},twin:{n:'대가족 집안',e:'👨‍👩‍👧‍👦',m:500,tx:'식구가 많아 늘 북적북적'}};
+const BG={gold:{n:'금수저 가정',e:'💎',m:12000,tx:'부모님이 든든한 지원군'},mid:{n:'평범한 가정',e:'🏠',m:2000,tx:'특별할 것 없는 보통의 출발'},poor:{n:'흙수저 가정',e:'🥔',m:-1500,tx:'학자금 대출과 함께하는 시작'},shop:{n:'자영업 집안',e:'🏪',m:1200,tx:'부모님 가게에서 어깨너머로 장사를 배움'},single:{n:'한부모 가정',e:'👩‍👦',m:-600,tx:'일찍 철이 든 씩씩한 출발'},rural:{n:'양주 시골집',e:'🌾',m:300,tx:'논밭과 개울이 놀이터였던 어린 시절'},twin:{n:'대가족 집안',e:'👨‍👩‍👧‍👦',m:500,tx:'식구가 많아 늘 북적북적'}};
 const TRAITS_NEW_PLACEHOLDER=0;
 const TRAITS={
 genius:{n:'천재 기질',e:'🧠',d:'지능이 오를 때 +30%'},
@@ -1922,14 +1922,14 @@ const BADARCH=[{n:'아싸형',e:'🥶',v:[55,45,52,28,30]},{n:'소심형',e:'�
 /* 후보 구성: 8할은 불리한 출발(인기 없는 성향 또는 불우한 환경), 2할만 좋은 출발 */
 function pickCand(){
   /* 8할은 불리한 출발(인기 없는 성향 또는 불우한 환경), 2할만 좋은 출발. 원형·집안·성향을 폭넓게 섞어 매번 다른 재민이가 나온다 */
-  const good=Math.random()<.2;let a,bg,trait;
+  const good=Math.random()<.12;let a,bg,trait;
   const GOODT=['genius','strongbody','lucky','charming','latebloom','frugal','sharp','mentalrock'];
   const BADT=['spender','unlucky','glass','clumsy','gamer','foodie','nightowl','latebloom','spender'];
-  if(good){a=pick(ARCH);bg=pick(['gold','gold','mid','shop','twin','rural']);trait=pick(GOODT)}
+  if(good){a=pick(ARCH);bg=pick(['gold','mid','mid','shop','twin','rural']);trait=pick(GOODT);if(trait==='genius'&&(a.n==='공부형'||a.n==='발명가형'))trait='lucky';if(bg==='gold'&&(trait==='lucky'||trait==='genius'))trait='frugal'}
   else if(Math.random()<.5){a=pick(BADARCH);bg=pick(['poor','single','mid','rural','twin','poor']);trait=pick(BADT)}
   else{a=pick(ARCH.concat(BADARCH));bg=pick(['poor','single','poor','rural','shop']);trait=pick(BADT.concat(['frugal','charming']))}
   const v=a.v.map(x=>x+ri(-5,5));const tgt=a.v.reduce((p,q)=>p+q,0);v[ri(0,4)]+=tgt-v.reduce((p,q)=>p+q,0);
-  return {arch:a.n,ae:a.e,v:v.map(x=>Math.max(5,Math.min(95,x))),bg,trait,good};
+  return {arch:a.n,ae:a.e,v:v.map(x=>Math.max(5,Math.min(62,x))),bg,trait,good};
 }
 
 /* ===== effects ===== */
