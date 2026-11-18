@@ -3185,7 +3185,13 @@ function drawBody(cv,o,oy){
 }
 function drawHead(cv,img,old,hk){
   /* 머리: 오려낸 사진을 화질 그대로(색 단순화 없음) 그리고, 흰 테두리 + 진한 외곽선을 둘러 스티커처럼 깔끔하게 */
-  const g=cv.getContext('2d'),TW=SPW*K,TH=HEADH*K,hw=HEADW*K,hh=hw*img.naturalHeight/img.naturalWidth,ox=(TW-hw)/2,oy=HEADY*K;
+  const g=cv.getContext('2d'),TW=SPW*K,TH=(BODYY+8)*K,hw=HEADW*K,hh=hw*img.naturalHeight/img.naturalWidth;
+  /* 목 연결: 사진 속 턱(불투명 영역 맨 아래)의 가로 중심을 몸통 목 중앙에 맞추고, 턱 끝이 셔츠 윗선에 살짝 겹치게 배치 */
+  if(!img._chin){const c0=document.createElement('canvas');c0.width=img.naturalWidth;c0.height=img.naturalHeight;const x0=c0.getContext('2d');x0.drawImage(img,0,0);const dt=x0.getImageData(0,0,c0.width,c0.height).data,W0=c0.width,H0=c0.height;
+    let bot=0,top0=H0;for(let y=0;y<H0;y++){for(let x=0;x<W0;x++)if(dt[(y*W0+x)*4+3]>60){if(y<top0)top0=y;bot=y;break}}
+    const y1=Math.max(top0,bot-Math.round((bot-top0)*.10));let sx=0,n=0;for(let y=y1;y<=bot;y++)for(let x=0;x<W0;x++)if(dt[(y*W0+x)*4+3]>60){sx+=x;n++}
+    img._chin={fx:n?sx/n/W0:.5,fy:(bot+1)/H0}}
+  const ox=TW/2-img._chin.fx*hw,oy=(BODYY+3)*K-img._chin.fy*hh;
   const t=document.createElement('canvas');t.width=TW;t.height=TH;const tg=t.getContext('2d');tg.imageSmoothingEnabled=true;tg.imageSmoothingQuality='high';
   tg.drawImage(img,0,0,img.naturalWidth,img.naturalHeight,ox,oy,hw,hh);
   const bf=({hike:30})[hk]||0;
