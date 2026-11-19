@@ -3265,6 +3265,7 @@ function choose(i){
 
 /* ===== score ===== */
 function calc(){
+  if(S&&S.final)return S.final; /* 결과가 확정된 뒤에는 점수·등급을 고정 (결과 화면·공유 카드·랭킹이 항상 같은 등급) */
   const n=net();
   const wealth=clamp(n/1500,-100,250),inc=Math.min(100,S.peakS/120),hap=S.hap*1.5,abil=(S.int+S.str+S.chr+S.cha+S.soc)/5;
   const fam=Math.min(110,(S.married?35:0)+Math.min(3,S.kids)*18+(S.pet?10:0)+(S.flags.mp?10:0));
@@ -3273,7 +3274,7 @@ function calc(){
   let pen=S.over==='bankrupt'?-80:S.over==='health'?-70:S.over==='karoshi'?-90:0;
   const parts=[['재산',wealth,250],['연봉',inc,100],['행복',hap,150],['능력',abil,100],['가족',fam,110],['업적',ach,100],['콤보',Math.min(60,(S.maxCombo||0)*10),60],['스트레스',stp,0],['엔딩',pen,0]];
   const total=Math.round(parts.reduce((p,x)=>p+x[1],0));
-  const grade=total>=484?'S':total>=313?'A':total>=204?'B':total>=169?'C':'D'; /* 목표 비율 S3 : A7 : B20 : C35 : D35 (자동 플레이 기준 보정) */
+  const grade=total>=493?'S':total>=307?'A':total>=214?'B':total>=182?'C':'D'; /* 목표 비율 S3 : A7 : B20 : C35 : D35 (자동 플레이 기준 보정) */
   return {total,grade,parts};
 }
 function ending(){
@@ -3647,8 +3648,9 @@ async function openShareCard(){
 }
 function endView(){
   stopVoiceLoop();setAmbient('firefly');
+  if(!S.done&&!S.final)checkAch(); /* 점수에 들어가는 업적을 먼저 확정한 뒤 최종 점수를 계산 */
   const sc=calc(),en=ending();
-  if(!S.done){S.done=1;S.endGrade=sc.grade;META.runs++;META.pts+=Math.floor(sc.total/40)+1;META.best=Math.max(META.best,sc.total);
+  if(!S.done){S.final=sc;S.done=1;S.endGrade=sc.grade;META.runs++;META.pts+=Math.floor(sc.total/40)+1;META.best=Math.max(META.best,sc.total);
     META.ranks.push({name:S.name,score:sc.total,grade:sc.grade,title:en[1],age:S.age,job:S.job?JOBS[S.job].n:'-',net:Math.round(net()),d:new Date().toLocaleDateString('ko-KR')});
     META.ranks.sort((a,b)=>b.score-a.score);META.ranks=META.ranks.slice(0,20);checkAch();saveMeta();try{localStorage.removeItem('jmk_save')}catch(e){}}
   setBgm(bgmFileFor('end')?'end':'old');duck(4200);setTimeout(()=>{sfx('stamp');setTimeout(()=>{try{endingTheme(sc.grade)}catch(e){}},2800);setTimeout(()=>sfx(sc.grade==='S'?'fanS':sc.grade==='A'?'fanA':sc.grade==='B'?'fanB':sc.grade==='C'?'fanC':'sadD'),350);if(sc.grade==='S'||sc.grade==='A')setTimeout(()=>sfx('cheer'),900)},650);
