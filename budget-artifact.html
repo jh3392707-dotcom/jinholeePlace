@@ -86,6 +86,31 @@ body.wide .toast{bottom:80px}
 .rule .pace{position:absolute;top:0;bottom:0;width:2px;background:var(--tx);opacity:.35;z-index:1}
 .rule>*:not(.fill):not(.pace){position:relative;z-index:2}
 body.wide #app>.motiv{column-span:all}body.wide .mv{flex:0 0 calc(50% - 4px)}
+
+.adv2 h3{font-size:16px;margin:18px 0 6px;font-weight:800}
+.advh{display:flex;gap:10px;align-items:center}
+.advg{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;background:var(--card2);flex:none}
+.advg.good{background:#2fb67c33;color:var(--green)}.advg.mid{background:#e0a33a33;color:var(--amber)}.advg.bad{background:var(--redbg);color:var(--red)}
+.advt{font-size:17px;font-weight:800;line-height:1.4;word-break:keep-all}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.tile{background:var(--card2);border-radius:12px;padding:8px 10px}.tv{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.25}
+.alert2{border:1px solid var(--red);background:var(--redbg);border-radius:12px;padding:9px 11px;margin-top:8px}.alert2 b{color:var(--red)}
+.crow{padding:8px 0;border-top:1px solid var(--line)}.crow.first{border-top:0}
+.cn{display:flex;align-items:center;gap:7px;font-size:16px}.cn .ce{font-size:20px}
+.cb{position:relative;height:8px;background:var(--card2);border-radius:4px;margin:6px 0 4px}
+.cb i{position:absolute;left:0;border-radius:4px}.cb .p{top:0;bottom:0;background:#8b8b9655}.cb .l{top:2px;bottom:2px;background:var(--blue)}
+.cv{font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums}.cnote{font-size:14.5px;margin-top:2px;line-height:1.5;word-break:keep-all}
+.dl{font-size:12px;font-weight:800;border-radius:6px;padding:1px 6px;background:var(--card2);color:var(--sub);white-space:nowrap}.dl.up{background:var(--redbg);color:var(--red)}.dl.dn{background:#2fb67c26;color:var(--green)}
+.bone{border-left:4px solid var(--red);background:var(--card2);border-radius:10px;padding:10px 12px;margin:8px 0}.bone .say{font-size:16px;line-height:1.65;word-break:keep-all}.bone .do{margin-top:6px;font-weight:700;color:var(--blue);font-size:15px}
+.rres{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}.rres.first{border-top:0}
+.step{display:flex;gap:9px;padding:5px 0;font-size:15.5px;line-height:1.55;word-break:keep-all}.step b{color:var(--blue);min-width:18px}
+.stl{font-size:15px;line-height:1.7;word-break:keep-all}
+body.wide #app>.card:has(.adv2){column-span:all}
+.rblk{padding:8px 0;border-top:1px solid var(--line)}.rblk.first{border-top:0}
+.rtop{display:flex;align-items:center;gap:8px}.rtop .rt{font-size:16px;font-weight:800}.rtop .rr{margin-left:auto;text-align:right;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rtx{font-size:14px;color:var(--sub);line-height:1.5;margin:2px 0 0 30px;word-break:keep-all}
+.rbar{height:6px;border-radius:3px;background:var(--card2);margin:6px 0 0 30px;overflow:hidden}.rbar i{display:block;height:100%}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.5}.kv.first{border-top:0}.kv .k{color:var(--sub);flex:none}.kv .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;word-break:keep-all}
 </style>
 <div id="app"></div>
 <button class="fab" id="fab" aria-label="내역 추가">＋</button>
@@ -350,8 +375,8 @@ function rulesFor(off=0){const d=S.rules.find(x=>x.id===weekId(off));return d&&d
 function rulesCard(){
  const R=rulesFor(0),dow=(today().getDay()+6)%7,pace=Math.min(100,(dow+1)/7*100);
  return `<div class="card"><div class="row sp"><b>🛡️ 이번 주 소비 철칙</b><span class="row" style="gap:6px"><span class="sub">${R.src==='auto'?'지난주 기록 기반':R.src==='advice'?'지난주 조언 기반':'직접 수정'}</span>${sampleCap&&adviceState()==='none'?'<button class="btn g sm" data-a="goAdvice">🧑‍💼 이번 주 조언 받기</button>':''}</span></div>
- ${R.items.map((r,i)=>{const sp=weekSpent(r.cat),lim=+r.limit||0,p=lim>0?sp/lim*100:(sp>0?100:0),cl=p>=100?'#ff5a6a':p>=70?'#e0a33a':'#2fb67c',ic=r.cat==='합계'?'💰':ocat(r.cat)[1];
-  return `<div class="rule" data-a="ruleForm" data-id="${i}"><div class="fill" style="width:${Math.min(100,p)}%;background:${cl}59"></div><div class="pace" style="left:${pace}%"></div><div class="grow" style="font-weight:600;font-size:15px">${ic} ${esc(r.t)}</div><div class="num" style="text-align:right;white-space:nowrap">${W(sp)}<div class="sub" style="font-size:12px">/ ${W(lim)} · ${p>=100?'<b style="color:#ff5a6a">초과</b>':'남은 '+W(lim-sp)}</div></div></div>`}).join('')}
+ ${R.items.map((r,i)=>{const sp=weekSpent(r.cat),lim=+r.limit||0,p=lim>0?sp/lim*100:(sp>0?100:0),over=lim>0?sp>lim:sp>0,full=lim>0&&sp===lim,cl=over?'#ff5a6a':(full||p>=70)?'#e0a33a':'#2fb67c',ic=r.cat==='합계'?'💰':ocat(r.cat)[1];
+  return `<div class="rule" data-a="ruleForm" data-id="${i}"><div class="fill" style="width:${Math.min(100,p)}%;background:${cl}59"></div><div class="pace" style="left:${pace}%"></div><div class="grow" style="font-weight:600;font-size:15px">${ic} ${esc(r.t)}</div><div class="num" style="text-align:right;white-space:nowrap">${W(sp)}<div class="sub" style="font-size:12px">/ ${W(lim)} · ${over?'<b style="color:#ff5a6a">'+W(sp-lim)+' 초과</b>':full?'<b style="color:#e0a33a">한도 소진</b>':'남은 '+W(lim-sp)}</div></div></div>`}).join('')}
  <div class="sub" style="margin-top:5px">세로선 = 오늘까지의 평균 속도 · 소비를 기록할 때마다 칸이 차올라요 · 눌러서 수정</div></div>`}
 function parseRules(text){
  const cats=['합계',...OUT.map(x=>x[0])],out=[];
@@ -636,13 +661,13 @@ function monthChart(n=6){
  return `<svg viewBox="0 0 300 130" style="width:100%">${[0,.5,1].map(k=>`<line class="gl" x1="0" x2="300" y1="${100-k*85}" y2="${100-k*85}"/>`).join('')}${d.map(([m,i,o],k)=>{const x=k*50+8;return `<rect x="${x}" y="${100-i/mx*85}" width="16" height="${i/mx*85}" rx="2" fill="#4c8dff"/><rect x="${x+18}" y="${100-o/mx*85}" width="16" height="${o/mx*85}" rx="2" fill="#ff5a6a"/><text class="t" x="${x+17}" y="114" font-size="11" text-anchor="middle">${+m.slice(5)}월</text>${i?`<text class="t" x="${x+8}" y="${96-i/mx*85}" font-size="9" text-anchor="middle">${big(i)}</text>`:''}${o?`<text class="t" x="${x+26}" y="${96-o/mx*85}" font-size="9" text-anchor="middle">${big(o)}</text>`:''}`}).join('')}</svg><div class="row sub" style="justify-content:center;gap:14px"><span class="blue">■ 수입</span><span class="red">■ 지출</span></div>`}
 function weekRange(off=0){const t=today(),dow=(t.getDay()+6)%7,s=new Date(t);s.setDate(t.getDate()-dow+off*7);const e=new Date(s);e.setDate(s.getDate()+6);return[s,e]}
 const inR=(l,r)=>l.filter(t=>t.date>=ymd(r[0])&&t.date<=ymd(r[1]));
-function weekPrompt(){
+function weekPrompt(mode){
  const r=weekRange(-1),p=weekRange(-2),cw=weekRange(0),L=inR(S.tx,r),PL=inR(S.tx,p),CL=inR(S.tx,cw),T=totals(),ML=monthTx(ym(today()));
  const cs=catSum(L).slice(0,5).map(([n,v])=>`${n} ${W(v)}`).join(', ')||'없음';
  const up=S.fixed.map(f=>({f,d:nextDue(f.day)})).filter(x=>dday(x.d)<=7).sort((a,b)=>a.d-b.d).map(x=>`${x.f.name} ${W(x.f.amt)} (${x.d.getMonth()+1}/${x.d.getDate()})`).join(', ')||'없음';
  const as=ATYPE.map(([n])=>{const v=S.assets.filter(a=>a.type===n).reduce((s,a)=>s+val(a),0);return v?`${n} ${W(v)} (${Math.round(v/T.as*100)}%)`:''}).filter(Boolean).join(', ')||'없음';
  const b3=L.filter(t=>t.type==='out').sort((a,b)=>b.amt-a.amt).slice(0,3).map(t=>`${t.date.slice(5)} ${t.memo||t.cat} ${W(t.amt)}`).join(', ')||'없음';
- return `당신은 냉철하고 직설적인 자산관리 전문가(CFP)입니다. 아래는 제 지난주(월~일) 가계 요약이고, 지지난주와 비교한 내용입니다. 월요일에 한 번 받는 주간 조언이라, 이번 주(월~일) 동안 지킬 방향을 정해 주세요. 1) 잘한 점 2) 문제점 3) 이번 주 행동 3가지 4) 자산 배분(주식/환테크/코인/현금/통장/애드포스트/레뷰포인트) 코멘트 5) 월 배당·패시브 수입을 늘려 파이어에 가까워지는 방법과 목표 달성을 앞당길 방법을 구체적인 숫자로, 한국어로 간결하게 조언해 주세요. 특정 종목·코인 매수 추천은 하지 말고 원칙 위주로 말해 주세요.
+ const MD_HEAD=`당신은 냉철하고 직설적인 자산관리 전문가(CFP)입니다. 아래는 제 지난주(월~일) 가계 요약이고, 지지난주와 비교한 내용입니다. 월요일에 한 번 받는 주간 조언이라, 이번 주(월~일) 동안 지킬 방향을 정해 주세요. 1) 잘한 점 2) 문제점 3) 이번 주 행동 3가지 4) 자산 배분(주식/환테크/코인/현금/통장/애드포스트/레뷰포인트) 코멘트 5) 월 배당·패시브 수입을 늘려 파이어에 가까워지는 방법과 목표 달성을 앞당길 방법을 구체적인 숫자로, 한국어로 간결하게 조언해 주세요. 특정 종목·코인 매수 추천은 하지 말고 원칙 위주로 말해 주세요.
 
 먼저 [지난주 소비 철칙 달성 결과]를 맨 앞에서 평가해 주세요. 철칙마다 달성·실패를 밝히고, 못 지킨 철칙은 초과 금액을 숫자로 들어 가장 따끔하게, 지킨 철칙은 짧게 인정하되 한 단계 더 높은 기준을 제시해 주세요. 3개 모두 실패했다면 가장 강하게, 모두 달성했다면 칭찬 후 한도를 더 낮추라고 해 주세요. 철칙이 없던 첫 주라면 그 점을 짚어 주세요.
 
@@ -651,7 +676,22 @@ function weekPrompt(){
 또한 '이번 주 행동 3가지'는 곧 이번 주(월~일) 소비 철칙 3개입니다. 철칙은 숫자로 측정 가능해야 하고, 응답 맨 끝에 아래 형식의 3줄을 설명 없이 그대로 출력해 주세요.
 철칙|분류|주 한도(원, 숫자만)|철칙 문구 한 줄
 분류는 다음 중 하나: 합계, ${OUT.map(x=>x[0]).join(', ')}
-한도는 0원으로 하지 말고 지난주 실제 소비보다 줄이되 지킬 수 있는 현실적인 금액으로 정하고, 선물·보험·이체 같은 줄이기 어려운 분류는 철칙으로 만들지 마세요.
+한도는 0원으로 하지 말고 지난주 실제 소비보다 줄이되 지킬 수 있는 현실적인 금액으로 정하고, 선물·보험·이체 같은 줄이기 어려운 분류는 철칙으로 만들지 마세요.`;
+ const JSON_HEAD=`당신은 냉철하고 직설적인 자산관리 전문가(CFP)입니다. 아래는 사용자의 지난주(월~일) 가계 데이터와 지지난주 비교입니다. 사용자는 월요일에 주 1회만 이 리포트를 받습니다. 숫자 계산과 표는 앱이 이미 하므로, 당신은 판단과 문장만 JSON으로 작성하세요.
+
+원칙:
+- 먼저 [지난주 소비 철칙 달성 결과]를 평가한다. 못 지킨 철칙은 초과 금액을 숫자로 들어 가장 따끔하게, 지킨 철칙은 짧게 인정하되 더 높은 기준을 준다. 철칙이 없던 첫 주면 그 점을 짚는다.
+- 지난주와 지지난주의 항목별 증감에서 눈에 띄는 것(급증·급감, 0원인 항목의 기록 누락 가능성)을 항목마다 한 줄로 짚는다.
+- [이번 주 현재까지] 지출에 이미 큰 문제가 있으면 alerts에 가장 먼저 경고한다.
+- bones(뼈 때리는 한마디)는 2~3개. 실제 숫자(금액, 비율, 자산 대비, 목표 도달 시점)로 현실을 짚되 인신공격·비하 없이 사실에 근거한다. "이 속도면 집을 사겠냐, 차를 사겠냐" 같은 비교를 쓰고, 각 한마디마다 오늘 바로 할 행동 1개를 붙인다.
+- rules(이번 주 소비 철칙)는 정확히 3개. 분류는 합계 또는 지출 분류 중 하나. 한도는 이번 주 이미 쓴 금액을 반영해 지킬 수 있으면서 0원이 아닌 숫자(원 단위 정수)로 정한다. 선물·보험·이체처럼 줄이기 어려운 분류는 제외한다.
+- steps는 이번 주 어떻게 움직일지 구체적인 지침 3~5개(요일·금액 포함).
+- 특정 종목·코인 매수 추천은 하지 않는다. 한국어로 간결하게.
+
+반드시 아래 형식의 JSON 객체 하나만 출력하세요 (설명, 마크다운, 코드블록 금지):
+{"grade":"A~F 중 지난주 성적","headline":"한 줄 총평(60자 이내)","cat_notes":{"분류명":"그 항목의 지난주 vs 지지난주 한 줄 코멘트(40자 이내)"},"alerts":[{"title":"경고 제목","body":"근거 숫자 포함 2문장 이내"}],"bones":[{"say":"뼈 때리는 한마디(숫자 포함 2~3문장)","do":"오늘 할 행동 1개(한 문장)"}],"rules":[{"cat":"합계 또는 분류명","limit":15000,"t":"철칙 문구 한 줄"}],"steps":["이번 주 행동 지침"],"status_note":"자산·목표 한두 문장","flags":["데이터 확인이 필요한 점 0~3개"]}
+분류명은 다음 중 하나: 합계, ${OUT.map(x=>x[0]).join(', ')}`;
+ return (mode==='json'?JSON_HEAD:MD_HEAD)+`
 
 [분석 기간(지난주)] ${ymd(r[0])} ~ ${ymd(r[1])}
 [지난주] 지출 ${W(sum(L,'out'))} / 수입 ${W(sum(L,'in'))}
@@ -670,6 +710,76 @@ ${ruleResults(-1).map(x=>`- ${x.ok?'✅':'❌'} ${x.r.t} | 분류 ${x.r.cat} | �
 [자산] 합계 ${W(T.net)} — ${as}
 [목표 예상 도달] ${S.goals.map(g=>g.name+' → '+etaText(goalEta(g.target).n)).join(' / ')}
 [목표] ${S.goals.map(g=>`${g.name} ${(Math.max(0,T.net/g.target*100)).toFixed(1)}% (목표 ${W(g.target)})`).join(' / ')}`}
+/* ---------- 구조화된 주간 리포트 (숫자·표는 앱이 계산, 판단과 문장은 AI가 작성) ---------- */
+function weekReportStats(){
+ const r1=weekRange(-1),r2=weekRange(-2),r0=weekRange(0),L=inR(S.tx,r1),P=inR(S.tx,r2),C=inR(S.tx,r0),M=monthTx(ym(today()));
+ const cl=Object.fromEntries(catStats(L).map(x=>[x[0],x])),cp=Object.fromEntries(catStats(P).map(x=>[x[0],x])),cc=Object.fromEntries(catStats(C).map(x=>[x[0],x]));
+ const cats=[...new Set([...Object.keys(cl),...Object.keys(cp),...Object.keys(cc)])].map(c=>({cat:c,prev:(cp[c]||[0,0])[1],last:(cl[c]||[0,0])[1],cur:(cc[c]||[0,0])[1],lastN:(cl[c]||[0,0,0])[2],curN:(cc[c]||[0,0,0])[2]})).sort((a,b)=>Math.max(b.prev,b.last,b.cur)-Math.max(a.prev,a.last,a.cur));
+ const fx=L.filter(t=>t.type==='out'&&/\(고정\)/.test(t.memo||'')).reduce((x,t)=>x+t.amt,0);
+ const top=l=>l.filter(t=>t.type==='out').sort((a,b)=>b.amt-a.amt).slice(0,3).map(t=>({d:t.date.slice(5),m:t.memo||t.cat,c:t.cat,a:t.amt}));
+ const T=totals(),si=savingInfo();
+ return{v:1,wk:weekId(0),
+  last:{from:ymd(r1[0]),to:ymd(r1[1]),out:sum(L,'out'),in:sum(L,'in'),fixed:fx},
+  prev:{from:ymd(r2[0]),to:ymd(r2[1]),out:sum(P,'out'),in:sum(P,'in')},
+  cur:{from:ymd(r0[0]),out:sum(C,'out'),in:sum(C,'in'),days:Math.round((today()-r0[0])/864e5)+1},
+  cats,top:top(L),topCur:top(C),
+  rules:ruleResults(-1).map(x=>({cat:x.r.cat,t:x.r.t,lim:x.lim,sp:x.sp,ok:x.ok,diff:x.diff,pct:x.pct})),
+  month:{out:sum(M,'out'),in:sum(M,'in'),lottery:M.filter(t=>t.type==='out'&&t.cat==='복권·토토').reduce((x,t)=>x+t.amt,0)},
+  net:Math.round(T.net),usable:Math.round(S.assets.filter(a=>a.type==='현금'||a.type==='통장').reduce((x,a)=>x+val(a),0)),
+  neg:S.assets.filter(a=>val(a)<0).map(a=>({n:a.name,v:Math.round(val(a))})),
+  passive:Math.round(passiveSum()),cost:fireSet().cost,
+  save:{monthly:Math.round(si.monthly),used:si.used,cash:Math.round(si.cashM),asset:si.asset?Math.round(si.asset.monthly):null,days:si.days},
+  goals:S.goals.map(g=>({n:g.name,pct:+(Math.max(0,T.net/g.target*100)).toFixed(2),eta:etaText(goalEta(g.target).n)}))}
+}
+const cut=(x,n)=>String(x??'').slice(0,n);
+function validRules(arr){const cats=['합계',...OUT.map(x=>x[0])];return (Array.isArray(arr)?arr:[]).map(r=>({cat:cut(r&&r.cat,20).trim(),limit:Math.max(1000,Math.round(+String(r&&r.limit).replace(/,/g,''))||0),t:cut(r&&r.t,200).trim()})).filter(r=>cats.includes(r.cat)&&r.t).slice(0,3)}
+function parseAdviceJSON(text){const t=String(text),a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<a)return null;try{const j=JSON.parse(t.slice(a,b+1));return j&&typeof j.headline==='string'&&Array.isArray(j.rules)?j:null}catch(e){return null}}
+function cleanAI(j){const o={grade:cut(j.grade,3).trim()||'-',headline:cut(j.headline,160),cat_notes:{},alerts:[],bones:[],rules:validRules(j.rules),steps:[],status_note:cut(j.status_note,400),flags:[]};
+ if(j.cat_notes&&typeof j.cat_notes==='object')Object.keys(j.cat_notes).slice(0,14).forEach(k=>{o.cat_notes[cut(k,20)]=cut(j.cat_notes[k],160)});
+ (Array.isArray(j.alerts)?j.alerts:[]).slice(0,3).forEach(x=>o.alerts.push({title:cut(x&&x.title,80),body:cut(x&&x.body,400)}));
+ (Array.isArray(j.bones)?j.bones:[]).slice(0,4).forEach(x=>o.bones.push({say:cut(x&&x.say,600),do:cut(x&&x.do,240)}));
+ (Array.isArray(j.steps)?j.steps:[]).slice(0,6).forEach(x=>o.steps.push(cut(x,260)));
+ (Array.isArray(j.flags)?j.flags:[]).slice(0,4).forEach(x=>o.flags.push(cut(x,240)));return o}
+const dltag=(prev,last)=>{if(!prev&&!last)return '<span class="dl">-</span>';if(!prev)return '<span class="dl up">신규</span>';const p=Math.round((last/prev-1)*100);return `<span class="dl ${p>0?'up':p<0?'dn':''}">${p>0?'▲':p<0?'▼':'■'} ${Math.abs(p)}%</span>`};
+function advToText(st){const s=st.stats,a=st.ai||{};
+ return `## 지난주 성적 ${a.grade||''} — ${a.headline||''}\n지난주 지출 ${W(s.last.out)} (지지난주 ${W(s.prev.out)}) / 수입 ${W(s.last.in)}\n\n## 항목별 분석\n${s.cats.map(c=>`- ${c.cat}: ${W(c.prev)} → ${W(c.last)}${c.cur?` (이번 주 ${W(c.cur)})`:''}${a.cat_notes&&a.cat_notes[c.cat]?' · '+a.cat_notes[c.cat]:''}`).join('\n')}\n\n## 지난주 철칙 결과\n${s.rules.map(r=>`- ${r.ok?'✅':'❌'} ${r.t} (${W(r.sp)}/${W(r.lim)})`).join('\n')||'- 없음'}\n\n## 🔨 뼈 때리는 한마디\n${(a.bones||[]).map(b=>`- ${b.say} → ${b.do}`).join('\n')}\n\n## 이번 주 이렇게 하세요\n${(a.rules||[]).map(r=>`- [철칙] ${r.t} (${r.cat} ${W(r.limit)})`).join('\n')}\n${(a.steps||[]).map((x,i)=>`${i+1}. ${x}`).join('\n')}`}
+function advView(a){
+ const st=a.struct,s=st.stats,ai=st.ai||{},fd=x=>String(x).slice(5).replace('-','/'),okN=s.rules.filter(r=>r.ok).length,g=(ai.grade||'-').toUpperCase(),gc=/^[AB]/.test(g)?'good':/^C/.test(g)?'mid':'bad';
+ const mx=Math.max(1,...s.cats.map(c=>Math.max(c.prev,c.last,c.cur))),netL=s.last.in-s.last.out,netP=s.prev.in-s.prev.out;
+ const fixedNote=s.last.fixed?` (고정 ${W(s.last.fixed)} 제외 변동 ${W(s.last.out-s.last.fixed)})`:'';
+ const curRow=(cat)=>cat==='합계'?s.cur.out:((s.cats.find(c=>c.cat===cat)||{}).cur||0);
+ const flags=[...(s.neg||[]).map(n=>`${n.n} 잔액이 ${W(n.v)}로 계산돼요. 실제 잔액과 다르면 자산 탭에서 실제 금액으로 고쳐 주세요 (고치면 자동 보정).`),...s.cats.filter(c=>c.cat==='식비'&&c.prev>0&&c.last===0).map(()=>'식비가 0원이에요. 식사를 안 먹었을 리 없으니 기록이 빠졌거나 편의점·카페 항목으로 옮겨 갔는지 확인하세요.'),...(ai.flags||[])];
+ return `<div class="adv2">
+ <div class="advh"><div class="advg ${gc}">${esc(g)}</div><div class="grow"><div class="advt">${esc(ai.headline||'')}</div><div class="sub">지난주 ${fd(s.last.from)}~${fd(s.last.to)} 분석 · ${fd(s.cur.from)}부터 이번 주 지침</div></div></div>
+ <div class="tiles">
+  <div class="tile"><div class="sub">지난주 지출</div><div class="tv">${W(s.last.out)}</div><div class="sub">지지난주 ${W(s.prev.out)} ${dltag(s.prev.out,s.last.out)}</div></div>
+  <div class="tile"><div class="sub">지난주 수입</div><div class="tv blue">${W(s.last.in)}</div><div class="sub">지지난주 ${W(s.prev.in)}</div></div>
+  <div class="tile"><div class="sub">순현금흐름</div><div class="tv ${netL<0?'red':'green'}">${netL<0?'-':'+'}${W(Math.abs(netL))}</div><div class="sub">지지난주 ${netP<0?'-':'+'}${W(Math.abs(netP))}</div></div>
+  <div class="tile"><div class="sub">철칙 달성</div><div class="tv ${okN===s.rules.length&&okN?'green':okN?'':'red'}">${s.rules.length?okN+' / '+s.rules.length:'없음'}</div><div class="sub">이번 주 ${W(s.cur.out)}</div></div>
+ </div>
+ ${(ai.alerts||[]).map(x=>`<div class="alert2"><b>🚨 ${esc(x.title)}</b><div style="margin-top:3px;line-height:1.6;word-break:keep-all">${esc(x.body)}</div></div>`).join('')}
+ <h3>📊 항목별 분석 · 지난주 vs 지지난주</h3>
+ ${s.cats.map((c,i)=>{const [em,col]=[ocat(c.cat)[1],ocat(c.cat)[2]],note=ai.cat_notes&&ai.cat_notes[c.cat];return `<div class="crow ${i?'':'first'}"><div class="cn"><span class="ce">${em}</span><b>${esc(c.cat)}</b>${c.prev||c.last?dltag(c.prev,c.last):''}${c.cur?`<span class="dl up">이번 주 ${W(c.cur)}</span>`:''}</div><div class="cb"><i class="p" style="width:${c.prev/mx*100}%"></i><i class="l" style="width:${c.last/mx*100}%;background:${col}"></i></div><div class="cv">지지난주 ${W(c.prev)} → 지난주 <b style="color:var(--tx)">${W(c.last)}</b>${c.lastN?` (${c.lastN}건)`:''}</div>${note?`<div class="cnote">${esc(note)}</div>`:''}</div>`}).join('')}
+ <div class="crow"><div class="cn"><span class="ce">🧮</span><b>합계</b>${dltag(s.prev.out,s.last.out)}</div><div class="cv">지지난주 ${W(s.prev.out)} → 지난주 <b style="color:var(--tx)">${W(s.last.out)}</b>${fixedNote}</div></div>
+ <h3>🛡️ 지난주 철칙 결과 · ${okN}/${s.rules.length} 달성</h3>
+ ${s.rules.length?s.rules.map((r,i)=>{const pct=r.lim>0?Math.min(100,r.sp/r.lim*100):(r.sp>0?100:0),first=String(r.t).split(/[.。]/)[0];return `<div class="rblk ${i?'':'first'}"><div class="rtop"><span style="font-size:22px">${r.ok?'✅':'❌'}</span><span class="rt">${r.cat==='합계'?'💰 ':ocat(r.cat)[1]+' '}${esc(r.cat)}</span><span class="sub">한도 ${W(r.lim)}</span><span class="rr">${W(r.sp)}<div class="sub" style="font-size:12px">${r.ok?W(r.diff)+' 남김':'<b style="color:var(--red)">'+W(r.diff)+' 초과 ('+r.pct+'%)</b>'}</div></span></div><div class="rtx">${esc(first)}</div><div class="rbar"><i style="width:${pct}%;background:${r.ok?'var(--green)':'var(--red)'}"></i></div></div>`}).join(''):'<div class="sub">지난주에는 저장된 철칙이 없었어요 (이번 주부터 시작).</div>'}
+ ${(ai.bones||[]).length?`<h3>🔨 뼈 때리는 한마디</h3>${ai.bones.map(b=>`<div class="bone"><div class="say">${esc(b.say)}</div>${b.do?`<div class="do">👉 ${esc(b.do)}</div>`:''}</div>`).join('')}`:''}
+ <h3>🎯 이번 주 이렇게 하세요</h3>
+ ${(ai.rules||[]).map((r,i)=>{const c=curRow(r.cat),left=r.limit-c,pct=r.limit>0?Math.min(100,c/r.limit*100):0,over=left<0;return `<div class="rblk ${i?'':'first'}"><div class="rtop"><span style="font-size:22px">${r.cat==='합계'?'💰':ocat(r.cat)[1]}</span><span class="rt">철칙 ${i+1} · ${esc(r.cat)}</span><span class="rr">한도 ${W(r.limit)}<div class="sub" style="font-size:12px">작성 시점 ${W(c)} · ${over?'<b style="color:var(--red)">'+W(-left)+' 초과</b>':left===0?'<b style="color:var(--amber)">한도 소진</b>':'남은 '+W(left)}</div></span></div><div class="rtx" style="color:var(--tx);font-size:15px">${esc(r.t)}</div><div class="rbar"><i style="width:${pct}%;background:${over?'var(--red)':pct>=70?'var(--amber)':'var(--green)'}"></i></div></div>`}).join('')}
+ ${(ai.steps||[]).length?'<div class="sub" style="margin:12px 0 2px;font-weight:700">행동 지침 (요일별)</div>':''}
+ ${(ai.steps||[]).map((x,i)=>`<div class="step"><b>${i+1}</b><div>${esc(x)}</div></div>`).join('')}
+ <h3>📌 자산 · 목표 상태</h3>
+ <div class="kv first"><span class="k">순자산</span><span class="v">${W(s.net)}</span></div>
+ <div class="kv"><span class="k">지금 쓸 수 있는 돈 (통장+현금)</span><span class="v ${s.usable<0?'red':''}">${W(s.usable)}</span></div>
+ <div class="kv"><span class="k">11월 누계 (수입−지출)</span><span class="v ${s.month.in-s.month.out<0?'red':'green'}">${s.month.in-s.month.out<0?'-':'+'}${W(Math.abs(s.month.in-s.month.out))}<div class="sub" style="font-weight:400">지출 ${W(s.month.out)} · 수입 ${W(s.month.in)}</div></span></div>
+ <div class="kv"><span class="k">11월 복권·토토</span><span class="v">${W(s.month.lottery)}</span></div>
+ <div class="kv"><span class="k">월 저축 (수입−지출 기준)</span><span class="v ${s.save.cash<0?'red':'green'}">${s.save.cash<0?'-':''}${W(Math.abs(s.save.cash))}</span></div>
+ ${s.save.asset!=null?`<div class="kv"><span class="k">월 저축 (자산 추이 기준)</span><span class="v ${s.save.asset<0?'red':'green'}">${s.save.asset<0?'-':''}${W(Math.abs(s.save.asset))}</span></div>`:''}
+ <div class="kv"><span class="k">패시브 수입 / 생활비 목표</span><span class="v">${W(s.passive)} / ${W(s.cost)}</span></div>
+ ${s.goals.map(g=>`<div class="kv"><span class="k">${esc(g.n)}</span><span class="v">${g.pct}%<div class="sub" style="font-weight:400">${esc(g.eta)}</div></span></div>`).join('')}
+ ${ai.status_note?`<div class="sub" style="margin-top:6px;line-height:1.6">${esc(ai.status_note)}</div>`:''}
+ ${flags.length?`<h3>🧾 데이터 확인이 필요해요</h3>${flags.map(x=>`<div class="stl">• ${esc(x)}</div>`).join('')}`:''}
+ </div>`}
 let adviceLive='';
 /* 주 1회 잠금: 누르는 순간 이번 주 조언 문서를 '작성 중'으로 먼저 저장 → 다른 기기·새로고침해도 다시 누를 수 없음. 실패하면 풀림(3분 지나도 풀림) */
 function adviceState(){const d=S.advice.find(a=>a.id===weekId(0));if(!d)return 'none';if(d.pending)return Date.now()-(d.t||0)<180000?'busy':'none';return 'done'}
@@ -692,7 +802,7 @@ ${(()=>{const R=ruleResults(-1);if(!R.length)return '';return `<div style="margi
  <div class="row" style="margin:8px 0">${sampleCap?(have?`<div class="sub" style="flex:1">${adviceState()==='busy'?'⏳ 이번 주 조언을 작성 중이에요 (주 1회)':'✅ 이번 주 조언은 이미 받았어요 (주 1회 · 다음 조언은 다음 주 월요일부터)'}</div>`:`<button class="btn" id="advBtn" data-a="getAdvice">🧑‍💼 이번 주 조언 받기 (지난주 분석)</button>`):''}<button class="btn g" data-a="copyP">📋 요약 복사</button></div>
  ${adviceLive?`<div class="advbox"><div class="advice" id="advLive">${fmtAdvice(adviceLive)}</div></div>`:''}
  <details class="sum"><summary>📋 AI에게 보내는 요약 보기 (눌러서 펼치기)</summary><textarea id="wp" readonly>${esc(weekPrompt())}</textarea></details><div class="sub" style="margin-top:4px">${sampleCap?'버튼을 누르면 Claude가 바로 조언하고, 결과는 아래에 저장돼요. 복사해서 Claude 대화에 붙여넣어도 됩니다.':'요약을 복사해 Claude 대화에 붙여넣으면 조언을 받을 수 있어요.'}</div></div>
- ${adv.map(a=>`<div class="card"><div class="sub" style="margin-bottom:2px;font-size:14px">${esc(a.id.slice(5).replace('-','/'))}부터 한 주 조언 (지난주 분석) · ${esc(a.at||'')}</div><div class="advbox"><div class="advice">${fmtAdvice(a.text)}</div></div></div>`).join('')}
+ ${adv.map(a=>`<div class="card"><div class="sub" style="margin-bottom:2px;font-size:14px">${esc(a.id.slice(5).replace('-','/'))}부터 한 주 리포트 (지난주 분석) · ${esc(a.at||'')}</div>${a.struct&&a.struct.v===2?advView(a):`<div class="advbox"><div class="advice">${fmtAdvice(a.text)}</div></div>`}</div>`).join('')}
  <h2>화면 모드 (폴드7)</h2><div class="card"><div class="seg"><div class="${layoutMode==='auto'?'on':''}" data-a="layout" data-id="auto">자동</div><div class="${layoutMode==='narrow'?'on':''}" data-a="layout" data-id="narrow">접힘형</div><div class="${layoutMode==='wide'?'on':''}" data-a="layout" data-id="wide">펼침형</div></div><div class="sub" style="margin-top:6px">자동: 폴드를 접으면 세로 한 줄, 펼치면 왼쪽 메뉴 + 2~3단 카드로 바뀌어요. 화면 너비 600px 이상이 펼침형입니다.</div></div>
  <h2>데이터</h2><div class="card row" style="flex-wrap:wrap">${dlCap?'<button class="btn g sm" data-a="exp">백업 내보내기</button>':''}<button class="btn g sm" data-a="impPick">백업 복원</button><button class="btn r sm" data-a="resetAsk">전체 초기화</button><input id="imp" type="file" accept=".json" hidden></div>`;
 }
@@ -700,8 +810,11 @@ async function getAdvice(){
  const st=adviceState();if(st==='done')return toast('이번 주 조언은 이미 받았어요 (주 1회)');if(st==='busy'||(adviceLive&&adviceLive.startsWith('⏳')))return toast('조언을 작성 중이에요. 잠시만 기다려 주세요');
  const wk=weekId(0);put('advice',{id:wk,pending:true,t:Date.now(),text:'',at:new Date().toLocaleString('ko-KR')}); // 누르는 즉시 잠금
  const b=$('#advBtn');if(b)b.disabled=true;adviceLive='⏳ 분석 중…';render();
- try{const r=await sampleCap(weekPrompt(),{modelTier:'default',onText:({text})=>{adviceLive=text;const e=$('#advLive');if(e)e.innerHTML=fmtAdvice(text)}});
-  adviceLive=r.text;const k=wk;put('advice',{id:k,text:r.text,at:new Date().toLocaleString('ko-KR')});adviceLive='';const rl=parseRules(r.text);if(rl.length)saveRules(rl,'advice',targetRuleWeek());toast(rl.length?'조언과 이번 주 철칙 3개가 저장됐어요':'조언이 저장됐어요')}
+ try{const r=await sampleCap(weekPrompt('json'),{modelTier:'default'});
+  const j=parseAdviceJSON(r.text),at=new Date().toLocaleString('ko-KR');
+  if(j){const ai=cleanAI(j),st={v:2,stats:weekReportStats(),ai};put('advice',{id:wk,text:advToText(st),struct:st,at});adviceLive='';
+   if(ai.rules.length)saveRules(ai.rules,'advice',targetRuleWeek());toast(ai.rules.length?'주간 리포트와 이번 주 철칙 3개가 저장됐어요':'주간 리포트가 저장됐어요')}
+  else{put('advice',{id:wk,text:r.text,at});adviceLive='';const rl=parseRules(r.text);if(rl.length)saveRules(rl,'advice',targetRuleWeek());toast(rl.length?'조언과 이번 주 철칙이 저장됐어요':'조언이 저장됐어요')}}
  catch(e){const d=S.advice.find(a=>a.id===wk);if(d&&d.pending)del('advice',wk);adviceLive=e&&e.code==='not_granted'?'허용되지 않았어요. 아래 "요약 복사"를 이용하세요.':'조언을 불러오지 못했어요 ('+((e&&e.code)||'error')+'). 잠시 후 다시 시도하거나 요약을 복사해 주세요.'}
  render();
 }
