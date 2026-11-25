@@ -351,7 +351,7 @@ function usableOpen(){tab='home';scrollTo(0,document.body.scrollHeight*0.3)}
 function assetRows(){
  const T=totals(),list=S.assets.slice().sort((x,y)=>val(y)-val(x));if(!list.length)return '';
  return list.map(a=>{const t=ATYPE.find(x=>x[0]===a.type)||['', '💰','#999'],v=val(a),pc=T.net?Math.round(v/T.net*100):0,dup=a.name.replace(/\s/g,'').includes(a.type.replace(/\s/g,''));
-  return `<div class="card" data-a="assetForm" data-id="${a.id}"><div class="row sp"><div class="grow ell"><span style="width:34px;height:34px;border-radius:50%;background:${t[2]}33;border:2px solid ${t[2]};display:inline-flex;align-items:center;justify-content:center;font-size:19px;vertical-align:middle;margin-right:6px">${t[1]}</span>${esc(a.name)}${dup?'':` <span class="sub">${esc(a.type)}</span>`}</div><div style="text-align:right"><div class="num mid">${W(v)}</div><div class="sub">${pc}%</div></div></div></div>`}).join('')}
+  return `<div class="card" data-a="assetForm" data-id="${a.id}"><div class="row sp"><div class="grow ell"><span style="width:34px;height:34px;border-radius:50%;background:${t[2]}33;border:2px solid ${t[2]};display:inline-flex;align-items:center;justify-content:center;font-size:19px;vertical-align:middle;margin-right:6px">${t[1]}</span>${esc(a.name)}${dup?'':` <span class="sub">${esc(a.type)}</span>`}${a.auto?`<div class="sub">🔗 세븐스플릿 자동 연동 (평가금액 − 100만 원)${a.srcAt?' · 환율 기준 '+esc(String(a.srcAt).slice(5,10).replace('-','/')):''}</div>`:''}</div><div style="text-align:right"><div class="num mid">${W(v)}</div><div class="sub">${pc}%</div></div></div></div>`}).join('')}
 /* ---------- 동기부여 목표 + 이번 주 소비 철칙 ---------- */
 function motiv(){
  if(!S.goals.length)return '';const net=totals().net;
@@ -422,10 +422,10 @@ function vHome(){
 /* 자산 기록(하루 한 번 순자산을 남겨서 자산의 움직임을 분석) */
 function snapNow(){
  if(!loadedAll||!S.assets.length||Date.now()-lastSnapT<60000)return;
- const net=Math.round(totals().net),day=ymd(today()),cur=S.snaps.find(x=>x.id===day);
- if(cur&&cur.net===net)return;lastSnapT=Date.now();
+ const net=Math.round(totals().net),core=Math.round(totals().net-S.assets.filter(a=>a.auto).reduce((x,a)=>x+val(a),0)),day=ymd(today()),cur=S.snaps.find(x=>x.id===day);
+ if(cur&&cur.net===net&&cur.core===core)return;lastSnapT=Date.now();
  const usable=Math.round(S.assets.filter(a=>a.type==='현금'||a.type==='통장').reduce((x,a)=>x+val(a),0));
- const o={id:day,net,usable,_m:Date.now()},i=S.snaps.findIndex(x=>x.id===day);i>=0?S.snaps[i]=o:S.snaps.push(o);cacheSave();
+ const o={id:day,net,core,usable,_m:Date.now()},i=S.snaps.findIndex(x=>x.id===day);i>=0?S.snaps[i]=o:S.snaps.push(o);cacheSave();
  if(mode==='cloud')enqueue({k:'set',col:'snaps',id:day,data:clean(o),m:o._m});
 }
 const goalCfg=()=>{const f=S.settings.find(x=>x.id==='goalcfg')||{};return{since:f.since||'2026-11-01',rate:f.rate==null?3:f.rate,mode:f.mode||'auto'}};
@@ -433,7 +433,7 @@ function savingInfo(){
  const cfg=goalCfg(),t=today(),since=parse(cfg.since),days=Math.max(1,Math.round((t-since)/864e5)+1);
  const L=S.tx.filter(x=>x.date>=cfg.since&&x.date<=ymd(t)),inc=sum(L,'in'),out=sum(L,'out'),cashM=(inc-out)/days*30.4;
  const sn=S.snaps.filter(x=>x.id>=cfg.since).sort((a,b)=>a.id.localeCompare(b.id));let asset=null;
- if(sn.length>=2){const f=sn[0],l=sn[sn.length-1],span=Math.round((parse(l.id)-parse(f.id))/864e5);if(span>=1)asset={span,delta:l.net-f.net,monthly:(l.net-f.net)/span*30.4,n:sn.length,ok:span>=21}}
+ if(sn.length>=2){const f=sn[0],l=sn[sn.length-1],span=Math.round((parse(l.id)-parse(f.id))/864e5);if(span>=1){const dl=(l.core??l.net)-(f.core??f.net);asset={span,delta:dl,monthly:dl/span*30.4,n:sn.length,ok:span>=21}}}
  const useAsset=cfg.mode==='asset'?!!(asset&&asset.span>=7):cfg.mode==='auto'?!!(asset&&asset.ok):false;
  return{cfg,days,inc,out,cashM,asset,sn,used:useAsset?'asset':'cash',monthly:useAsset?asset.monthly:cashM};
 }
@@ -450,7 +450,7 @@ function savingCard(){
  return `<div class="card"><div class="row sp"><b>📈 저축 기준 · 예상 도달 분석</b><button class="btn g sm" data-a="goalCfgForm">기준 설정</button></div>
  <div class="item"><div class="grow sub">월 저축(추정) · 적용 기준: ${si.used==='asset'?'자산 추이':'수입−지출'}</div><div class="num mid ${si.monthly>=0?'green':'red'}">${si.monthly>=0?'':'-'}${W(Math.abs(si.monthly))}</div></div>
  <div class="sub" style="line-height:1.6">① <b>수입−지출 기준</b> (${c.since.slice(5).replace('-','/')}~오늘 ${si.days}일): 수입 ${W(si.inc)} − 지출 ${W(si.out)} = ${W(si.inc-si.out)} → 월 환산 <b>${W(si.cashM)}</b><br>
- ② <b>자산 추이 기준</b>: ${a?`${a.n}번 기록, ${a.span}일간 ${a.delta>=0?'+':''}${W(a.delta)} → 월 환산 <b>${W(a.monthly)}</b>${a.ok?'':` (21일 이상 쌓이면 자동 적용 — 지금은 ${a.span}일)`}`:'자산 기록이 쌓이는 중이에요 (하루 한 번 순자산을 자동으로 남겨요)'}<br>
+ ② <b>자산 추이 기준</b> (자동 연동 자산 제외): ${a?`${a.n}번 기록, ${a.span}일간 ${a.delta>=0?'+':''}${W(a.delta)} → 월 환산 <b>${W(a.monthly)}</b>${a.ok?'':` (21일 이상 쌓이면 자동 적용 — 지금은 ${a.span}일)`}`:'자산 기록이 쌓이는 중이에요 (하루 한 번 순자산을 자동으로 남겨요)'}<br>
  설정: ${modeTxt} · 자산 기대수익률 연 ${c.rate}%</div>
  ${tot?`<div class="sub" style="margin:6px 0 2px">목표를 N년 안에 이루려면 월 저축이 얼마나 필요한지 (전체 합계 ${big(tot)}원 기준)</div>${[10,20,30].map(y=>`<div class="item"><div class="grow sub">${y}년 안에</div><div class="num">${W(needMonthly(net,tot,y,c.rate))}</div></div>`).join('')}`:''}</div>`}
 function goalCfgForm(){const c=goalCfg();
@@ -855,12 +855,14 @@ function assetForm(id,keep){
  const a=keep||S.assets.find(x=>x.id===id)||{type:'통장',name:'',value:''};if(!a.name&&(a.type==='네이버 애드포스트'||a.type==='레뷰포인트'))a.name=a.type;const calc=a.type==='환테크'||a.type==='코인';
  sheet(`<label>종류</label><select id="a_type" data-ch="assetType">${opts(ATYPE.map(x=>x[0]),a.type)}</select>
  <label>이름</label><input id="a_name" value="${esc(a.name)}" placeholder="${a.type==='네이버 애드포스트'?'네이버 애드포스트':a.type==='레뷰포인트'?'레뷰 포인트':'예: 삼성전자, 달러 예금, 비트코인, 토스뱅크'}">
- <label>${a.type==='주식'?'평가금액 (원)':a.type==='환테크'?'평가금액 (원화로 환산한 금액)':a.type==='코인'?'평가금액 (원)':a.type==='네이버 애드포스트'?'애드포스트 잔액/미정산 수익 (원)':a.type==='레뷰포인트'?'레뷰 포인트 (1P=1원 기준, 원)':'금액 (원)'}</label><input id="a_val" type="number" inputmode="numeric" value="${id&&!keep?Math.round(val(a)):(a.value??'')}">
+ <label>${a.type==='주식'?'평가금액 (원)':a.type==='환테크'?'평가금액 (원화로 환산한 금액)':a.type==='코인'?'평가금액 (원)':a.type==='네이버 애드포스트'?'애드포스트 잔액/미정산 수익 (원)':a.type==='레뷰포인트'?'레뷰 포인트 (1P=1원 기준, 원)':'금액 (원)'}</label><input id="a_val" type="number" inputmode="numeric" value="${id&&!keep?Math.round(val(a)):(a.value??'')}" ${a.auto?'readonly':''}>${a.auto?'<div class="sub" style="margin-top:4px">🔗 세븐스플릿 평가금액 − 100만 원이 매일 자동으로 들어와요. 직접 고쳐도 다음 갱신 때 덮어써요. 삭제해도 다음 갱신 때 다시 만들어져요.</div>':''}
  <div class="row" style="margin-top:12px">${id?`<button class="btn r" data-a="delAsset" data-id="${id}">삭제</button>`:''}<button class="btn g grow" data-a="close">취소</button><button class="btn grow" data-a="saveAsset" data-id="${id||''}">저장</button></div>`);
 }
 function saveAsset(id){const type=v('a_type'),name=v('a_name').trim();if(!name)return toast('이름을 입력하세요');
+ const old=S.assets.find(x=>x.id===id);
+ if(old&&old.auto){put('assets',{...old,name,type});close();return toast('저장됨')} // 자동 연동 자산은 금액을 건드리지 않음
  const val0=+v('a_val');if(!(val0>=0)||v('a_val')==='')return toast('금액을 입력하세요');
- const o={id:id||uid(),type,name,value:val0-(id?linkSum(id):0)};put('assets',o);close();toast('저장됨')}
+ const o={...(old||{}),id:id||uid(),type,name,value:val0-(id?linkSum(id):0)};put('assets',o);close();toast('저장됨')}
 function fixedForm(id){
  const f=S.fixed.find(x=>x.id===id)||{name:'',amt:'',day:25,cat:'주거·통신',acct:''};
  sheet(`<label>이름</label><input id="x_name" value="${esc(f.name)}" placeholder="예: 월세, 통신비, 보험"><label>금액</label><input id="x_amt" type="number" inputmode="numeric" value="${f.amt}">
