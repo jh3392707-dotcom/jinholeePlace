@@ -51,6 +51,8 @@
 1. `git pull --rebase --autostash` (노트북에 남은 변경을 자동으로 잠시 치우고 최신본을 받는다). **실패하거나 충돌 표시가 나오면 오래된 템플릿으로 게시하지 말고**, 수집·분석까지만 하고 이유를 보고한다.
 2. `node collector/collect.js` → 베트맨 경기·배당. 0건이면 `raw/`를 읽고 parse.js 수정 후 1회 재시도. 실패하면 이유를 한 줄로 보고하고 종료(아티팩트는 건드리지 않는다).
 3. `node collector/yt.js --download-only` → 자막 다운로드 (`collector/transcripts/manifest.json`).
+   - **채널 범위**: 사용자가 "최신화"를 요청하면 기존 8개 채널에 더해 **추가한 유튜버 10명(현재 총 18개)을 전부** 분석 대상으로 한다. 대상은 노트북의 `collector/channels.json`에 있는 모든 채널이다. 사용자에게 채널을 다시 묻지 말고 알아서 자막을 가져와 4~5단계(1차 판단·2차 검증)에 모두 포함한다.
+   - 노트북 `channels.json`이 저장소보다 채널이 많으면(미커밋 변경) 그 파일을 기준으로 하고, 3단계 직후 `git add collector/channels.json` 후 커밋·푸시해 채널 목록이 사라지지 않게 한다(단일 명령으로 각각 실행). 채널 URL이 404이거나 자막이 없으면 그 채널만 건너뛰고 최종 보고에 채널명과 이유를 적는다. 새 채널의 가중치는 기본 1이다.
 4. **1차 판단**: 자막을 읽고 채널별·경기별·항목별 픽과 원문 근거를 `collector/picks_today.json`에 저장 (위 '4.'와 '같은 팀 이름 주의' 규칙 적용).
 5. **2차 검증**: Agent 도구로 **독립된 서브에이전트**를 띄워 1차 결과를 믿지 말고 자막을 처음부터 다시 읽어 확인하게 한다('2회 확인 지침'). 통과한 것만 `verified:true`로 `collector/picks_verified.json`에 저장하고 `node collector/apply_picks.js collector/picks_verified.json --replace`.
 6. **추천픽 저장(성적표용)**: `node collector/snapshot.js` — 지금 앱이 보여주는 추천픽(네 구역+조합)을 `records.json`에 스냅샷으로 저장한다. (Playwright 필요)
