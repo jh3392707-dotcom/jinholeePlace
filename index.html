@@ -201,6 +201,7 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .rec>summary::-webkit-details-marker{display:none}
 .rc-s{float:right;font-size:14px;color:#cfe8a0;font-weight:900}
 .rec-b{padding:0 14px 14px}
+.catbar{position:sticky;top:0;z-index:20;display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px;margin:0 0 8px;background:#0e110a;border:1px solid var(--line);border-radius:10px}.catbar b{color:var(--khaki);font-size:13px}.catbar button{padding:6px 11px;border-radius:999px;border:2px solid var(--line);background:#12160d;color:var(--mute);font:inherit;font-weight:900;font-size:13px;cursor:pointer}.catbar button.on{background:#2a3a17;border-color:#7fb04a;color:#cfe8a0}.catb{display:inline-block;padding:1px 7px;border-radius:6px;background:#2a3a17;color:#cfe8a0;font-size:11px;font-weight:900}
 .rc-mode{display:flex;gap:6px;margin:0 0 8px}.rc-mode button{flex:1;padding:9px 6px;border-radius:8px;border:2px solid var(--line);background:#12160d;color:var(--mute);font:inherit;font-weight:900;font-size:14px;cursor:pointer}.rc-mode button.on{background:#2a3a17;border-color:#7fb04a;color:#cfe8a0}
 .rc-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin:4px 0 8px}
 .rc-n{background:#12160d;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;font-size:13px;color:var(--mute)}
@@ -550,6 +551,22 @@ function simSnap(snap,res){
   return{...all,bud,E,single:{inv:sInv,net:sRet-sInv,h:sH,m:sM}};
 }
 const wonAbs=n=>Math.abs(Math.round(n)).toLocaleString('ko-KR')+'원';
+// 종목 분류 (남축·여축·남농·여농·남배·여배·야구·기타)
+const CAT_ORDER=['남축','여축','남농','여농','남배','여배','야구','기타','혼합'];
+function catOf(sport,league){const lg=String(league||''),fem=/여자|여성|WKBL|WNBA|여\b|WOMEN/i.test(lg)&&!/남자/.test(lg);const g=fem?'여':'남';
+  if(sport==='축구')return g+'축';if(sport==='농구')return g+'농';if(sport==='배구')return g+'배';if(sport==='야구')return '야구';return '기타'}
+const catPk=p=>catOf(p.sport,p.league);
+const catTk=x=>{const u=[...new Set(x.legs.map(l=>l.p?catPk(l.p):'기타'))];return u.length===1?u[0]:'혼합'};
+let CAT='all';try{CAT=localStorage.getItem('toto_cat')||'all'}catch(e){}
+function catBar(){const R=window.TOTO_RECORDS||{},have=new Set();
+  (S.matches||[]).forEach(m=>have.add(catOf(m.sport,m.league)));(R.snapshots||[]).forEach(sn=>(sn.picks||[]).forEach(p=>have.add(catPk(p))));
+  if(have.size>1)have.add('혼합');
+  const list=['all',...CAT_ORDER.filter(c=>have.has(c))];if(!list.includes(CAT))CAT='all';
+  return `<div class="catbar" id="catBar"><b>종목</b>${list.map(c=>`<button type="button" data-cat="${c}" class="${CAT===c?'on':''}">${c==='all'?'전체':c}</button>`).join('')}</div>`}
+function applyCat(){document.querySelectorAll('.pc[data-cat],.tk2[data-cat]').forEach(el=>{el.style.display=(CAT==='all'||el.dataset.cat===CAT)?'':'none'});
+  document.querySelectorAll('#catBar button').forEach(b=>b.classList.toggle('on',b.dataset.cat===CAT))}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cat]');if(!b||!b.closest('#catBar'))return;CAT=b.dataset.cat;try{localStorage.setItem('toto_cat',CAT)}catch(x){}
+  REC_OPEN=true;const box=document.getElementById('recBox');if(box){const t=document.createElement('div');t.innerHTML=recBanner();box.replaceWith(t.firstElementChild)}applyCat()});
 let REC_MODE='last',REC_OPEN=false;try{REC_MODE=localStorage.getItem('toto_recMode')==='all'?'all':'last'}catch(e){}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-rm]');if(!b)return;e.preventDefault();REC_MODE=b.dataset.rm==='all'?'all':'last';REC_OPEN=true;try{localStorage.setItem('toto_recMode',REC_MODE)}catch(x){}
   const box=document.getElementById('recBox');if(box){const t=document.createElement('div');t.innerHTML=recBanner();box.replaceWith(t.firstElementChild)}});
@@ -559,18 +576,20 @@ function recBanner(){
   const snap=snaps[snaps.length-1],ALL=REC_MODE==='all'&&snaps.length>1;
   // 누적 모드: 모든 스냅샷의 픽·조합을 합치되 같은 경기·선택 / 같은 조합은 한 번만 센다
   const pickSrc=[];if(ALL){const sk=new Set();snaps.forEach(sn=>sn.picks.forEach(p=>{const k=p.matchId+'|'+p.sel;if(sk.has(k))return;sk.add(k);pickSrc.push(p)}))}else pickSrc.push(...snap.picks);
-  const rows=pickSrc.map(p=>({p,e:evalPick(p,res[p.matchId])}));
+  const inCat=p=>CAT==='all'||catPk(p)===CAT;
+  const rows=pickSrc.filter(inCat).map(p=>({p,e:evalPick(p,res[p.matchId])}));
   const cnt=(arr,st)=>arr.filter(x=>x.e.st===st).length;
   const live=rows.filter(x=>!x.p.ban);
   const H=cnt(live,'hit'),M=cnt(live,'miss'),V=cnt(live,'void'),W=cnt(live,'wait'),J=H+M;
   // 누적(모든 스냅샷, 구매 금지 제외, 같은 경기·선택 중복 제외)
-  const seen=new Set();let aH=0,aJ=0;snaps.forEach(sn=>sn.picks.forEach(p=>{if(p.ban)return;const key=p.matchId+'|'+p.sel;if(seen.has(key))return;seen.add(key);const e=evalPick(p,res[p.matchId]);if(e.st==='hit'){aH++;aJ++}else if(e.st==='miss')aJ++}));
+  const seen=new Set();let aH=0,aJ=0;snaps.forEach(sn=>sn.picks.forEach(p=>{if(p.ban||!inCat(p))return;const key=p.matchId+'|'+p.sel;if(seen.has(key))return;seen.add(key);const e=evalPick(p,res[p.matchId]);if(e.st==='hit'){aH++;aJ++}else if(e.st==='miss')aJ++}));
   const GR=[['🛡 안정 2폴더','안정 2폴더'],['🛡 안정 3폴더','안정 3폴더'],['💥 도전 조합','도전 조합']];
   let EL;
   if(ALL){EL=[];const tk=new Set();snaps.forEach(sn=>(sn.tickets||[]).forEach(t=>{const k=t.group+'|'+t.legs.slice().sort().join(',');if(tk.has(k))return;tk.add(k);EL.push(evalTicket(sn,res,t))}))}
   else EL=simSnap(snap,res).E;
+  if(CAT!=='all')EL=EL.filter(x=>catTk(x)===CAT);
   const grp=GR.map(([key,label])=>{const L=EL.filter(x=>x.t.group===key);return{key,label,L,s:sumTk(L)}}).filter(g=>g.L.length);
-  const bud=snap.budget,bw=bud.toLocaleString('ko-KR')+'원';
+  const bud=snap.budget,bw=bud.toLocaleString('ko-KR')+'원',catNote=CAT==='all'?'':`<div class="note" style="margin:0 0 8px">🔎 <b>${CAT}</b>만 보는 중 — 위 종목 버튼에서 [전체]를 누르면 모두 보입니다.</div>`;
   const modeBar=snaps.length>1?`<div class="rc-mode"><button type="button" data-rm="last" class="${ALL?'':'on'}">마지막 추천픽</button><button type="button" data-rm="all" class="${ALL?'on':''}">📚 누적 (${snaps.length}회)</button></div>`:'';
   const sec=grp.map(g=>{const d=g.s.hit+g.s.miss,cls=!d?'wait':g.s.net>=0?'win':'lose';
     const line=!d?`⏳ 아직 판정된 조합이 없습니다 — 결과가 나오면 계산해 드립니다`:(g.s.net>=0?`💰 제 말만 따랐다면 <b>${wonAbs(g.s.net)}</b>을 버셨을 겁니다`:`😢 제 말만 따랐다면 <b>${wonAbs(g.s.net)}</b>을 잃으셨을 겁니다`);
@@ -581,7 +600,7 @@ function recBanner(){
     return `<div class="rc-r rc-${e.st}${p.ban?' rc-ban':''}"><span class="rc-i">${p.ban?'🚫':ic[e.st]}</span><div><b>${esc(p.label)}</b> <span class="note">x${p.odds.toFixed(2)}</span><div class="note">${esc(p.home)} vs ${esc(p.away)} · ${fmtT(p.time)} ${sc} · ${p.ban?'구매 금지 픽(집계 제외)':lb[e.st]} · ${p.sections.map(k=>SEC_NAME[k]).join(' ')}</div></div></div>`}).join('');
   const pending=!J&&!V;
   return `<details class="rec" id="recBox" ${J||REC_OPEN?'open':''}><summary>🏁 ${ALL?'누적':'마지막 추천픽'} 성적표 <span class="rc-s">${J?`✅${H} ❌${M} ⏳${W}`:'결과 대기 중'}</span></summary><div class="rec-b">
-   ${modeBar}
+   ${modeBar}${catNote}
    ${sec}
    <div class="rc-top"><div class="rc-n hit">✅ 적중 <b>${H}</b></div><div class="rc-n miss">❌ 비적중 <b>${M}</b></div><div class="rc-n wait">⏳ 대기 <b>${W}</b></div>${V?`<div class="rc-n void">⚪ 무효 <b>${V}</b></div>`:''}</div>
    <div class="note">${ALL?`저장 ${snaps.length}회 누적(${kstFmt(snaps[0].savedAt)} ~ ${kstFmt(snap.savedAt)}) · 같은 경기·같은 선택·같은 조합은 한 번만 계산 · 추천픽 ${live.length}개 (한국시간)`:`저장 시각 ${kstFmt(snap.savedAt)} 기준 추천픽 ${live.length}개 · 배당 수집 ${snap.collectedAt?kstFmt(snap.collectedAt):'-'} (한국시간)`}</div>
@@ -634,10 +653,10 @@ function pickCard(c,i,amt,kind,openAll,showCl){
   const chip=kind=='r'?`<span class="gr gr-r">EV ${c.ev.toFixed(2)}</span>`:`<span class="gr gr-${grade(c.pa)}">${grade(c.pa)}</span>`;
   const bud=Math.max(1000,+$('budget').value||0),pay=payoutOf(bud,c.odds);
   const amtTxt=opp?`<span class="ban">🚫 구매 금지</span>`:`<span class="pa-l">💰 ${won(bud)} 투자 시</span><span class="pa-v">적중금 <b>${won(pay)}</b></span>`;
-  return `<details class="pc${one?' pc1':''}${opp?' pc-opp':''}${openAll?' pc-big':''}"${openAll?' open':''}><summary class="pc-s">${opp?'<div class="oppbar">🚫 구매 금지 · 배당과 반대 의견 (분석 오류 가능)</div>':''}
+  return `<details data-cat="${catOf(c.m.sport,c.m.league)}" class="pc${one?' pc1':''}${opp?' pc-opp':''}${openAll?' pc-big':''}"${openAll?' open':''}><summary class="pc-s">${opp?'<div class="oppbar">🚫 구매 금지 · 배당과 반대 의견 (분석 오류 가능)</div>':''}
    <div class="pc-top"><span class="rk">${i+1}</span>${chip}<span class="pc-o">x${c.odds.toFixed(2)}</span></div>
    <div class="pc-t">${esc(c.label)}</div>
-   <div class="pc-m">${esc(c.m.home)} vs ${esc(c.m.away)}</div>
+   <div class="pc-m"><span class="catb">${catOf(c.m.sport,c.m.league)}</span> ${esc(c.m.home)} vs ${esc(c.m.away)}</div>
    <div class="pc-cd"><span class="cd" data-s="1" data-t="${esc(c.m.time)}"></span>${cbSpan(c.m,true)}</div>
    <div class="bar"><i style="width:${pct}%"></i></div>
    <div class="pc-gl">유튜버 <b>${c.votes}/${c.nPick||0}</b>명 ${pct}%${one?' <span class="b1 sm">⚠1명</span>':''}${c.warn?' <span class="warnic">⚠</span>':''}</div>
@@ -676,7 +695,7 @@ function run(){
   const owBanner=`<div class="stale ow"><span class="cw" data-s="${esc(OW.s)}" data-e="${esc(OW.e)}"></span><div class="note">베트맨 발매 시간 <b>매일 ${esc(OW.s)}~${esc(OW.e)}</b> · ${esc(OW.e)}~${esc(OW.s)}는 시스템 점검으로 <b>발매 중단</b></div>${nightN?`<div class="nightw">🌙 발매 중단 시간대에 마감되는 경기 <b>${nightN}개</b> — <b>${esc(OW.e)} 전에 미리 구매</b>해야 합니다 (카드의 🌙 표시)</div>`:''}</div>`;
   const legend=`<div class="legend"><span class="lg-r">🚫 빨간 카드</span> = 유튜버 의견이 <b>배당과 반대</b>입니다. <b>분석 오류 가능성이 있어 구매 금지</b>이며, 적중금 조합에서 제외됩니다.<br>💰 카드의 적중금은 <b>그 픽 하나에 투자했을 때</b>의 참고값입니다. 승부식은 2경기 이상 조합이 기본이라 실제 구매는 ⑤ 조합 카드를 보세요.<br>🛒 <b>구매 마감</b> 타이머는 경기 시작 타이머와 별개입니다. 베트맨이 준 마감 시각 기준이며 <b>~</b> 표시는 마감 시각 정보가 없어 <b>경기 30분 전으로 추정</b>한 값입니다.<br>🌙 <b>미리</b> 표시 = 마감이 발매 중단(점검) 시간대라서 <b>전날 발매 종료 시각 전에 미리 구매</b>해야 하는 경기입니다.</div>`;
   const none=t=>`<div class="none">${t}</div>`;
-  h+=owBanner+recBanner()+legend+`<div class="jump">${[['s1','◆◆◆ 대위 추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
+  h+=owBanner+catBar()+recBanner()+legend+`<div class="jump">${[['s1','◆◆◆ 대위 추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
   h+=sec('s1','<span class="dia">◆◆◆</span>','대위 이진호의 추천픽 <small class="mx">(최대 8개)</small>','<div class="crit">유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고 배당 확률도 <b>50% 이상</b>인 경기</div>',
     perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
   h+=sec('s2','📺','유튜버 추천픽 <small class="mx">(최대 8개)</small>','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
@@ -692,7 +711,8 @@ function run(){
     g.t.forEach(t=>{
       const pay=payoutOf(budget,t.odds),over=pay>CAP,prof=pay-budget,ev=pay*t.p;
       const first=t.legs.map(l=>l.m).sort((a,b)=>effDl(a).ms-effDl(b).ms)[0],fx=effDl(first);
-      h+=`<div class="tk2"><div class="tk2-h"><span>${t.legs.length}폴더</span><span>합산배당 <b>x${t.odds.toFixed(2)}</b></span></div>
+      const tc=(u=>u.length===1?u[0]:'혼합')([...new Set(t.legs.map(l=>catOf(l.m.sport,l.m.league)))]);
+      h+=`<div class="tk2" data-cat="${tc}"><div class="tk2-h"><span class="catb">${tc}</span><span>${t.legs.length}폴더</span><span>합산배당 <b>x${t.odds.toFixed(2)}</b></span></div>
       <div class="tk2-dl">가장 빠른 구매 마감 · <span class="cb cb-big" data-ms="${fx.ms}" data-e="${dlEst(first)?1:0}" data-h="${fx.sh?1:0}" data-l="${esc(OW.e)}"></span></div>
       <ul class="tk2-l">${t.legs.map(l=>`<li><b>${esc(l.label)}</b><span class="note"> ${esc(l.m.home)} vs ${esc(l.m.away)} · x${l.odds.toFixed(2)}</span> <span class="cd" data-s="1" data-t="${esc(l.m.time)}"></span> ${cbSpan(l.m,true)}</li>`).join('')}</ul>
       <div class="tk2-big">
@@ -717,7 +737,7 @@ function run(){
    [...vmap.values()].map(c=>`<tr><td class="l">${esc(c.m.home)} vs ${esc(c.m.away)}<br><span class="note">${fmtT(c.m.time)}</span></td><td class="l">${esc(c.label)}</td><td><b>${c.odds.toFixed(2)}</b></td><td><input type="number" step="0.01" min="1.01" style="width:90px;padding:4px" data-vm="${esc(c.m.id)}" data-vk="${c.k}" placeholder="${c.odds.toFixed(2)}"></td><td>${c.ver?'✓ 직접 확인':c.warn?'⚠ '+esc(c.warn):'미확인'}</td></tr>`).join('')+
    `</table></div>`+
    (LASTDIFF.length?`<div style="margin-top:10px"><b style="color:var(--khaki)">최근 최신화로 바뀐 배당 ${LASTDIFF.length}건</b><div class="note">${LASTDIFF.slice().sort((a,b)=>Math.abs(b.nw/b.old-1)-Math.abs(a.nw/a.old-1)).slice(0,10).map(d=>`${esc(d.m.home)} vs ${esc(d.m.away)} ${esc(selLabel(d.m,d.k))}: ${d.old.toFixed(2)} → <b>${d.nw.toFixed(2)}</b>`).join('<br>')}${LASTDIFF.length>10?'<br>…':''}</div></div>`:'')+`</details>`;
-  $('out').innerHTML=h;tickCd();
+  $('out').innerHTML=h;applyCat();tickCd();
   document.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{const t=document.getElementById(b.dataset.j);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
   document.querySelectorAll('[data-vm]').forEach(inp=>inp.onchange=()=>{
     const v=parseFloat(inp.value);if(!(v>1))return;
