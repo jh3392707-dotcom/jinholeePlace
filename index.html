@@ -443,7 +443,7 @@ function build(){
   // ② 유튜버 추천: 의견 일치율 높은 순 (1명만 분석한 것도 포함, 화면에서 따로 강조)
   const yt=top(all.filter(c=>c.votes>=1&&c.ratio>=0.5&&c.odds>=1.1),c=>c.ratio*1000+c.votes*10+c.pa);
   // ③ 클로드 추천: 배당에서 역산한 확률이 높은 순
-  const cl=top(all.filter(isCl),c=>c.pa);
+  const cl=top(all.filter(c=>c.odds>=1.1&&c.pa>=0.6),c=>c.pa); // 클로드 추천: 확률 60%↑ & 배당 1.10↑
   // ④ 고배당: 배당 1.8↑ 이면서 (유튜버 다수 일치 또는 기대값 0.95↑ & 확률 28%↑)
   const high=top(all.filter(c=>c.odds>=1.8&&(isYt(c)||(c.pa>=0.28&&c.ev>=0.95))),c=>c.ev+0.1*c.ratio*c.cov);
   // 작전 배분용: 안정권 후보를 합쳐 상위 5, 고배당은 겹치지 않는 경기만
@@ -700,7 +700,7 @@ function run(){
     perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
   h+=sec('s2','📺','유튜버 추천픽 <small class="mx">(최대 8개)</small>','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
     yt.length?yt.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('유튜버 픽이 없습니다. 유튜버 분석을 먼저 수집하세요.'));
-  h+=sec('s3','🤖','클로드 추천픽 <small class="mx">(최대 8개)</small>','배당에서 역산한 승리 확률이 높은 순 (50%↑, 배당 1.20↑). 선수·부상 같은 정보는 반영되지 않았습니다.',
+  h+=sec('s3','🤖','클로드 추천픽 <small class="mx">(최대 8개)</small>','배당에서 역산한 승리 확률이 높은 순 (<b>60%↑, 배당 1.10↑</b>). 선수·부상 같은 정보는 반영되지 않았습니다.',
     cl.length?cl.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('조건에 맞는 경기가 없습니다.'));
   h+=sec('s4','💥','오늘의 고배당 <small class="mx">(최대 8개)</small>','배당 <b>1.8배 이상</b>이면서 유튜버가 다수 일치했거나, 확률 대비 배당이 유리(기대값 0.95↑)한 픽',
     high.length?high.map((c,i)=>pickCard(c,i,amtH(c),'r')).join(''):none('조건에 맞는 고배당 픽이 없습니다.'));
