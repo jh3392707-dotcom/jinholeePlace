@@ -201,7 +201,7 @@ header{padding:14px 0 8px;margin-bottom:12px}.star{font-size:22px}
 .rec>summary::-webkit-details-marker{display:none}
 .rc-s{float:right;font-size:14px;color:#cfe8a0;font-weight:900}
 .rec-b{padding:0 14px 14px}
-.catbar{position:sticky;top:0;z-index:20;display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px;margin:0 0 8px;background:#0e110a;border:1px solid var(--line);border-radius:10px}.catbar b{color:var(--khaki);font-size:13px}.catbar button{padding:6px 11px;border-radius:999px;border:2px solid var(--line);background:#12160d;color:var(--mute);font:inherit;font-weight:900;font-size:13px;cursor:pointer}.catbar button.on{background:#2a3a17;border-color:#7fb04a;color:#cfe8a0}.catb{display:inline-block;padding:1px 7px;border-radius:6px;background:#2a3a17;color:#cfe8a0;font-size:11px;font-weight:900}
+.catbar{position:sticky;top:0;z-index:20;display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px;margin:0 0 8px;background:#0e110a;border:1px solid var(--line);border-radius:10px}.catbar b{color:var(--khaki);font-size:13px}.catbar button{padding:6px 11px;border-radius:999px;border:2px solid var(--line);background:#12160d;color:var(--mute);font:inherit;font-weight:900;font-size:13px;cursor:pointer}.catbar button.on{background:#2a3a17;border-color:#7fb04a;color:#cfe8a0}.pc-lg{font-size:12px;font-weight:700;color:var(--mute);margin-bottom:2px}.catb{display:inline-block;padding:1px 7px;border-radius:6px;background:#2a3a17;color:#cfe8a0;font-size:11px;font-weight:900}
 .rc-mode{display:flex;gap:6px;margin:0 0 8px}.rc-mode button{flex:1;padding:9px 6px;border-radius:8px;border:2px solid var(--line);background:#12160d;color:var(--mute);font:inherit;font-weight:900;font-size:14px;cursor:pointer}.rc-mode button.on{background:#2a3a17;border-color:#7fb04a;color:#cfe8a0}
 .rc-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin:4px 0 8px}
 .rc-n{background:#12160d;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;font-size:13px;color:var(--mute)}
@@ -597,7 +597,7 @@ function recBanner(){
     return `<div class="rc-pg ${cls}"><div class="rc-pgh">${g.label} <small>${g.L.length}장</small></div><div class="rc-pgm">${line}</div><div class="note">${sub}</div></div>`}).join('');
   const ic={hit:'✅',miss:'❌',void:'⚪',wait:'⏳'},lb={hit:'적중',miss:'비적중',void:'무효(1.0배)',wait:'대기'};
   const list=rows.slice().sort((a,b)=>({miss:0,hit:1,void:2,wait:3}[a.e.st]-{miss:0,hit:1,void:2,wait:3}[b.e.st])||a.p.time.localeCompare(b.p.time)).map(({p,e})=>{const r=res[p.matchId],sc=r&&r.home!=null?`<b>${r.home}:${r.away}</b>`:'';
-    return `<div class="rc-r rc-${e.st}${p.ban?' rc-ban':''}"><span class="rc-i">${p.ban?'🚫':ic[e.st]}</span><div><b>${esc(p.label)}</b> <span class="note">x${p.odds.toFixed(2)}</span><div class="note">${esc(p.home)} vs ${esc(p.away)} · ${fmtT(p.time)} ${sc} · ${p.ban?'구매 금지 픽(집계 제외)':lb[e.st]} · ${p.sections.map(k=>SEC_NAME[k]).join(' ')}</div></div></div>`}).join('');
+    return `<div class="rc-r rc-${e.st}${p.ban?' rc-ban':''}"><span class="rc-i">${p.ban?'🚫':ic[e.st]}</span><div><span class="catb">${catPk(p)}</span> <b>${esc(p.label)}</b> <span class="note">x${p.odds.toFixed(2)}</span><div class="note">${esc(p.league||'')} · ${esc(p.home)} vs ${esc(p.away)} · ${fmtT(p.time)} ${sc} · ${p.ban?'구매 금지 픽(집계 제외)':lb[e.st]} · ${p.sections.map(k=>SEC_NAME[k]).join(' ')}</div></div></div>`}).join('');
   const pending=!J&&!V;
   return `<details class="rec" id="recBox" ${J||REC_OPEN?'open':''}><summary>🏁 ${ALL?'누적':'마지막 추천픽'} 성적표 <span class="rc-s">${J?`✅${H} ❌${M} ⏳${W}`:'결과 대기 중'}</span></summary><div class="rec-b">
    ${modeBar}${catNote}
@@ -606,7 +606,7 @@ function recBanner(){
    <div class="note">${ALL?`저장 ${snaps.length}회 누적(${kstFmt(snaps[0].savedAt)} ~ ${kstFmt(snap.savedAt)}) · 같은 경기·같은 선택·같은 조합은 한 번만 계산 · 추천픽 ${live.length}개 (한국시간)`:`저장 시각 ${kstFmt(snap.savedAt)} 기준 추천픽 ${live.length}개 · 배당 수집 ${snap.collectedAt?kstFmt(snap.collectedAt):'-'} (한국시간)`}</div>
    ${pending?`<div class="note" style="margin:8px 0">경기가 끝나면 결과가 정리되어 적중/비적중이 표시됩니다. 이 채팅에 <b>"결과 정리"</b>라고 하시면 최종 스코어를 찾아 반영합니다.</div>`:''}
    ${grp.map(g=>`<details class="rc-list"><summary>${g.label} 결과 보기 (${g.L.length}장)</summary>${g.L.map(x=>{const ic2={hit:'✅',miss:'❌',void:'⚪',wait:'⏳'}[x.st];const names=x.legs.map(l=>l.p?esc(l.p.label):'?').join(' + ');const oddsT=(x.t.odds||0).toFixed(2);
-     return `<div class="rc-r rc-${x.st}"><span class="rc-i">${ic2}</span><div><b>${names}</b><div class="note">합산 x${oddsT} · ${x.st==='hit'?`적중금 ${wonAbs(x.ret)} (+${wonAbs(x.net)})`:x.st==='miss'?`${wonAbs(x.inv)} 손실`:x.st==='void'?'전부 무효 — 환불':'결과 대기'} · 경기별 ${x.legs.map(l=>({hit:'✅',miss:'❌',void:'⚪',wait:'⏳'})[l.e.st]).join('')}</div></div></div>`}).join('')}</details>`).join('')}
+     return `<div class="rc-r rc-${x.st}"><span class="rc-i">${ic2}</span><div><span class="catb">${catTk(x)}</span> <b>${names}</b><div class="note">합산 x${oddsT} · ${x.st==='hit'?`적중금 ${wonAbs(x.ret)} (+${wonAbs(x.net)})`:x.st==='miss'?`${wonAbs(x.inv)} 손실`:x.st==='void'?'전부 무효 — 환불':'결과 대기'} · 경기별 ${x.legs.map(l=>({hit:'✅',miss:'❌',void:'⚪',wait:'⏳'})[l.e.st]).join('')}</div></div></div>`}).join('')}</details>`).join('')}
    <details class="rc-list"><summary>픽별 결과 보기 (${rows.length}개)</summary>${list}</details>
    ${snaps.length>1?`<div class="note" style="margin-top:8px">📚 누적: 저장 ${snaps.length}회 · 판정된 추천픽 ${aJ}개 중 적중 ${aH}개${aJ?` (${Math.round(aH/aJ*100)}%)`:''}</div>`:''}
   </div></details>`;
@@ -656,7 +656,7 @@ function pickCard(c,i,amt,kind,openAll,showCl){
   return `<details data-cat="${catOf(c.m.sport,c.m.league)}" class="pc${one?' pc1':''}${opp?' pc-opp':''}${openAll?' pc-big':''}"${openAll?' open':''}><summary class="pc-s">${opp?'<div class="oppbar">🚫 구매 금지 · 배당과 반대 의견 (분석 오류 가능)</div>':''}
    <div class="pc-top"><span class="rk">${i+1}</span>${chip}<span class="pc-o">x${c.odds.toFixed(2)}</span></div>
    <div class="pc-t">${esc(c.label)}</div>
-   <div class="pc-m"><span class="catb">${catOf(c.m.sport,c.m.league)}</span> ${esc(c.m.home)} vs ${esc(c.m.away)}</div>
+   <div class="pc-lg"><span class="catb">${catOf(c.m.sport,c.m.league)}</span> ${esc(c.m.league)}</div><div class="pc-m">${esc(c.m.home)} vs ${esc(c.m.away)}</div>
    <div class="pc-cd"><span class="cd" data-s="1" data-t="${esc(c.m.time)}"></span>${cbSpan(c.m,true)}</div>
    <div class="bar"><i style="width:${pct}%"></i></div>
    <div class="pc-gl">유튜버 <b>${c.votes}/${c.nPick||0}</b>명 ${pct}%${one?' <span class="b1 sm">⚠1명</span>':''}${c.warn?' <span class="warnic">⚠</span>':''}</div>
