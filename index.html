@@ -463,8 +463,10 @@ const tk=legs=>({legs,odds:offOdds(legs.reduce((a,l)=>a*l.odds,1)),p:legs.reduce
 // 승부식 규정: 2~10경기 조합, 같은 경기의 일반·핸디·언오버는 섞을 수 없음(여기서는 경기당 하나만 고르므로 해당 없음)
 function tickets(safe,chal){
   const rk=(a,b)=>b.p*b.odds-a.p*a.odds;
-  const s2=combos(safe,2).map(tk).filter(t=>t.odds>=1.4).sort(rk).slice(0,3);
-  const s3=combos(safe,3).map(tk).filter(t=>t.odds>=1.8).sort(rk).slice(0,2);
+  // 합산배당 하한(2폴 1.4↑, 3폴 1.8↑)을 넘는 조합을 우선하되, 저배당 픽만 남아 하나도 없으면 하한 없이 가장 좋은 조합을 보여준다(조합이 통째로 사라지지 않게)
+  const pickT=(arr,min,n)=>{const all=arr.map(tk).sort(rk),ok=all.filter(t=>t.odds>=min);return (ok.length?ok:all).slice(0,n)};
+  const s2=pickT(combos(safe,2),1.4,3);
+  const s3=pickT(combos(safe,3),1.8,2);
   const c=[];
   if(safe[0]&&chal[0])c.push(tk([safe[0],chal[0]]));
   if(chal.length>=2)c.push(tk([chal[0],chal[1]]));
