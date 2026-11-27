@@ -436,14 +436,14 @@ function bestPerMatch(list,cmp){const best={};list.forEach(c=>{const b=best[c.m.
 function build(){
   const all=candidates();
   const isYt=c=>c.votes>=2&&c.ratio>=0.6;      // 같은 항목 유튜버 다수 일치
-  const isCl=c=>c.odds>=1.2&&c.pa>=0.5;        // 클로드(배당 확률 모델) 안정 추천
+  const isCl=c=>c.odds>=1.1&&c.pa>=0.6;        // 클로드(배당 확률 모델) 안정 추천: 확률 60%↑ & 배당 1.10↑
   const top=(list,score,n=8)=>bestPerMatch(list,(a,b)=>score(a)-score(b)).sort((a,b)=>score(b)-score(a)).slice(0,n);
   // ① 완전 추천: 유튜버 다수 일치 + 클로드 안정 추천이 같은 선택
   const perfect=top(all.filter(c=>isYt(c)&&isCl(c)),c=>c.pa+0.15*c.ratio*c.cov);
   // ② 유튜버 추천: 의견 일치율 높은 순 (1명만 분석한 것도 포함, 화면에서 따로 강조)
   const yt=top(all.filter(c=>c.votes>=1&&c.ratio>=0.5&&c.odds>=1.1),c=>c.ratio*1000+c.votes*10+c.pa);
   // ③ 클로드 추천: 배당에서 역산한 확률이 높은 순
-  const cl=top(all.filter(c=>c.odds>=1.1&&c.pa>=0.6),c=>c.pa); // 클로드 추천: 확률 60%↑ & 배당 1.10↑
+  const cl=top(all.filter(isCl),c=>c.pa);
   // ④ 고배당: 배당 1.8↑ 이면서 (유튜버 다수 일치 또는 기대값 0.95↑ & 확률 28%↑)
   const high=top(all.filter(c=>c.odds>=1.8&&(isYt(c)||(c.pa>=0.28&&c.ev>=0.95))),c=>c.ev+0.1*c.ratio*c.cov);
   // 작전 배분용: 안정권 후보를 합쳐 상위 5, 고배당은 겹치지 않는 경기만
@@ -696,7 +696,7 @@ function run(){
   const legend=`<div class="legend"><span class="lg-r">🚫 빨간 카드</span> = 유튜버 의견이 <b>배당과 반대</b>입니다. <b>분석 오류 가능성이 있어 구매 금지</b>이며, 적중금 조합에서 제외됩니다.<br>💰 카드의 적중금은 <b>그 픽 하나에 투자했을 때</b>의 참고값입니다. 승부식은 2경기 이상 조합이 기본이라 실제 구매는 ⑤ 조합 카드를 보세요.<br>🛒 <b>구매 마감</b> 타이머는 경기 시작 타이머와 별개입니다. 베트맨이 준 마감 시각 기준이며 <b>~</b> 표시는 마감 시각 정보가 없어 <b>경기 30분 전으로 추정</b>한 값입니다.<br>🌙 <b>미리</b> 표시 = 마감이 발매 중단(점검) 시간대라서 <b>전날 발매 종료 시각 전에 미리 구매</b>해야 하는 경기입니다.</div>`;
   const none=t=>`<div class="none">${t}</div>`;
   h+=owBanner+catBar()+recBanner()+legend+`<div class="jump">${[['s1','◆◆◆ 대위 추천'],['s2','② 유튜버'],['s3','③ 클로드'],['s4','④ 고배당'],['s5','⑤ 적중금']].map(x=>`<button type="button" data-j="${x[0]}">${x[1]}</button>`).join('')}</div>`;
-  h+=sec('s1','<span class="dia">◆◆◆</span>','대위 이진호의 추천픽 <small class="mx">(최대 8개)</small>','<div class="crit">유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고 배당 확률도 <b>50% 이상</b>인 경기</div>',
+  h+=sec('s1','<span class="dia">◆◆◆</span>','대위 이진호의 추천픽 <small class="mx">(최대 8개)</small>','<div class="crit">유튜버 다수(60%↑)와 클로드가 <b>같은 선택</b>을 골랐고 배당 확률도 <b>60% 이상(배당 1.10↑)</b>인 경기</div>',
     perfect.length?perfect.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('오늘은 유튜버와 클로드가 겹치는 안정 픽이 없습니다.<br>② ③을 각각 참고하세요.'));
   h+=sec('s2','📺','유튜버 추천픽 <small class="mx">(최대 8개)</small>','같은 항목(승무패·핸디캡·언오버)을 고른 유튜버 중 <b>의견일치율이 높은 순</b>. 분석한 사람이 <b>1명뿐</b>이면 노란 경고가 붙습니다.',
     yt.length?yt.map((c,i)=>pickCard(c,i,amtS(c),'s',false,true)).join(''):none('유튜버 픽이 없습니다. 유튜버 분석을 먼저 수집하세요.'));
